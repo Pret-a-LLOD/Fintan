@@ -9,6 +9,8 @@ Without additional code integration, external loader components can be combined 
 	$> bash -e ./unimorph2lemon.sh data/sqi.gz | \
 	   ../../../backend/run.sh CoNLLRDFUpdater WITH-USER-PARAMETERS
 
+This way of execution requires that the corresponding loader script writes into the standard output stream, and that it does not create a new file, instead. Before a loader can be formally integrated with Fintan, this needs to be confirmed.
+
 Aside from loader components listed here, the Fintan backend natively supports tabular formats (TSV, CSV via CoNLL-RDF) with extensions for XML markup (CoNLL-RDF tree extensions).
 
 ## External loaders
