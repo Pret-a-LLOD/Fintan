@@ -11,3 +11,8 @@ Without additional code integration, external loader components can be combined 
 
 Aside from loader components listed here, the Fintan backend natively supports tabular formats (TSV, CSV via CoNLL-RDF) with extensions for XML markup (CoNLL-RDF tree extensions).
 
+## External loaders
+
+- LLODifier, see [llodifier/*/](https://github.com/acoli-repo/LLODifier)
+- CoNLL-Merge converters, see [conll-merge/cmd/](https://github.com/acoli-repo/conll-merge/tree/master/cmd)
+- XML2CoNLL, see [xml2conll](https://github.com/acoli-repo/xml2conll)
