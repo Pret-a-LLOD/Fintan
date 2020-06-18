@@ -1,3 +1,6 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/acoli-repo/conll-rdf
+[submodule "loaders/llodifier"]
+	path = loaders/llodifier
+	url = https://github.com/acoli-repo/LLODifier.git
