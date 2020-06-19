@@ -18,4 +18,4 @@ Aside from loader components listed here, the Fintan backend natively supports t
 - LLODifier, see [llodifier/*/](https://github.com/acoli-repo/LLODifier)
 - CoNLL-Merge converters, see [conll-merge/cmd/](https://github.com/acoli-repo/conll-merge/tree/master/cmd)
 - XML2CoNLL, see [xml2conll](https://github.com/acoli-repo/xml2conll)
-- TBX2RDF, see [tbx2rdf][https://github.com/cimiano/tbx2rdf.git]
+- TBX2RDF, see [tbx2rdf](https://github.com/cimiano/tbx2rdf.git)
