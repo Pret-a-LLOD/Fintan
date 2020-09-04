@@ -1,0 +1,11 @@
+{
+"input" : "System.in"
+, "output" : "System.out"
+, "pipeline" : [ 
+
+	{ "class" : "SimpleLineBreakSplitter",
+		"baseURI" : "https://github.com/UniversalDependencies/UD_English#",
+		"columns" : ["IGNORE", "WORD", "IGNORE", "UPOS", "IGNORE", "IGNORE", "HEAD", "EDGE", "IGNORE", "IGNORE"]
+	}
+]
+}
