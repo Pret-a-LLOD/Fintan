@@ -195,8 +195,19 @@ public class FintanCLIManager {
 		if (targetClass==null) System.exit(1);
 		try {
 			FintanStreamComponent component;
-			component = ((FintanStreamComponentFactory) targetClass.newInstance()).buildFromJsonConf(conf);
-			return component;
+			try {
+				component = ((FintanStreamComponentFactory) targetClass.newInstance()).buildFromJsonConf(conf);
+				return component;
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(1);
+			}
+			
 		} catch (InstantiationException | IllegalAccessException e) {
 			LOG.error(e, e);
 			System.exit(1);

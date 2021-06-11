@@ -8,8 +8,6 @@ public abstract class FintanStreamComponent implements Runnable {
 
 	private InputStream inputStream;
 	private OutputStream outputStream;
-	private InputStream inputStream2;
-	private OutputStream outputStream2;
 
 	//TODO: add segmentation delimiter handling
 	//TODO: -TEXT-	StreamComponents: 	add data FORMAT handling
@@ -34,23 +32,6 @@ public abstract class FintanStreamComponent implements Runnable {
 		this.outputStream = outputStream;
 	}
 
-	
-	//OPTIONAL secondary I/O (especially for unprocessed bulk-data in splitters/combiners)
-	public InputStream getInputStream2() {
-		return inputStream2;
-	}
-
-	public void setInputStream2(InputStream inputStream2) {
-		this.inputStream2 = inputStream2;
-	}
-
-	public OutputStream getOutputStream2() {
-		return outputStream2;
-	}
-
-	public void setOutputStream2(OutputStream outputStream2) {
-		this.outputStream2 = outputStream2;
-	}
 
 	public abstract void start();
 	
