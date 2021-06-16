@@ -13,39 +13,65 @@ public abstract class StreamRdfUpdater extends FintanStreamComponent {
 
 	protected static final Logger LOG = LogManager.getLogger(StreamRdfUpdater.class.getName());
 	
-	private ObjectInputStream inputStream;
-	private ObjectOutputStream outputStream;
+
+	@Override
+	public final ObjectInputStream getInputStream() {
+		return (ObjectInputStream) super.getInputStream();
+	}
+
 	
-
 	@Override
-	public ObjectInputStream getInputStream() {
-		return inputStream;
+	public final ObjectInputStream getInputStream(String name) {
+		return (ObjectInputStream) super.getInputStream(name);
 	}
 
 	@Override
-	public ObjectOutputStream getOutputStream() {
-		return outputStream;
-	}
-
-	@Override
-	public void setInputStream(InputStream inputStream) {
-		super.setInputStream(inputStream);
+	public final void setInputStream(InputStream inputStream) {
 		try {
-			this.inputStream = new ObjectInputStream(super.getInputStream());
+			super.setInputStream(new ObjectInputStream(inputStream));
 		} catch (IOException e) {
 			LOG.error(e, e);
 			System.exit(1);
 		}
 	}
+	
+	@Override
+	public final void setInputStream(InputStream inputStream, String name) {
+		try {
+			super.setInputStream(new ObjectInputStream(inputStream), name);
+		} catch (IOException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		}	
+	}
 
 	@Override
-	public void setOutputStream(OutputStream outputStream) {
-		super.setOutputStream(outputStream);
+	public final ObjectOutputStream getOutputStream() {
+		return (ObjectOutputStream) super.getOutputStream();
+	}
+	
+	@Override
+	public final ObjectOutputStream getOutputStream(String name) {
+		return (ObjectOutputStream) super.getOutputStream(name);
+	}
+	
+	@Override
+	public final void setOutputStream(OutputStream outputStream) {
 		try {
-			this.outputStream = new ObjectOutputStream(super.getOutputStream());
+			super.setOutputStream(new ObjectOutputStream(outputStream));
 		} catch (IOException e) {
 			LOG.error(e, e);
 			System.exit(1);
 		}
+	}
+	
+	@Override
+	public final void setOutputStream(OutputStream outputStream, String name) {
+		try {
+			super.setOutputStream(new ObjectOutputStream(outputStream), name);
+		} catch (IOException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		}	
 	}
 }

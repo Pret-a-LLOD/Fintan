@@ -2,12 +2,13 @@ package de.unifrankfurt.informatik.acoli.fintan.core;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 
 public abstract class FintanStreamComponent implements Runnable {
 
-	private InputStream inputStream;
-	private OutputStream outputStream;
+	private HashMap<String,InputStream> inputStreams;
+	private HashMap<String,OutputStream> outputStreams;
 
 	//TODO: add segmentation delimiter handling
 	//TODO: -TEXT-	StreamComponents: 	add data FORMAT handling
@@ -17,19 +18,35 @@ public abstract class FintanStreamComponent implements Runnable {
 	//				should be compatible with OpenAPI, elexis and teanga.
 	
 	public InputStream getInputStream() {
-		return inputStream;
+		return inputStreams.get("");
+	}
+	
+	public InputStream getInputStream(String name) {
+		return inputStreams.get(name);
 	}
 
 	public void setInputStream(InputStream inputStream) {
-		this.inputStream = inputStream;
+		this.inputStreams.put("", inputStream);
+	}
+	
+	public void setInputStream(InputStream inputStream, String name) {
+		this.inputStreams.put(name, inputStream);
 	}
 
 	public OutputStream getOutputStream() {
-		return outputStream;
+		return outputStreams.get("");
+	}
+
+	public OutputStream getOutputStream(String name) {
+		return outputStreams.get(name);
 	}
 
 	public void setOutputStream(OutputStream outputStream) {
-		this.outputStream = outputStream;
+		this.outputStreams.put("", outputStream);
+	}
+	
+	public void setOutputStream(OutputStream outputStream, String name) {
+		this.outputStreams.put(name, outputStream);
 	}
 
 
