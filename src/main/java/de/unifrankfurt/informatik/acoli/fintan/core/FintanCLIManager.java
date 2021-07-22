@@ -1,13 +1,19 @@
 package de.unifrankfurt.informatik.acoli.fintan.core;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -46,6 +52,40 @@ public class FintanCLIManager {
 	OutputStream output;
 	InputStream input;
 	
+	
+	/**
+	 * Read an entire file to String, encoded as UTF-8. Intended to load small files
+	 * like sparql queries into memory. Implementation of
+	 * {@Code Files.readString(Path path)} available in Java 11
+	 *
+	 * @param path the path to the file
+	 * @return a String containing the content read from the file
+	 * @throws IOException              if the read fails
+	 * @throws IllegalArgumentException if the file is reported as larger than 2GB
+	 */
+	public static String readString(Path path) throws IOException {
+		// Files.readString(path, StandardCharsets.UTF_8); // requires Java 11
+		if (path.toFile().length() > 2000000000) {
+			throw new IllegalArgumentException(
+					"The file " + path + " is too large. " + path.toFile().length() + " bytes");
+		}
+		byte[] buffer = new byte[(int) path.toFile().length()];
+		buffer = Files.readAllBytes(path);
+		return new String(buffer, StandardCharsets.UTF_8);
+	}
+
+	public static String readUrl(URL url) throws IOException {
+		BufferedReader reader;
+		if (url.toString().endsWith(".gz")) {
+			reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(url.openStream()), StandardCharsets.UTF_8));
+		} else {
+			reader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
+		}
+		StringBuilder out = new StringBuilder();
+		for (String line = reader.readLine(); line != null; line = reader.readLine())
+			out.append(line + "\n");
+		return out.toString();
+	}
 	
 	
 	public static void main(String[] args) throws Exception {

@@ -13,6 +13,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  
 
   <dependencies>
   
@@ -22,13 +23,6 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    
-	<!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
-	<dependency>
-		<groupId>net.sf.saxon</groupId>
-		<artifactId>Saxon-HE</artifactId>
-		<version>9.9.1-7</version>
-	</dependency>
     
     <dependency>
 	  <groupId>org.apache.jena</groupId>
@@ -42,6 +36,19 @@
       <artifactId>log4j-core</artifactId>
       <version>2.12.1</version>
     </dependency>
+    
+    <dependency>
+	  <groupId>org.deri.tarql</groupId>
+	  <artifactId>tarql</artifactId>
+	  <version>1.2</version>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
+	<dependency>
+		<groupId>net.sf.saxon</groupId>
+		<artifactId>Saxon-HE</artifactId>
+		<version>9.9.1-7</version>
+	</dependency>
     
   </dependencies>
 </project>

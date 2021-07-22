@@ -4,9 +4,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 
 public abstract class FintanStreamComponent implements Runnable {
 
+	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL = "###FINTAN#end#segment###";
+	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_CoNLL = "###FINTAN#end#segment###";
+	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TSV = "###FINTAN#end#segment###";
+
+	private ObjectNode config;
 	private HashMap<String,InputStream> inputStreams;
 	private HashMap<String,OutputStream> outputStreams;
 
@@ -17,6 +24,14 @@ public abstract class FintanStreamComponent implements Runnable {
 	//		-BOTH- 	possibly to be moved to manager classes, or abstraction layer in Fintan Service.
 	//				should be compatible with OpenAPI, elexis and teanga.
 	
+	public ObjectNode getConfig() {
+		return config;
+	}
+
+	public void setConfig(ObjectNode config) {
+		this.config = config;
+	}
+
 	public InputStream getInputStream() {
 		return inputStreams.get("");
 	}
@@ -47,6 +62,14 @@ public abstract class FintanStreamComponent implements Runnable {
 	
 	public void setOutputStream(OutputStream outputStream, String name) {
 		this.outputStreams.put(name, outputStream);
+	}
+	
+	public String[] listInputStreamNames() {
+		return (String[]) inputStreams.keySet().toArray();
+	}
+	
+	public String[] listOutputStreamNames() {
+		return (String[]) outputStreams.keySet().toArray();
 	}
 
 
