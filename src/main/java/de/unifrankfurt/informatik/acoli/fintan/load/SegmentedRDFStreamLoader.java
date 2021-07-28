@@ -47,7 +47,10 @@ public class SegmentedRDFStreamLoader extends StreamLoader {
 		private void processStream() {
 			//TODO: read from config: which streams to pass to which output?.
 			for (String name:listInputStreamNames()) {
-				if (getOutputStream(name) == null) continue;
+				if (getOutputStream(name) == null) {
+					LOG.info("Input stream '"+name+"' does not have a corresponding output stream and is thus dropped.");
+					continue;
+				}
 				BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream(name)));
 				String ttlsegment = "";
 				try {

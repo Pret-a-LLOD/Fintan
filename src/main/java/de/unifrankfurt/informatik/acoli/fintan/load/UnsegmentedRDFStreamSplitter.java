@@ -181,7 +181,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 					}
 				}
 
-				//for CONSTRUCT query the default grpah has been written in the resultModel
+				//for CONSTRUCT query the default graph has been written in the resultModel
 				//for DESCRIBE query only default graph is needed and directly supplied as resultModel
 				if (resultModel == null) {
 					try {
