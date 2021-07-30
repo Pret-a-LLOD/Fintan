@@ -10,9 +10,33 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class RDFStreamWriter extends StreamWriter {
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
+import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
+import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
+
+public class RDFStreamWriter extends StreamWriter implements FintanStreamComponentFactory {
+	
+	@Override
+	public RDFStreamWriter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+		RDFStreamWriter writer = new RDFStreamWriter();
+		writer.setConfig(conf);
+		if (conf.has("lang")) {
+			writer.setLang(conf.get("lang").asText());
+		}
+		if (conf.has("delimiter")) {
+			writer.setSegmentDelimiter(conf.get("delimiter").asText());
+		}
+		return writer;
+	}
+
+	@Override
+	public RDFStreamWriter buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 	protected static final Logger LOG = LogManager.getLogger(RDFStreamWriter.class.getName());
 
@@ -42,20 +66,23 @@ public class RDFStreamWriter extends StreamWriter {
 				LOG.info("Input stream '"+name+"' does not have a corresponding output stream and is thus dropped.");
 				continue;
 			}
-			ObjectInputStream in = getInputStream(name);
 			PrintStream out = new PrintStream(getOutputStream(name));
 			try {
+				System.out.println("writer stream load start");
+				ObjectInputStream in = new ObjectInputStream(getInputStream(name));
+				System.out.println("writer stream load end");
 				for(Object obj = in.readObject(); obj != null;) {
-					Model m = (Model) obj;
+					
+					Model m = (Model) in.readObject();
 					m.write(out, lang);
 					if (segmentDelimiter != null) {
 						out.println(segmentDelimiter);
 					}
 				}
 			} catch (ClassNotFoundException e) {
-				LOG.error(e);
+				LOG.error("Error when reading from stream "+name+": "+e);
 			} catch (IOException e) {
-				LOG.error(e);
+				LOG.error("Error when reading from stream "+name+": "+e);
 			}
 		}
 	}

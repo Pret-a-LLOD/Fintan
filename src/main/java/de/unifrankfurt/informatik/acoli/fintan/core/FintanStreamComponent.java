@@ -14,8 +14,8 @@ public abstract class FintanStreamComponent implements Runnable {
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TSV = "###FINTAN#end#segment###";
 
 	private ObjectNode config;
-	private HashMap<String,InputStream> inputStreams;
-	private HashMap<String,OutputStream> outputStreams;
+	private HashMap<String,InputStream> inputStreams = new HashMap<String,InputStream>();
+	private HashMap<String,OutputStream> outputStreams = new HashMap<String,OutputStream>();
 
 	//TODO: add segmentation delimiter handling
 	//TODO: -TEXT-	StreamComponents: 	add data FORMAT handling
@@ -65,11 +65,11 @@ public abstract class FintanStreamComponent implements Runnable {
 	}
 	
 	public String[] listInputStreamNames() {
-		return (String[]) inputStreams.keySet().toArray();
+		return inputStreams.keySet().toArray(new String[] {});
 	}
 	
 	public String[] listOutputStreamNames() {
-		return (String[]) outputStreams.keySet().toArray();
+		return outputStreams.keySet().toArray(new String[] {});
 	}
 
 

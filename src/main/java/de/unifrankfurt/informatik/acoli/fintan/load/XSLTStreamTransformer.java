@@ -1,4 +1,4 @@
-package de.unifrankfurt.informatik.acoli.fintan.text.transform;
+package de.unifrankfurt.informatik.acoli.fintan.load;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,10 +19,22 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.trans.CommandLineOptions;
 import net.sf.saxon.trans.XPathException;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
 
-public class XSLTStreamTransformer extends StreamLoader {
+/**
+ * Stream component which reads XML data and applies XSLT transformation to 
+ * generate output.
+ * 
+ * Reads and writes Text
+ * 
+ * @author CF
+ *
+ */
+public class XSLTStreamTransformer extends FintanStreamComponent {
 
+	//TODO: double check compatibility and add support for multiple streams.
+	
 	private Processor processor;
 	private XsltExecutable stylesheet;
 	

@@ -11,35 +11,35 @@ public abstract class StreamWriter extends FintanStreamComponent{
 
 	protected static final Logger LOG = LogManager.getLogger(StreamWriter.class.getName());
 
-	@Override
-	public final ObjectInputStream getInputStream() {
-		return (ObjectInputStream) super.getInputStream();
-	}
-
-	
-	@Override
-	public final ObjectInputStream getInputStream(String name) {
-		return (ObjectInputStream) super.getInputStream(name);
-	}
-
-	@Override
-	public final void setInputStream(InputStream inputStream) {
-		try {
-			super.setInputStream(new ObjectInputStream(inputStream));
-		} catch (IOException e) {
-			LOG.error(e, e);
-			System.exit(1);
-		}
-	}
-	
-	@Override
-	public final void setInputStream(InputStream inputStream, String name) {
-		try {
-			super.setInputStream(new ObjectInputStream(inputStream), name);
-		} catch (IOException e) {
-			LOG.error(e, e);
-			System.exit(1);
-		}	
-	}
+//	@Override
+//	public final ObjectInputStream getInputStream() {
+//		return (ObjectInputStream) super.getInputStream();
+//	}
+//
+//	
+//	@Override
+//	public final ObjectInputStream getInputStream(String name) {
+//		return (ObjectInputStream) super.getInputStream(name);
+//	}
+//
+//	@Override
+//	public final void setInputStream(InputStream inputStream) {
+//		try {
+//			super.setInputStream(new ObjectInputStream(inputStream));
+//		} catch (IOException e) {
+//			LOG.error(e, e);
+//			System.exit(1);
+//		}
+//	}
+//	
+//	@Override
+//	public final void setInputStream(InputStream inputStream, String name) {
+//		try {
+//			super.setInputStream(new ObjectInputStream(inputStream), name);
+//		} catch (IOException e) {
+//			LOG.error(e, e);
+//			System.exit(1);
+//		}	
+//	}
 	
 }

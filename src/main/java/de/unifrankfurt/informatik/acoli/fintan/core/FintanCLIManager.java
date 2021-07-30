@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class FintanCLIManager {
 	
+	//TODO: adapt to multiple streams + JSON
+	
 	protected static final Logger LOG = LogManager.getLogger(FintanCLIManager.class.getName());
 	
 	public static final String[] DEFAULT_PACKAGES = {
@@ -110,6 +112,7 @@ public class FintanCLIManager {
 		}
 		
 		man.buildComponentStack();
+		System.out.println("built stack, starting");
 		man.start();
 	}
 
@@ -199,8 +202,8 @@ public class FintanCLIManager {
 			} else {
 				// intermediate pipeline to next component (using PipedOutputStream->PipedInputStream)
 				PipedOutputStream compOutput = new PipedOutputStream();
-				componentStack.get(componentStack.size()-1).setOutputStream(compOutput);
 				nextInput = new PipedInputStream(compOutput);
+				componentStack.get(componentStack.size()-1).setOutputStream(compOutput);
 			}
 			
 		}

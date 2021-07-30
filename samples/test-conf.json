@@ -3,9 +3,15 @@
 , "output" : "System.out"
 , "pipeline" : [ 
 
-	{ "class" : "SimpleLineBreakSplitter",
-		"baseURI" : "https://github.com/UniversalDependencies/UD_English#",
-		"columns" : ["IGNORE", "WORD", "IGNORE", "UPOS", "IGNORE", "IGNORE", "HEAD", "EDGE", "IGNORE", "IGNORE"]
+	{ 
+	  "class" : "SegmentedRDFStreamLoader",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#INPUT##"
+	},
+	{ 
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
 	}
 ]
 }
