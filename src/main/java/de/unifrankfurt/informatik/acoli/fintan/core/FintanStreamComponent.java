@@ -1,21 +1,19 @@
 package de.unifrankfurt.informatik.acoli.fintan.core;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
-public abstract class FintanStreamComponent implements Runnable {
+public abstract class FintanStreamComponent<In, Out> implements Runnable {
 
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL = "###FINTAN#end#segment###";
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_CoNLL = "###FINTAN#end#segment###";
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TSV = "###FINTAN#end#segment###";
 
 	private ObjectNode config;
-	private HashMap<String,InputStream> inputStreams = new HashMap<String,InputStream>();
-	private HashMap<String,OutputStream> outputStreams = new HashMap<String,OutputStream>();
+	private HashMap<String,In> inputStreams = new HashMap<String,In>();
+	private HashMap<String,Out> outputStreams = new HashMap<String,Out>();
 
 	//TODO: add segmentation delimiter handling
 	//TODO: -TEXT-	StreamComponents: 	add data FORMAT handling
@@ -32,35 +30,35 @@ public abstract class FintanStreamComponent implements Runnable {
 		this.config = config;
 	}
 
-	public InputStream getInputStream() {
+	public In getInputStream() {
 		return inputStreams.get("");
 	}
 	
-	public InputStream getInputStream(String name) {
+	public In getInputStream(String name) {
 		return inputStreams.get(name);
 	}
 
-	public void setInputStream(InputStream inputStream) {
+	public void setInputStream(In inputStream) {
 		this.inputStreams.put("", inputStream);
 	}
 	
-	public void setInputStream(InputStream inputStream, String name) {
+	public void setInputStream(In inputStream, String name) {
 		this.inputStreams.put(name, inputStream);
 	}
 
-	public OutputStream getOutputStream() {
+	public Out getOutputStream() {
 		return outputStreams.get("");
 	}
 
-	public OutputStream getOutputStream(String name) {
+	public Out getOutputStream(String name) {
 		return outputStreams.get(name);
 	}
 
-	public void setOutputStream(OutputStream outputStream) {
+	public void setOutputStream(Out outputStream) {
 		this.outputStreams.put("", outputStream);
 	}
 	
-	public void setOutputStream(OutputStream outputStream, String name) {
+	public void setOutputStream(Out outputStream, String name) {
 		this.outputStreams.put(name, outputStream);
 	}
 	

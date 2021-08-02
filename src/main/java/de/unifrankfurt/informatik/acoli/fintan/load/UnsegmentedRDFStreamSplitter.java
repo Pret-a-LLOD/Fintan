@@ -1,35 +1,21 @@
 package de.unifrankfurt.informatik.acoli.fintan.load;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryException;
-import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
 
 /**
@@ -173,9 +159,8 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 					while(iter.hasNext()) {
 						String name = iter.next();
 						try {
-							getOutputStream(name).writeObject(resultDataset.getNamedModel(name));
-							getOutputStream(name).flush();
-						} catch (IOException e) {
+							getOutputStream(name).write(resultDataset.getNamedModel(name));
+						} catch (InterruptedException e) {
 							LOG.error("Error when processing stream "+name+ ": " +e);
 						}
 					}
@@ -185,14 +170,15 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 				//for DESCRIBE query only default graph is needed and directly supplied as resultModel
 				if (resultModel == null) {
 					try {
-						getOutputStream().writeObject(resultModel);
-						getOutputStream().flush();
-					} catch (IOException e) {
+						getOutputStream().write(resultModel);
+					} catch (InterruptedException e) {
 						LOG.error("Error when processing default output stream: " +e);
 					}
 				}
 			}
-			
+			for (String name:listOutputStreamNames()) {
+				getOutputStream(name).terminate();
+			}
 			tdbDataset.end();
 			tdbDataset.close();
 			
@@ -208,6 +194,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 			try {
 				processStream();
 			} catch (Exception e) {
+				tdbDataset.close();
 				LOG.error(e, e);
 				System.exit(1);
 			}

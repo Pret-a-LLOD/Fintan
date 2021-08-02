@@ -1,9 +1,6 @@
 package de.unifrankfurt.informatik.acoli.fintan.write;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.PrintStream;
 
 import org.apache.jena.rdf.model.Model;
@@ -14,7 +11,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
-import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
 
 public class RDFStreamWriter extends StreamWriter implements FintanStreamComponentFactory {
 	
@@ -67,22 +63,16 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 				continue;
 			}
 			PrintStream out = new PrintStream(getOutputStream(name));
-			try {
-				System.out.println("writer stream load start");
-				ObjectInputStream in = new ObjectInputStream(getInputStream(name));
-				System.out.println("writer stream load end");
-				for(Object obj = in.readObject(); obj != null;) {
-					
-					Model m = (Model) in.readObject();
+			while (getInputStream(name).canRead()) {
+				try {
+					Model m = getInputStream(name).read();
 					m.write(out, lang);
-					if (segmentDelimiter != null) {
-						out.println(segmentDelimiter);
-					}
+				} catch (InterruptedException e) {
+					LOG.error("Error when reading from Stream "+name+ ": " +e);
 				}
-			} catch (ClassNotFoundException e) {
-				LOG.error("Error when reading from stream "+name+": "+e);
-			} catch (IOException e) {
-				LOG.error("Error when reading from stream "+name+": "+e);
+				if (segmentDelimiter != null) {
+					out.println(segmentDelimiter);
+				}
 			}
 		}
 	}

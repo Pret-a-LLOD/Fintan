@@ -1,15 +1,12 @@
 package de.unifrankfurt.informatik.acoli.fintan.load;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
 
-import org.xml.sax.XMLReader;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -18,9 +15,8 @@ import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.trans.CommandLineOptions;
-import net.sf.saxon.trans.XPathException;
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
-import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
+
+import de.unifrankfurt.informatik.acoli.fintan.core.StreamGenericIO;
 
 /**
  * Stream component which reads XML data and applies XSLT transformation to 
@@ -31,7 +27,7 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
  * @author CF
  *
  */
-public class XSLTStreamTransformer extends FintanStreamComponent {
+public class XSLTStreamTransformer extends StreamGenericIO {
 
 	//TODO: double check compatibility and add support for multiple streams.
 	

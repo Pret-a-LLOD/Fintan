@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -112,7 +113,6 @@ public class FintanCLIManager {
 		}
 		
 		man.buildComponentStack();
-		System.out.println("built stack, starting");
 		man.start();
 	}
 
@@ -182,7 +182,7 @@ public class FintanCLIManager {
 			componentStack.clear();
 		
 		// First inputStream is always main input
-		InputStream nextInput = input;
+		Object nextInput = input;
 		// Traverse pipeline array	
 		for (JsonNode pipelineElement:config.withArray("pipeline")) {
 			if (!pipelineElement.getNodeType().equals(JsonNodeType.OBJECT)) {
@@ -195,16 +195,37 @@ public class FintanCLIManager {
 			
 			// Define Pipeline I/O
 			// always use previously defined input... first main input, later piped input
+			// currently late binding. Will terminate if streams are incompatible.
 			component.setInputStream(nextInput);
 			if (componentStack.size() == config.withArray("pipeline").size()) {
 				// last component, final output
 				component.setOutputStream(output);
-			} else {
-				// intermediate pipeline to next component (using PipedOutputStream->PipedInputStream)
+			} else if (component instanceof StreamLoader) {
+				// Loader uses FintanStream as Output
+				FintanStreamHandler compOutput = new FintanStreamHandler();
+				component.setOutputStream(compOutput);
+				nextInput = compOutput;
+			} else if (component instanceof StreamRdfUpdater) {
+				// Updater uses FintanStream as Output
+				FintanStreamHandler compOutput = new FintanStreamHandler();
+				component.setOutputStream(compOutput);
+				nextInput = compOutput;
+			} else if (component instanceof StreamGenericIO) {
+				// GenericIO uses java OutputStreams
 				PipedOutputStream compOutput = new PipedOutputStream();
+				component.setOutputStream(compOutput);
 				nextInput = new PipedInputStream(compOutput);
-				componentStack.get(componentStack.size()-1).setOutputStream(compOutput);
+			} else if (component instanceof StreamWriter) {
+				// GenericIO uses java OutputStreams
+				PipedOutputStream compOutput = new PipedOutputStream();
+				component.setOutputStream(compOutput);
+				nextInput = new PipedInputStream(compOutput);
 			}
+			
+			
+			// Define Pipeline I/O
+			// always use previously defined input... first main input, later piped input
+			
 			
 		}
 	}
@@ -239,7 +260,7 @@ public class FintanCLIManager {
 		try {
 			FintanStreamComponent component;
 			try {
-				component = ((FintanStreamComponentFactory) targetClass.newInstance()).buildFromJsonConf(conf);
+				component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
 				return component;
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
@@ -249,6 +270,15 @@ public class FintanCLIManager {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.exit(1);
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
 		} catch (InstantiationException | IllegalAccessException e) {

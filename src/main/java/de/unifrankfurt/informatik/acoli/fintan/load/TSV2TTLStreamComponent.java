@@ -59,7 +59,7 @@ import jena.cmd.CmdGeneral;
  * @author CF
  *
  */
-public class TSV2TTLStreamComponent extends FintanStreamComponent  {
+public class TSV2TTLStreamComponent extends FintanStreamComponent<InputStream, OutputStream>  {
 	
 	protected static final Logger LOG = LogManager.getLogger(TSV2TTLStreamComponent.class.getName());
 

@@ -79,18 +79,14 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 			BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream(name)));
 			String ttlsegment = "";
 			try {
-				System.out.println("reader stream load start");
-				ObjectOutputStream out = new ObjectOutputStream(getOutputStream(name));
-				System.out.println("reader stream load end");
 				for(String line = ""; line !=null; line=in.readLine()) {
 					if (line.equals(segmentDelimiter)) {
 						Model m = ModelFactory.createDefaultModel();
 						m.read(new StringReader(ttlsegment), null, lang);
 						try {
-							out.writeObject(m);
-							out.flush();
-						} catch (IOException e) {
-							LOG.error("Error when writing to Stream "+name+ ": " +e);
+							getOutputStream(name).write(m);
+						} catch (InterruptedException e) {
+							LOG.error("Error when writing to Stream "+name+": "+e);
 						}
 						ttlsegment = "";
 					} else {
