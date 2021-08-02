@@ -1,18 +1,12 @@
-package de.unifrankfurt.informatik.acoli.fintan.load;
+package de.unifrankfurt.informatik.acoli.fintan.genericIO;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 
 import org.apache.jena.query.QueryParseException;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.shared.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,14 +19,12 @@ import org.deri.tarql.TarqlQuery;
 import org.deri.tarql.TarqlQueryExecution;
 import org.deri.tarql.TarqlQueryExecutionFactory;
 import org.deri.tarql.URLOptionsParser;
-import org.deri.tarql.tarql;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
-import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
+import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
 import jena.cmd.ArgDecl;
 import jena.cmd.CmdGeneral;
 
-import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,26 +34,20 @@ import java.util.jar.Manifest;
 import org.apache.jena.atlas.io.IndentedWriter;
 import org.apache.jena.atlas.lib.Lib;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.query.QueryParseException;
 import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.sparql.serializer.FmtTemplate;
 import org.apache.jena.sparql.serializer.SerializationContext;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.util.iterator.NullIterator;
-import org.apache.log4j.Level;
-
-import jena.cmd.ArgDecl;
-import jena.cmd.CmdGeneral;
 
 /**
  * Uses Tarql for segmented or unsegmented TSV/CSV streams
  * @author CF
  *
  */
-public class TSV2TTLStreamComponent extends FintanStreamComponent<InputStream, OutputStream>  {
+public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO {
 	
-	protected static final Logger LOG = LogManager.getLogger(TSV2TTLStreamComponent.class.getName());
+	protected static final Logger LOG = LogManager.getLogger(TSV2TTLStreamTransformer.class.getName());
 
 
 	private boolean segmented = false;

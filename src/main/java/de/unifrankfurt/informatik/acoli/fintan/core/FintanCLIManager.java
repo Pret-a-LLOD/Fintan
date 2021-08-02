@@ -210,7 +210,7 @@ public class FintanCLIManager {
 				FintanStreamHandler compOutput = new FintanStreamHandler();
 				component.setOutputStream(compOutput);
 				nextInput = compOutput;
-			} else if (component instanceof StreamGenericIO) {
+			} else if (component instanceof StreamTransformerGenericIO) {
 				// GenericIO uses java OutputStreams
 				PipedOutputStream compOutput = new PipedOutputStream();
 				component.setOutputStream(compOutput);

@@ -12,6 +12,11 @@
 	  "class" : "RDFStreamWriter",
 	  "lang" : "ttl",
 	  "delimiter" : "##TEST#OUTPUT##"
+	},
+	{ 
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
 	}
 ]
 }

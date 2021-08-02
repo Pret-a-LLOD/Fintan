@@ -1,4 +1,4 @@
-package de.unifrankfurt.informatik.acoli.fintan.load;
+package de.unifrankfurt.informatik.acoli.fintan.genericIO;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.trans.CommandLineOptions;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.StreamGenericIO;
+import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
 
 /**
  * Stream component which reads XML data and applies XSLT transformation to 
@@ -27,7 +27,7 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamGenericIO;
  * @author CF
  *
  */
-public class XSLTStreamTransformer extends StreamGenericIO {
+public class XSLTStreamTransformer extends StreamTransformerGenericIO {
 
 	//TODO: double check compatibility and add support for multiple streams.
 	
