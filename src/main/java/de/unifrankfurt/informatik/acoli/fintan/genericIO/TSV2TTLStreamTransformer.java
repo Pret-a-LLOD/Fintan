@@ -8,6 +8,7 @@ import java.io.PrintStream;
 
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.shared.NotFoundException;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.deri.tarql.CSVOptions;
@@ -20,8 +21,12 @@ import org.deri.tarql.TarqlQueryExecution;
 import org.deri.tarql.TarqlQueryExecutionFactory;
 import org.deri.tarql.URLOptionsParser;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
+import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
 import jena.cmd.ArgDecl;
 import jena.cmd.CmdGeneral;
 
@@ -45,30 +50,213 @@ import org.apache.jena.util.iterator.NullIterator;
  * @author CF
  *
  */
-public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO {
+public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 	
 	protected static final Logger LOG = LogManager.getLogger(TSV2TTLStreamTransformer.class.getName());
 
-
-	private boolean segmented = false;
-
-	private boolean hasHeaderRow = false;
-	
-
-	public boolean isSegmented() {
-		return segmented;
+	@Override
+	public TSV2TTLStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+		TSV2TTLStreamTransformer tsv2ttl = new TSV2TTLStreamTransformer();
+		tsv2ttl.setConfig(conf);
+		if (conf.hasNonNull("delimiterIn")) {
+			tsv2ttl.setSegmentDelimiterIn(conf.get("delimiterIn").asText());
+		}
+		if (conf.hasNonNull("delimiterOut")) {
+			tsv2ttl.setSegmentDelimiterOut(conf.get("delimiterOut").asText());
+		}
+		if (conf.hasNonNull("query")) {
+			tsv2ttl.setQueryPath(conf.get("query").asText());
+		}
+		if (conf.hasNonNull("delimiterCSV")) {
+			tsv2ttl.setDelimiterCSV(conf.get("delimiterCSV").asText());
+		}
+		if (conf.hasNonNull("tabs")) {
+			tsv2ttl.setTabs(conf.get("tabs").asBoolean());
+		}
+		if (conf.hasNonNull("quoteChar")) {
+			tsv2ttl.setQuoteChar(conf.get("quoteChar").asText());
+		}
+		if (conf.hasNonNull("escapeChar")) {
+			tsv2ttl.setEscapeChar(conf.get("escapeChar").asText());
+		}
+		if (conf.hasNonNull("encoding")) {
+			tsv2ttl.setEncoding(conf.get("encoding").asText());
+		} else {
+			tsv2ttl.setEncoding("UTF-8");
+		}
+		if (conf.hasNonNull("headerRow")) {
+			tsv2ttl.setHasHeaderRow(conf.get("headerRow").asBoolean());
+		}
+		if (conf.hasNonNull("baseIRI")) {
+			tsv2ttl.setBaseIRI(conf.get("baseIRI").asText());
+		}
+		if (conf.hasNonNull("write-base")) {
+			tsv2ttl.setWriteBase(conf.get("write-base").asBoolean());
+		}
+		if (conf.hasNonNull("dedup")) {
+			tsv2ttl.setDedup(conf.get("dedup").asInt());
+		}
+		return tsv2ttl;
 	}
 
-	public void setSegmented(boolean segmented) {
-		this.segmented = segmented;
+	@Override
+	public TSV2TTLStreamTransformer buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	//Fintan-segments
+	private String segmentDelimiterIn = null;
+	private String segmentDelimiterOut = FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL;
+	
+	//Main input TARQL
+	private String queryPath = null;
+	
+	//Parameters TARQL
+	private String delimiterCSV = null;
+	private boolean tabs = true;
+	private String quoteChar = null;
+	private String escapeChar = null;
+	private String encoding = null;
+	private boolean hasHeaderRow = true;
+	private String baseIRI = null;
+	private boolean writeBase = false;
+	private int dedup = -1;
+
+	public String getSegmentDelimiterIn() {
+		return segmentDelimiterIn;
+	}
+
+	public void setSegmentDelimiterIn(String segmentDelimiter) {
+		this.segmentDelimiterIn = segmentDelimiter;
 	}
 	
-	public boolean hasHeaderRow() {
+	public String getSegmentDelimiterOut() {
+		return segmentDelimiterOut;
+	}
+
+	public void setSegmentDelimiterOut(String segmentDelimiter) {
+		this.segmentDelimiterOut = segmentDelimiter;
+	}
+	
+	public String getQueryPath() {
+		return queryPath;
+	}
+
+	public void setQueryPath(String queryPath) {
+		this.queryPath = queryPath;
+	}
+
+	public String getDelimiterCSV() {
+		return delimiterCSV;
+	}
+
+	public void setDelimiterCSV(String delimiterCSV) {
+		this.delimiterCSV = delimiterCSV;
+	}
+
+	public boolean isTabs() {
+		return tabs;
+	}
+
+	public void setTabs(boolean tabs) {
+		this.tabs = tabs;
+	}
+
+	public String getQuoteChar() {
+		return quoteChar;
+	}
+
+	public void setQuoteChar(String quoteChar) {
+		this.quoteChar = quoteChar;
+	}
+
+	public String getEscapeChar() {
+		return escapeChar;
+	}
+
+	public void setEscapeChar(String escapeChar) {
+		this.escapeChar = escapeChar;
+	}
+
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
+	public boolean isHasHeaderRow() {
 		return hasHeaderRow;
 	}
 
-	public void setHasHeaderRow(boolean header_row) {
-		this.hasHeaderRow = header_row;
+	public void setHasHeaderRow(boolean hasHeaderRow) {
+		this.hasHeaderRow = hasHeaderRow;
+	}
+
+	public String getBaseIRI() {
+		return baseIRI;
+	}
+
+	public void setBaseIRI(String baseIRI) {
+		this.baseIRI = baseIRI;
+	}
+
+	public boolean isWriteBase() {
+		return writeBase;
+	}
+
+	public void setWriteBase(boolean writeBase) {
+		this.writeBase = writeBase;
+	}
+
+	public int getDedup() {
+		return dedup;
+	}
+
+	public void setDedup(int dedup) {
+		this.dedup = dedup;
+	}
+
+	public String[] getOptions() {
+		ArrayList<String> options = new ArrayList<String>();
+		
+		if(delimiterCSV!=null) {
+			options.add("-d");
+			options.add(delimiterCSV);
+		}
+		if(tabs) options.add("-t");
+		if(quoteChar!=null) {
+			options.add("--quotechar");
+			options.add(quoteChar);
+		}
+		if(escapeChar!=null) {
+			options.add("-p");
+			options.add(escapeChar);
+		}
+		if(encoding!=null) {
+			options.add("-e");
+			options.add(encoding);
+		}
+		if(!hasHeaderRow) options.add("-H");
+		if(baseIRI!=null) {
+			options.add("--base");
+			options.add(baseIRI);
+		}
+		if(!writeBase) options.add("--write-base");
+		if(dedup>-1) {
+			options.add("--dedup");
+			options.add(Integer.toString(dedup));
+		}
+		if(LOG.getLevel()==Level.DEBUG) options.add("--debug");
+		if(LOG.getLevel()==Level.TRACE) options.add("--verbose");	
+		if(LOG.getLevel()==Level.ERROR) options.add("--quiet");
+
+		options.add("--fintan-stream");
+		options.add(queryPath);
+				
+		return options.toArray(new String[] {});
 	}
 
 
@@ -77,11 +265,11 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO {
 			if (getOutputStream(name) == null) continue;
 			PrintStream out = new PrintStream(getOutputStream(name));
 			
-			String[] args = new String[] {};
+			String[] args = getOptions();
 			//TODO read args from config
 			
 			// for unsegmented streams, directly use TARQL processing
-			if (!segmented) {
+			if (segmentDelimiterIn == null) {
 				InputStreamSource source = new InputStreamSource() {
 					boolean open = false;
 					public InputStream open() throws IOException {
@@ -107,7 +295,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO {
 					if (hasHeaderRow && headerRow == null) {
 						// cache first line, if it is supposed to be the header_row
 						headerRow=line;
-					} else if (!line.equals(FintanStreamComponent.FINTAN_DEFAULT_SEGMENT_DELIMITER_TSV)) {
+					} else if (!line.equals(segmentDelimiterIn)) {
 						// regular line
 						tsvsegment+=line+"\n";
 					} else {
@@ -119,7 +307,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO {
 						new tarql(args, InputStreamSource.fromString(tsvsegment), out).mainRun();
 
 						// print segment delimiter
-						out.println(FintanStreamComponent.FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL);
+						out.println(segmentDelimiterOut);
 						
 						// clear segment cache
 						tsvsegment = "";
@@ -230,10 +418,6 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO {
 			BUILD_DATE = date;
 			
 			TarqlQuery.registerFunctions();
-		}
-		
-		public static void main(String... args) {
-			new tarql(args, InputStreamSource.fromStdin(), System.out).mainRun();
 		}
 		
 		//new

@@ -4,14 +4,25 @@
 , "pipeline" : [ 
 
 	{ 
-	  "class" : "SegmentedRDFStreamLoader",
-	  "lang" : "ttl",
-	  "delimiter" : "##TEST#INPUT##"
+	  "class" : "TSV2TTLStreamTransformer",
+	  "delimiterIn" : "##TEST#INPUT##",
+	  "delimiterOut" : "##TEST#MIDDLE##",
+	  
+	  "query" : "samples/test.tarql",
+	  "delimiterCSV" : null,
+	  "tabs" : true,
+	  "quoteChar" : null,
+	  "escapeChar" : null,
+	  "encoding" : "UTF-8",
+	  "headerRow" : true,
+	  "baseIRI" : null,
+	  "write-base" : false,
+	  "dedup" : null
 	},
 	{ 
-	  "class" : "RDFStreamWriter",
+	  "class" : "SegmentedRDFStreamLoader",
 	  "lang" : "ttl",
-	  "delimiter" : "##TEST#OUTPUT##"
+	  "delimiter" : "##TEST#MIDDLE##"
 	},
 	{ 
 	  "class" : "RDFStreamWriter",

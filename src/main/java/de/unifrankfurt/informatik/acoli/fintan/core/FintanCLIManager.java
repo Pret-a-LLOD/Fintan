@@ -41,6 +41,7 @@ public class FintanCLIManager {
 	
 	public static final String[] DEFAULT_PACKAGES = {
 			"de.unifrankfurt.informatik.acoli.fintan.core",
+			"de.unifrankfurt.informatik.acoli.fintan.genericIO",
 			"de.unifrankfurt.informatik.acoli.fintan.load",
 			"de.unifrankfurt.informatik.acoli.fintan.split",
 			"de.unifrankfurt.informatik.acoli.fintan.transform",
@@ -252,7 +253,7 @@ public class FintanCLIManager {
 					LOG.info("Class loaded successfully: " + targetClass.getName());
 					break;
 				} catch (ClassNotFoundException e1) {
-					LOG.error("Class "+conf.get("class")+" not in package "+pkg);
+					LOG.info("Class "+conf.get("class")+" not in package "+pkg);
 				}
 			}
 		}
@@ -263,22 +264,20 @@ public class FintanCLIManager {
 				component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
 				return component;
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.exit(1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.exit(1);
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.exit(1);
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.exit(1);
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.exit(1);
 			}
 			
 		} catch (InstantiationException | IllegalAccessException e) {
