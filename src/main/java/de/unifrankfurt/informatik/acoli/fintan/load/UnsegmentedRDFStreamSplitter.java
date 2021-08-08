@@ -1,5 +1,7 @@
 package de.unifrankfurt.informatik.acoli.fintan.load;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -16,7 +18,13 @@ import org.apache.jena.tdb.TDBFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
+import de.unifrankfurt.informatik.acoli.fintan.genericIO.TSV2TTLStreamTransformer;
 
 /**
  * Load unsegmented RDF streams in the given serialization format. Default: TTL
@@ -25,9 +33,55 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
  * @author CF
  *
  */
-public class UnsegmentedRDFStreamSplitter extends StreamLoader {
+public class UnsegmentedRDFStreamSplitter extends StreamLoader implements FintanStreamComponentFactory {
 	
 		protected static final Logger LOG = LogManager.getLogger(UnsegmentedRDFStreamSplitter.class.getName());
+		
+		
+		
+		//TODO: test secure termination (possibly in subsequent streams)
+		//TODO: test CONSTRUCT
+		//TODO: test delete tdb on Termination (currently does not work well)
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+		@Override
+		public UnsegmentedRDFStreamSplitter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+			UnsegmentedRDFStreamSplitter splitter = new UnsegmentedRDFStreamSplitter();
+			splitter.setConfig(conf);
+			
+			if (conf.hasNonNull("lang")) {
+				splitter.setLang(conf.get("lang").asText());
+			}
+			if (conf.hasNonNull("iteratorQuery")) {
+				splitter.setIteratorQuery(FintanCLIManager.readSourceAsString(conf.get("iteratorQuery").asText()));
+			}
+			if (conf.hasNonNull("constructQuery")) {
+				splitter.setConstructQuery(FintanCLIManager.readSourceAsString(conf.get("constructQuery").asText()));
+			}
+			if (conf.hasNonNull("tdbPath")) {
+				splitter.initTDB(conf.get("tdbPath").asText());
+			} else {
+				splitter.initTDB(null);
+			}
+			
+			return splitter;
+		}
+
+		@Override
+		public UnsegmentedRDFStreamSplitter buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		
 		
 		public static final String DEFAULT_TDB_PATH = "tdb/";
 
@@ -47,22 +101,31 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 		public String getConstructQuery() {
 			return constructQuery;
 		}
-
-		public void setConstructQuery(String query) {
-			this.constructQuery = query;
-		}
 		
+		public void setConstructQuery(String constructQuery) {
+			this.constructQuery = constructQuery;
+		}
+
+		public void setIteratorQuery(String iteratorQuery) {
+			this.iteratorQuery = iteratorQuery;
+		}
+
 		public String getIteratorQuery() {
 			return iteratorQuery;
 		}
-
-		public void setIteratorQuery(String query) {
-			this.iteratorQuery = query;
-		}
-		
 		
 
-		//TODO: consider reassembling the query using an iterator over e.g. LexEntries, Sentences etc.
+		/**
+		 * Parse iterator query. Project variables must correspond to wildcards 
+		 * in construct query.
+		 * 
+		 * @param query_string 
+		 * 			Must be a Select query with at least one project variable.
+		 * @return	
+		 * 			The parsed query.
+		 * @throws QueryException	
+		 * 			if parsing fails.
+		 */
 		public Query parseIteratorQuery(String query_string) throws QueryException {
 			LOG.debug("Attempting to read query as String " + query_string);
 			Query query = QueryFactory.create(query_string);
@@ -80,18 +143,20 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 		 * @param query_string
 		 * @param seedElements
 		 * @return
+		 * 			The parsed query.
 		 * @throws QueryException
+		 * 			if parsing fails.
 		 */
 		public Query parseConstructQuery(String query_string, HashMap<String, String> seedElements) throws QueryException {
 			LOG.debug("Attempting to read query as String " + query_string);
 			
 			if (seedElements==null) {
 				// replace all wildcards by blank nodes (Test parsing)
-				query_string = query_string.replaceAll("<\\?.+?>", "[]");
+				query_string = query_string.replaceAll("<\\?.+?>", "<http://test>");
 			} else {
 				// replace all wildcards with their respective seedElements
 				for (String var:seedElements.keySet()) {
-					query_string = query_string.replace("<"+var+">", seedElements.get(var));
+					query_string = query_string.replace("<?"+var+">", "<"+seedElements.get(var)+">");
 				}
 			}
 			
@@ -106,7 +171,11 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 		public void initTDB(String path) {
 			if (path == null) path = DEFAULT_TDB_PATH;
 			if (!path.endsWith("/")) path+="/";
-			tdbDataset = TDBFactory.createDataset(path+this.getClass().getName()+this.hashCode()+"/");
+			File f = new File(path+this.getClass().getName()+this.hashCode()+"/");
+			if (f.exists() && f.isDirectory()) f.delete();
+			f.mkdirs();
+			f.deleteOnExit();
+			tdbDataset = TDBFactory.createDataset(f.getAbsolutePath());
 		}
 
 		private void processStream() {
@@ -118,9 +187,9 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 			for (String name:listInputStreamNames()) {
 				tdbDataset.begin(ReadWrite.WRITE);
 				if (name.equals("")) {
-					tdbDataset.getDefaultModel().read(getInputStream(name),lang);
+					tdbDataset.getDefaultModel().read(getInputStream(name), null, lang);
 				} else {
-					tdbDataset.getNamedModel(name).read(getInputStream(name),lang);
+					tdbDataset.getNamedModel(name).read(getInputStream(name), null, lang);
 				}
 				tdbDataset.commit();
 				tdbDataset.end();
@@ -168,7 +237,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 
 				//for CONSTRUCT query the default graph has been written in the resultModel
 				//for DESCRIBE query only default graph is needed and directly supplied as resultModel
-				if (resultModel == null) {
+				if (resultModel != null) {
 					try {
 						getOutputStream().write(resultModel);
 					} catch (InterruptedException e) {
@@ -199,6 +268,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader {
 				System.exit(1);
 			}
 		}
+
 
 
 

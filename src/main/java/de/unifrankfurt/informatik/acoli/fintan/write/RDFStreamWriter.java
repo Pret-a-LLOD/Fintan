@@ -18,10 +18,10 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 	public RDFStreamWriter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		RDFStreamWriter writer = new RDFStreamWriter();
 		writer.setConfig(conf);
-		if (conf.has("lang")) {
+		if (conf.hasNonNull("lang")) {
 			writer.setLang(conf.get("lang").asText());
 		}
-		if (conf.has("delimiter")) {
+		if (conf.hasNonNull("delimiter")) {
 			writer.setSegmentDelimiter(conf.get("delimiter").asText());
 		}
 		return writer;

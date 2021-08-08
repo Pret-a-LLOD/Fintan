@@ -266,7 +266,6 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 			PrintStream out = new PrintStream(getOutputStream(name));
 			
 			String[] args = getOptions();
-			//TODO read args from config
 			
 			// for unsegmented streams, directly use TARQL processing
 			if (segmentDelimiterIn == null) {
@@ -291,7 +290,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 			String tsvsegment = "";
 			String headerRow = null;
 			try {
-				for(String line = ""; line !=null; line=in.readLine()) {
+				for(String line = in.readLine(); line !=null; line=in.readLine()) {
 					if (hasHeaderRow && headerRow == null) {
 						// cache first line, if it is supposed to be the header_row
 						headerRow=line;
@@ -300,25 +299,29 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 						tsvsegment+=line+"\n";
 					} else {
 						// end of segment
-						// prepare input in case header row needs to be duplicated.
-						if (hasHeaderRow) tsvsegment = headerRow+"\n"+tsvsegment;
-						
-						// print processed segment directly to outputstream
-						new tarql(args, InputStreamSource.fromString(tsvsegment), out).mainRun();
-
-						// print segment delimiter
-						out.println(segmentDelimiterOut);
+						outputSegment(out, args, tsvsegment, headerRow);
 						
 						// clear segment cache
 						tsvsegment = "";
 					}
 				}
+				//final segment in case there is no segmentDelimiter in last row
+				outputSegment(out, args, tsvsegment, headerRow);
+				
 			} catch (IOException e) {
 				LOG.error("Error when reading from Stream "+name+ ": " +e);
 			}
 		}
+	}
+	private void outputSegment(PrintStream out, String[] args, String tsvsegment, String headerRow) {
+		// prepare input in case header row needs to be duplicated.
+		if (hasHeaderRow) tsvsegment = headerRow+"\n"+tsvsegment;
 		
-		
+		// print processed segment directly to outputstream
+		new tarql(args, InputStreamSource.fromString(tsvsegment), out).mainRun();
+
+		// print segment delimiter
+		out.println(segmentDelimiterOut);
 	}
 	
 	@Override

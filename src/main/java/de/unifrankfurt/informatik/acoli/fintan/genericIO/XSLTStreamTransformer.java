@@ -87,15 +87,15 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO {
 
 	public static void main(String[] args) throws Exception {
 		System.err.println("synopsis: XSLTStreamLoader -xsl:PATH [param=value]*");
-		XSLTStreamTransformer splitter = new XSLTStreamTransformer();
+		XSLTStreamTransformer transformer = new XSLTStreamTransformer();
 
 		long start = System.currentTimeMillis();
 
-		splitter.setInputStream(System.in);
-		splitter.setOutputStream(System.out);
-		splitter.loadStylesheet(args);
+		transformer.setInputStream(System.in);
+		transformer.setOutputStream(System.out);
+		transformer.loadStylesheet(args);
 
-		splitter.processStream();
+		transformer.processStream();
 		System.err.println(((System.currentTimeMillis()-start)/1000 + " seconds"));
 	}
 

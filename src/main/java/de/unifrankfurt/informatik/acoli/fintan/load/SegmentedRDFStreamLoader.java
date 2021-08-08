@@ -31,10 +31,10 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 	public SegmentedRDFStreamLoader buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		SegmentedRDFStreamLoader loader = new SegmentedRDFStreamLoader();
 		loader.setConfig(conf);
-		if (conf.has("lang")) {
+		if (conf.hasNonNull("lang")) {
 			loader.setLang(conf.get("lang").asText());
 		}
-		if (conf.has("delimiter")) {
+		if (conf.hasNonNull("delimiter")) {
 			loader.setSegmentDelimiter(conf.get("delimiter").asText());
 		}
 		return loader;
@@ -81,21 +81,28 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 			try {
 				for(String line = ""; line !=null; line=in.readLine()) {
 					if (line.equals(segmentDelimiter)) {
-						Model m = ModelFactory.createDefaultModel();
-						m.read(new StringReader(ttlsegment), null, lang);
-						try {
-							getOutputStream(name).write(m);
-						} catch (InterruptedException e) {
-							LOG.error("Error when writing to Stream "+name+": "+e);
-						}
+						outputSegment(ttlsegment, name);
+						
 						ttlsegment = "";
 					} else {
 						ttlsegment+=line+"\n";
 					}
 				}
+				//final segment in case there is no segmentDelimiter in last row
+				outputSegment(ttlsegment, name);
 			} catch (IOException e) {
 				LOG.error("Error when reading from Stream "+name+ ": " +e);
 			}
+		}
+	}
+	
+	private void outputSegment(String ttlsegment, String outputStreamName) {
+		Model m = ModelFactory.createDefaultModel();
+		m.read(new StringReader(ttlsegment), null, lang);
+		try {
+			getOutputStream(outputStreamName).write(m);
+		} catch (InterruptedException e) {
+			LOG.error("Error when writing to Stream "+outputStreamName+": "+e);
 		}
 	}
 

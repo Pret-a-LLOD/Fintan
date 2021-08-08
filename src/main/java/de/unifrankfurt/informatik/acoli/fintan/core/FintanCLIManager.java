@@ -56,42 +56,6 @@ public class FintanCLIManager {
 	OutputStream output;
 	InputStream input;
 	
-	
-	/**
-	 * Read an entire file to String, encoded as UTF-8. Intended to load small files
-	 * like sparql queries into memory. Implementation of
-	 * {@Code Files.readString(Path path)} available in Java 11
-	 *
-	 * @param path the path to the file
-	 * @return a String containing the content read from the file
-	 * @throws IOException              if the read fails
-	 * @throws IllegalArgumentException if the file is reported as larger than 2GB
-	 */
-	public static String readString(Path path) throws IOException {
-		// Files.readString(path, StandardCharsets.UTF_8); // requires Java 11
-		if (path.toFile().length() > 2000000000) {
-			throw new IllegalArgumentException(
-					"The file " + path + " is too large. " + path.toFile().length() + " bytes");
-		}
-		byte[] buffer = new byte[(int) path.toFile().length()];
-		buffer = Files.readAllBytes(path);
-		return new String(buffer, StandardCharsets.UTF_8);
-	}
-
-	public static String readUrl(URL url) throws IOException {
-		BufferedReader reader;
-		if (url.toString().endsWith(".gz")) {
-			reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(url.openStream()), StandardCharsets.UTF_8));
-		} else {
-			reader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
-		}
-		StringBuilder out = new StringBuilder();
-		for (String line = reader.readLine(); line != null; line = reader.readLine())
-			out.append(line + "\n");
-		return out.toString();
-	}
-	
-	
 	public static void main(String[] args) throws Exception {
 		Options options = new Options();
 		options.addRequiredOption("c", "config", true, "Specify JSON config file");
@@ -115,6 +79,35 @@ public class FintanCLIManager {
 		
 		man.buildComponentStack();
 		man.start();
+	}
+	
+	
+	/**
+	 * Reads the content of a given path or URL as String. Can be used for reading queries etc.
+	 * @param pathOrURL
+	 * @return file content as String
+	 * @throws IOException if unreadable.
+	 */
+	public static String readSourceAsString (String pathOrURL) throws IOException {
+		InputStream inputStream;
+		File f = new File(pathOrURL);
+		if (f.canRead()) {
+			inputStream = new FileInputStream(f);
+		} else {
+			URL url = new URL(pathOrURL);
+			inputStream = url.openStream();
+		}
+		BufferedReader reader;
+		if (pathOrURL.endsWith(".gz")) {
+			reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(inputStream), StandardCharsets.UTF_8));
+		} else {
+			reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+		}
+		
+		StringBuilder out = new StringBuilder();
+		for (String line = reader.readLine(); line != null; line = reader.readLine())
+			out.append(line + "\n");
+		return out.toString();
 	}
 
 

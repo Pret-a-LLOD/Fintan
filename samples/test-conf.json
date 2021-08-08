@@ -1,28 +1,14 @@
 {
-"input" : "System.in"
+"input" : "samples/splitter/en-ud-train.conllu.gz.linked.ttl"
 , "output" : "System.out"
 , "pipeline" : [ 
-
 	{ 
-	  "class" : "TSV2TTLStreamTransformer",
-	  "delimiterIn" : "##TEST#INPUT##",
-	  "delimiterOut" : "##TEST#MIDDLE##",
-	  
-	  "query" : "samples/test.tarql",
-	  "delimiterCSV" : null,
-	  "tabs" : true,
-	  "quoteChar" : null,
-	  "escapeChar" : null,
-	  "encoding" : "UTF-8",
-	  "headerRow" : true,
-	  "baseIRI" : null,
-	  "write-base" : false,
-	  "dedup" : null
-	},
-	{ 
-	  "class" : "SegmentedRDFStreamLoader",
+	  "class" : "UnsegmentedRDFStreamSplitter",
 	  "lang" : "ttl",
-	  "delimiter" : "##TEST#MIDDLE##"
+	  "iteratorQuery" : "samples/splitter/iterator.sparql",
+	  "constructQuery" : "samples/splitter/describe.sparql",
+	  "tdbPath" : null,
+	  "delimiter" : "##TEST#INPUT##"
 	},
 	{ 
 	  "class" : "RDFStreamWriter",
