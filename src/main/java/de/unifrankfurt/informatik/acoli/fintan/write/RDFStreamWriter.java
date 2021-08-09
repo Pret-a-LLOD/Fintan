@@ -12,6 +12,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
 
+/**
+ * Writes FintanStreams to any provided RDF serialization.
+ * Streams are treated sequentially and independently:
+ *   InputStream(name) writes to corresponding OutputStream(name)
+ *   If InputStream(name) has no corresponding OutputStream(name), Stream is dropped.
+ * @author CF
+ *
+ */
 public class RDFStreamWriter extends StreamWriter implements FintanStreamComponentFactory {
 	
 	@Override

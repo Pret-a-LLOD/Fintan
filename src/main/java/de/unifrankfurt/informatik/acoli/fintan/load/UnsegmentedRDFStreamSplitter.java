@@ -30,7 +30,10 @@ import de.unifrankfurt.informatik.acoli.fintan.genericIO.TSV2TTLStreamTransforme
 
 /**
  * Load unsegmented RDF streams in the given serialization format. Default: TTL
- * Utilize SPARQL query to split data into segments.
+ * Utilize SPARQL queries to split data into segments:
+ * - Iterator query selects the seeds for the segments. 
+ * - Construct query constructs the segments.
+ * If multiple Graphs are constructed, each is streamed separately.
  * Output: Stream of Models.
  * @author CF
  *
@@ -223,6 +226,10 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 					while(iter.hasNext()) {
 						String name = iter.next();
 						try {
+							if (getOutputStream(name) == null) {
+								LOG.info("Input stream '"+name+"' does not have a corresponding output stream and is thus dropped.");
+								continue;
+							}
 							getOutputStream(name).write(resultDataset.getNamedModel(name));
 						} catch (InterruptedException e) {
 							LOG.error("Error when processing stream "+name+ ": " +e);

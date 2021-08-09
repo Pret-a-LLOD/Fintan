@@ -19,7 +19,9 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
 
 /**
  * Load pre-segmented RDF streams in the given serialization format. Default: TTL
- * Output: Stream of Models.
+ * Streams are treated sequentially and independently:
+ *   InputStream(name) writes to corresponding OutputStream(name)
+ *   If InputStream(name) has no corresponding OutputStream(name), Stream is dropped.
  * @author CF
  *
  */
