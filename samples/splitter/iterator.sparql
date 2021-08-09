@@ -1,9 +1,0 @@
-
-PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
-PREFIX nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#>
-
-
-SELECT ?s 
-WHERE {
-  ?s a nif:Sentence
-}

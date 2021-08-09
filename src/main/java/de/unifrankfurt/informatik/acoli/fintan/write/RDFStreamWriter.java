@@ -66,12 +66,16 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 			while (getInputStream(name).canRead()) {
 				try {
 					Model m = getInputStream(name).read();
-					m.write(out, lang);
+					
+					//read may return null in case the queue has been emptied and terminated since asking for canRead()
+					if (m != null) {
+						m.write(out, lang);
+						if (segmentDelimiter != null) {
+							out.println(segmentDelimiter);
+						}
+					}
 				} catch (InterruptedException e) {
 					LOG.error("Error when reading from Stream "+name+ ": " +e);
-				}
-				if (segmentDelimiter != null) {
-					out.println(segmentDelimiter);
 				}
 			}
 		}

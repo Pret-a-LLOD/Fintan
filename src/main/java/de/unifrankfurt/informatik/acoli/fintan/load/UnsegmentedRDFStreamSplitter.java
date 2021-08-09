@@ -2,9 +2,11 @@ package de.unifrankfurt.informatik.acoli.fintan.load;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryException;
@@ -37,21 +39,6 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 	
 		protected static final Logger LOG = LogManager.getLogger(UnsegmentedRDFStreamSplitter.class.getName());
 		
-		
-		
-		//TODO: test secure termination (possibly in subsequent streams)
-		//TODO: test CONSTRUCT
-		//TODO: test delete tdb on Termination (currently does not work well)
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
 		@Override
 		public UnsegmentedRDFStreamSplitter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 			UnsegmentedRDFStreamSplitter splitter = new UnsegmentedRDFStreamSplitter();
@@ -172,9 +159,17 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			if (path == null) path = DEFAULT_TDB_PATH;
 			if (!path.endsWith("/")) path+="/";
 			File f = new File(path+this.getClass().getName()+this.hashCode()+"/");
-			if (f.exists() && f.isDirectory()) f.delete();
+			if (f.exists() && f.isDirectory()) {
+				try {
+					FileUtils.deleteDirectory(f);
+				} catch (IOException e) {
+					LOG.error("Could not delete directory <"+f.getAbsolutePath()+">. "
+							+ "Preexisting data may corrupt the current stream! "
+							+ "Error message:"+e);
+				}
+			}
 			f.mkdirs();
-			f.deleteOnExit();
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(f)));
 			tdbDataset = TDBFactory.createDataset(f.getAbsolutePath());
 		}
 

@@ -5,8 +5,8 @@
 	{ 
 	  "class" : "UnsegmentedRDFStreamSplitter",
 	  "lang" : "ttl",
-	  "iteratorQuery" : "samples/splitter/iterator.sparql",
-	  "constructQuery" : "samples/splitter/describe.sparql",
+	  "iteratorQuery" : "samples/splitter/iterate_sentences.sparql",
+	  "constructQuery" : "samples/splitter/construct_sentences.sparql",
 	  "tdbPath" : null,
 	  "delimiter" : "##TEST#INPUT##"
 	},
