@@ -1,0 +1,19 @@
+{
+"input" : "samples/splitter/en-ud-train.conllu.gz.linked.ttl"
+, "output" : "System.out"
+, "pipeline" : [ 
+	{ 
+	  "class" : "UnsegmentedRDFStreamSplitter",
+	  "lang" : "ttl",
+	  "iteratorQuery" : "samples/splitter/iterate_sentences.sparql",
+	  "constructQuery" : "samples/splitter/construct_sentences.sparql",
+	  "tdbPath" : null,
+	  "delimiter" : "##TEST#INPUT##"
+	},
+	{ 
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
+	}
+]
+}
