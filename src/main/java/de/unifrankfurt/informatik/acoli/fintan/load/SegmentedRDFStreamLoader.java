@@ -19,9 +19,10 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
 
 /**
  * Load pre-segmented RDF streams in the given serialization format. Default: TTL
- * Streams are treated sequentially and independently:
- *   InputStream(name) writes to corresponding OutputStream(name)
- *   If InputStream(name) has no corresponding OutputStream(name), Stream is dropped.
+ * For convenience, Fintan's treatment of named streams works in default configuration:
+ * 	- for each matching pair of named streams, a separate Thread is spawned 
+ * 		which converts the stream independently
+ *  - input streams without matching outputstreams are dropped.
  * @author CF
  *
  */
@@ -72,30 +73,43 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 
 
 	private void processStream() {
-		//TODO: read from config: which streams to pass to which output?.
+		
+		// Spawn loaders for parallel processing, in case there are multiple streams.
 		for (String name:listInputStreamNames()) {
+			if (name == FINTAN_DEFAULT_STREAM_NAME) 
+				continue;
 			if (getOutputStream(name) == null) {
 				LOG.info("Input stream '"+name+"' does not have a corresponding output stream and is thus dropped.");
 				continue;
 			}
-			BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream(name)));
-			String ttlsegment = "";
-			try {
-				for(String line = ""; line !=null; line=in.readLine()) {
-					if (line.equals(segmentDelimiter)) {
-						outputSegment(ttlsegment, name);
-						
-						ttlsegment = "";
-					} else {
-						ttlsegment+=line+"\n";
-					}
-				}
-				//final segment in case there is no segmentDelimiter in last row
-				outputSegment(ttlsegment, name);
-			} catch (IOException e) {
-				LOG.error("Error when reading from Stream "+name+ ": " +e);
-			}
+			
+			SegmentedRDFStreamLoader loader = new SegmentedRDFStreamLoader();
+			loader.setSegmentDelimiter(segmentDelimiter);
+			loader.setLang(lang);
+			loader.setInputStream(getInputStream(name));
+			loader.setOutputStream(getOutputStream(name));
+			new Thread(loader).start();
 		}
+		
+		// process default stream
+		BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream()));
+		String ttlsegment = "";
+		try {
+			for(String line = ""; line !=null; line=in.readLine()) {
+				if (line.equals(segmentDelimiter)) {
+					outputSegment(ttlsegment, "");
+
+					ttlsegment = "";
+				} else {
+					ttlsegment+=line+"\n";
+				}
+			}
+			//final segment in case there is no segmentDelimiter in last row
+			outputSegment(ttlsegment, "");
+		} catch (IOException e) {
+			LOG.error("Error when reading from Stream: " +e);
+		}
+
 	}
 	
 	private void outputSegment(String ttlsegment, String outputStreamName) {

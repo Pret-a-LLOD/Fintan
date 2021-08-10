@@ -11,12 +11,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
+import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
 
 /**
  * Writes FintanStreams to any provided RDF serialization.
- * Streams are treated sequentially and independently:
- *   InputStream(name) writes to corresponding OutputStream(name)
- *   If InputStream(name) has no corresponding OutputStream(name), Stream is dropped.
+ * For convenience, Fintan's treatment of named streams works in default configuration:
+ * 	- for each matching pair of named streams, a separate Thread is spawned 
+ * 		which converts the stream independently
+ *  - input streams without matching outputstreams are dropped.
  * @author CF
  *
  */
@@ -65,28 +67,39 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 	
 	
 	private void processStream() {
+		// Spawn loaders for parallel processing, in case there are multiple streams.
 		for (String name:listInputStreamNames()) {
+			if (name == FINTAN_DEFAULT_STREAM_NAME) 
+				continue;
 			if (getOutputStream(name) == null) {
 				LOG.info("Input stream '"+name+"' does not have a corresponding output stream and is thus dropped.");
 				continue;
 			}
-			PrintStream out = new PrintStream(getOutputStream(name));
-			while (getInputStream(name).canRead()) {
-				try {
-					Model m = getInputStream(name).read();
-					
-					//read may return null in case the queue has been emptied and terminated since asking for canRead()
-					if (m != null) {
-						m.write(out, lang);
-						if (segmentDelimiter != null) {
-							out.println(segmentDelimiter);
-						}
+
+			RDFStreamWriter writer = new RDFStreamWriter();
+			writer.setSegmentDelimiter(segmentDelimiter);
+			writer.setLang(lang);
+			writer.setInputStream(getInputStream(name));
+			writer.setOutputStream(getOutputStream(name));
+			new Thread(writer).start();
+		}
+		PrintStream out = new PrintStream(getOutputStream());
+		while (getInputStream().canRead()) {
+			try {
+				Model m = getInputStream().read();
+
+				//read may return null in case the queue has been emptied and terminated since asking for canRead()
+				if (m != null) {
+					m.write(out, lang);
+					if (segmentDelimiter != null) {
+						out.println(segmentDelimiter);
 					}
-				} catch (InterruptedException e) {
-					LOG.error("Error when reading from Stream "+name+ ": " +e);
 				}
+			} catch (InterruptedException e) {
+				LOG.error("Error when reading from Stream: " +e);
 			}
 		}
+
 	}
 	
 	@Override

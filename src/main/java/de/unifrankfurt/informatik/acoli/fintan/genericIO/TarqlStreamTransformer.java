@@ -27,6 +27,7 @@ import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
 import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
+import de.unifrankfurt.informatik.acoli.fintan.write.RDFStreamWriter;
 import jena.cmd.ArgDecl;
 import jena.cmd.CmdGeneral;
 
@@ -46,17 +47,30 @@ import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.util.iterator.NullIterator;
 
 /**
- * Uses Tarql for segmented or unsegmented TSV/CSV streams
+ * Uses TARQL for segmented or unsegmented TSV/CSV streams. 
+ * TARQL does not support reading data from multiple streams or writing quads.
+ * Only execTriples() is currently implemented for CONSTRUCT queries.
+ * 
+ * Therefore Fintan's treatment of named streams works in default configuration:
+ * 	- for each matching pair of named streams, a separate Thread is spawned 
+ * 		which converts the stream independently
+ *  - input streams without matching outputstreams are dropped.
+ *  
+ * For processing multiple tsv/csv files in a single query, it may be possible 
+ * to use the FROM statement. Please refer to http://tarql.github.io/
+ * 
+ * Output: Serialized Turtle. (Segmented, or unsegmented)
+ * 
  * @author CF
  *
  */
-public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
+public class TarqlStreamTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 	
-	protected static final Logger LOG = LogManager.getLogger(TSV2TTLStreamTransformer.class.getName());
+	protected static final Logger LOG = LogManager.getLogger(TarqlStreamTransformer.class.getName());
 
 	@Override
-	public TSV2TTLStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
-		TSV2TTLStreamTransformer tsv2ttl = new TSV2TTLStreamTransformer();
+	public TarqlStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+		TarqlStreamTransformer tsv2ttl = new TarqlStreamTransformer();
 		tsv2ttl.setConfig(conf);
 		if (conf.hasNonNull("delimiterIn")) {
 			tsv2ttl.setSegmentDelimiterIn(conf.get("delimiterIn").asText());
@@ -100,7 +114,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 	}
 
 	@Override
-	public TSV2TTLStreamTransformer buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+	public TarqlStreamTransformer buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -261,32 +275,56 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 
 
 	private void processStream() {
-		for (final String name:listInputStreamNames()) {
-			if (getOutputStream(name) == null) continue;
-			PrintStream out = new PrintStream(getOutputStream(name));
-			
-			String[] args = getOptions();
-			
-			// for unsegmented streams, directly use TARQL processing
-			if (segmentDelimiterIn == null) {
-				InputStreamSource source = new InputStreamSource() {
-					boolean open = false;
-					public InputStream open() throws IOException {
-						if (open) {
-							throw new TarqlException("Cannot use Fintan stream in mapping requiring multiple read passes");
-						}
-						open = true;
-						return getInputStream(name);
-					}
-				};
-				new tarql(args, source, out).mainRun();
+		for (String name:listInputStreamNames()) {
+			if (name == FINTAN_DEFAULT_STREAM_NAME) 
+				continue;
+			if (getOutputStream(name) == null) {
+				LOG.info("Input stream '"+name+"' does not have a corresponding output stream and is thus dropped.");
 				continue;
 			}
+
+			TarqlStreamTransformer tsv2ttl = new TarqlStreamTransformer();
+			tsv2ttl.setSegmentDelimiterIn(segmentDelimiterOut);
+			tsv2ttl.setSegmentDelimiterOut(segmentDelimiterOut);
+			tsv2ttl.setQueryPath(queryPath);
+			tsv2ttl.setDelimiterCSV(delimiterCSV);
+			tsv2ttl.setTabs(tabs);
+			tsv2ttl.setQuoteChar(quoteChar);
+			tsv2ttl.setEscapeChar(escapeChar);
+			tsv2ttl.setEncoding(encoding);
+			tsv2ttl.setHasHeaderRow(hasHeaderRow);
+			tsv2ttl.setBaseIRI(baseIRI);
+			tsv2ttl.setWriteBase(writeBase);
+			tsv2ttl.setDedup(dedup);
+			tsv2ttl.setInputStream(getInputStream(name));
+			tsv2ttl.setOutputStream(getOutputStream(name));
+			new Thread(tsv2ttl).start();
+		}
+
+
+		PrintStream out = new PrintStream(getOutputStream());
+
+		String[] args = getOptions();
+
+		// for unsegmented streams, directly use TARQL processing
+		if (segmentDelimiterIn == null) {
+			InputStreamSource source = new InputStreamSource() {
+				boolean open = false;
+				public InputStream open() throws IOException {
+					if (open) {
+						throw new TarqlException("Cannot use Fintan stream in mapping requiring multiple read passes");
+					}
+					open = true;
+					return getInputStream();
+				}
+			};
+			new tarqlFintanOverride(args, source, out).mainRun();
 			
-			// else
+		} else {
 			
-			// for segmented streams process tarql for individual segments
-			BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream(name)));
+		// for segmented streams process tarql for individual segments
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream()));
 			String tsvsegment = "";
 			String headerRow = null;
 			try {
@@ -300,25 +338,26 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 					} else {
 						// end of segment
 						outputSegment(out, args, tsvsegment, headerRow);
-						
+
 						// clear segment cache
 						tsvsegment = "";
 					}
 				}
 				//final segment in case there is no segmentDelimiter in last row
 				outputSegment(out, args, tsvsegment, headerRow);
-				
+
 			} catch (IOException e) {
-				LOG.error("Error when reading from Stream "+name+ ": " +e);
+				LOG.error("Error when reading from Stream: " +e);
 			}
 		}
+
 	}
 	private void outputSegment(PrintStream out, String[] args, String tsvsegment, String headerRow) {
 		// prepare input in case header row needs to be duplicated.
 		if (hasHeaderRow) tsvsegment = headerRow+"\n"+tsvsegment;
 		
 		// print processed segment directly to outputstream
-		new tarql(args, InputStreamSource.fromString(tsvsegment), out).mainRun();
+		new tarqlFintanOverride(args, InputStreamSource.fromString(tsvsegment), out).mainRun();
 
 		// print segment delimiter
 		out.println(segmentDelimiterOut);
@@ -398,7 +437,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 	 * Should probably be properly extended from original tarql class. 
 	 * TODO: discuss with Tarql-creators.
 	 */
-	private static class tarql extends CmdGeneral {
+	private static class tarqlFintanOverride extends CmdGeneral {
 
 		// This will be displayed by --version
 		public static final String VERSION;
@@ -410,7 +449,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 			String version = "Unknown";
 			String date = "Unknown";
 			try {
-				URL res = tarql.class.getResource(tarql.class.getSimpleName() + ".class");
+				URL res = tarqlFintanOverride.class.getResource(tarqlFintanOverride.class.getSimpleName() + ".class");
 				Manifest mf = ((JarURLConnection) res.openConnection()).getManifest();
 				version = (String) mf.getMainAttributes().getValue("Implementation-Version");
 				date = (String) mf.getMainAttributes().getValue("Built-Date")
@@ -458,7 +497,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 		
 		private ExtendedIterator<Triple> resultTripleIterator = NullIterator.instance();
 		
-		public tarql(String[] args, InputStreamSource fintanInputStream, PrintStream fintanOutputStream) {
+		public tarqlFintanOverride(String[] args, InputStreamSource fintanInputStream, PrintStream fintanOutputStream) {
 			super(args);
 			this.fintanInputStream = fintanInputStream;
 			this.fintanOutputStream = fintanOutputStream;
@@ -484,7 +523,7 @@ public class TSV2TTLStreamTransformer extends StreamTransformerGenericIO impleme
 			getUsage().startCategory("Main arguments");
 			getUsage().addUsage("query.sparql", "File containing a SPARQL query to be applied to an input file");
 			getUsage().addUsage("table.csv", "CSV/TSV file to be processed; can be omitted if specified in FROM clause");
-			modVersion.addClass(tarql.class);
+			modVersion.addClass(tarqlFintanOverride.class);
 		}
 		
 		@Override

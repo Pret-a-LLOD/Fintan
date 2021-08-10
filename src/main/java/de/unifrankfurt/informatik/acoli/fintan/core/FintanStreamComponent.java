@@ -10,6 +10,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL = "###FINTAN#end#segment###";
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_CoNLL = "###FINTAN#end#segment###";
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TSV = "###FINTAN#end#segment###";
+	public static final String FINTAN_DEFAULT_STREAM_NAME = "";
 
 	private ObjectNode config;
 	private HashMap<String,In> inputStreams = new HashMap<String,In>();
@@ -31,7 +32,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	}
 
 	public In getInputStream() {
-		return inputStreams.get("");
+		return inputStreams.get(FINTAN_DEFAULT_STREAM_NAME);
 	}
 	
 	public In getInputStream(String name) {
@@ -39,7 +40,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	}
 
 	public void setInputStream(In inputStream) {
-		this.inputStreams.put("", inputStream);
+		this.inputStreams.put(FINTAN_DEFAULT_STREAM_NAME, inputStream);
 	}
 	
 	public void setInputStream(In inputStream, String name) {
@@ -47,7 +48,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	}
 
 	public Out getOutputStream() {
-		return outputStreams.get("");
+		return outputStreams.get(FINTAN_DEFAULT_STREAM_NAME);
 	}
 
 	public Out getOutputStream(String name) {
@@ -55,7 +56,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	}
 
 	public void setOutputStream(Out outputStream) {
-		this.outputStreams.put("", outputStream);
+		this.outputStreams.put(FINTAN_DEFAULT_STREAM_NAME, outputStream);
 	}
 	
 	public void setOutputStream(Out outputStream, String name) {

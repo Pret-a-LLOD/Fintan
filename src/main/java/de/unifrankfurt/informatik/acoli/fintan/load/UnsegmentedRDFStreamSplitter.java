@@ -26,21 +26,34 @@ import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
-import de.unifrankfurt.informatik.acoli.fintan.genericIO.TSV2TTLStreamTransformer;
+import de.unifrankfurt.informatik.acoli.fintan.genericIO.TarqlStreamTransformer;
 
 /**
  * Load unsegmented RDF streams in the given serialization format. Default: TTL
  * Utilize SPARQL queries to split data into segments:
  * - Iterator query selects the seeds for the segments. 
  * - Construct query constructs the segments.
- * If multiple Graphs are constructed, each is streamed separately.
- * Output: Stream of Models.
+ * 
+ * Handling of multiple streams:
+ * Multiple input streams are loaded into a graph of the same name as the stream.
+ * Default Stream -> Default graph.
+ * 
+ * If multiple Graphs are constructed, each is streamed separately to its 
+ * 	correspondingly named stream.
+ * If no corresponding stream is defined, the resp. graph is dropped.
+ * 
+ * Output: Stream(s) of Models.
  * @author CF
  *
  */
 public class UnsegmentedRDFStreamSplitter extends StreamLoader implements FintanStreamComponentFactory {
 	
 		protected static final Logger LOG = LogManager.getLogger(UnsegmentedRDFStreamSplitter.class.getName());
+		
+		//TODO: optional. Implement splitting by recursive updates
+		public enum SplitterMode {ITERATE_CONSTRUCT, RECURSIVE_UPDATE}
+		private SplitterMode mode = SplitterMode.ITERATE_CONSTRUCT;
+		
 		
 		@Override
 		public UnsegmentedRDFStreamSplitter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
