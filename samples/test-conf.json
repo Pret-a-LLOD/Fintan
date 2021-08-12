@@ -5,8 +5,11 @@
 	{ 
 	  "class" : "UnsegmentedRDFStreamSplitter",
 	  "lang" : "ttl",
-	  "iteratorQuery" : "samples/splitter/iterate_sentences.sparql",
-	  "constructQuery" : "samples/splitter/construct_sentences.sparql",
+	  "iteratorQuery" : null,
+	  "constructQuery" : null,
+	  "updateQuery" : "samples/splitter/update_construct_sentences.sparql",
+	  "segmentStreams" : null,
+	  "deltaStreams" : null,
 	  "tdbPath" : null,
 	  "delimiter" : "##TEST#INPUT##"
 	},

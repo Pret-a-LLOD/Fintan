@@ -7,7 +7,11 @@
 	  "lang" : "ttl",
 	  "iteratorQuery" : "samples/splitter/iterate_sentences.sparql",
 	  "constructQuery" : "samples/splitter/construct_sentences.sparql",
-	  "tdbPath" : null
+	  "updateQuery" : null,
+	  "segmentStreams" : null,
+	  "deltaStreams" : null,
+	  "tdbPath" : null,
+	  "delimiter" : "##TEST#INPUT##"
 	},
 	{ 
 	  "class" : "RDFStreamWriter",

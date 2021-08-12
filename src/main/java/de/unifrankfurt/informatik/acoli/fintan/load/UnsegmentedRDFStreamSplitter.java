@@ -3,6 +3,7 @@ package de.unifrankfurt.informatik.acoli.fintan.load;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -16,10 +17,16 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.update.Update;
+import org.apache.jena.update.UpdateAction;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
@@ -50,11 +57,6 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 	
 		protected static final Logger LOG = LogManager.getLogger(UnsegmentedRDFStreamSplitter.class.getName());
 		
-		//TODO: optional. Implement splitting by recursive updates
-		public enum SplitterMode {ITERATE_CONSTRUCT, RECURSIVE_UPDATE}
-		private SplitterMode mode = SplitterMode.ITERATE_CONSTRUCT;
-		
-		
 		@Override
 		public UnsegmentedRDFStreamSplitter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 			UnsegmentedRDFStreamSplitter splitter = new UnsegmentedRDFStreamSplitter();
@@ -69,10 +71,34 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			if (conf.hasNonNull("constructQuery")) {
 				splitter.setConstructQuery(FintanCLIManager.readSourceAsString(conf.get("constructQuery").asText()));
 			}
+			if (conf.hasNonNull("updateQuery")) {
+				splitter.setUpdateQuery(FintanCLIManager.readSourceAsString(conf.get("updateQuery").asText()));
+			}
+			if (conf.hasNonNull("segmentStreams")) {
+				ArrayList<String> segmentStreams = new ArrayList<String>();
+				for (JsonNode node:conf.withArray("segmentStreams")) {
+					segmentStreams.add(node.asText());
+				}
+				if (!segmentStreams.isEmpty())
+					splitter.setSegmentStreams(segmentStreams.toArray(new String[] {}));
+			}
+			if (conf.hasNonNull("deltaStreams")) {
+				ArrayList<String> deltaStreams = new ArrayList<String>();
+				for (JsonNode node:conf.withArray("deltaStreams")) {
+					deltaStreams.add(node.asText());
+				}
+				if (!deltaStreams.isEmpty())
+					splitter.setDeltaStreams(deltaStreams.toArray(new String[] {}));
+			}
 			if (conf.hasNonNull("tdbPath")) {
 				splitter.initTDB(conf.get("tdbPath").asText());
 			} else {
 				splitter.initTDB(null);
+			}
+			
+			if (splitter.validateSplitterMode() == SplitterMode.INVALID) {
+				throw new IllegalArgumentException("Splitter is configured inconsistently. "
+						+ "Please supply either an UPDATE or a set of ITERATE / CONSTRUCT queries");
 			}
 			
 			return splitter;
@@ -88,10 +114,29 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		
 		public static final String DEFAULT_TDB_PATH = "tdb/";
 
+		
+		public enum SplitterMode {ITERATE_CONSTRUCT, RECURSIVE_UPDATE, INVALID}
+		private SplitterMode mode = SplitterMode.INVALID;
+		
 		private Dataset tdbDataset; 
 		private String lang = "TTL";
 		private String constructQuery;
 		private String iteratorQuery;
+		private String updateQuery;
+		private String[] deltaStreams;
+		private String[] segmentStreams;
+		
+		
+		public SplitterMode validateSplitterMode() {
+			if (updateQuery == null && iteratorQuery != null && constructQuery != null) {
+				mode = SplitterMode.ITERATE_CONSTRUCT;
+			} else if (updateQuery != null && iteratorQuery == null && constructQuery == null) {
+				mode = SplitterMode.RECURSIVE_UPDATE;
+			} else {
+				mode = SplitterMode.INVALID;
+			}
+			return mode;
+		}
 		
 		public String getLang() {
 			return lang;
@@ -107,16 +152,45 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		
 		public void setConstructQuery(String constructQuery) {
 			this.constructQuery = constructQuery;
-		}
-
-		public void setIteratorQuery(String iteratorQuery) {
-			this.iteratorQuery = iteratorQuery;
+			validateSplitterMode();
 		}
 
 		public String getIteratorQuery() {
 			return iteratorQuery;
 		}
 		
+		public void setIteratorQuery(String iteratorQuery) {
+			this.iteratorQuery = iteratorQuery;
+			validateSplitterMode();
+		}
+
+		public String getUpdateQuery() {
+			return updateQuery;
+		}
+
+		public void setUpdateQuery(String updateQuery) {
+			this.updateQuery = updateQuery;
+			validateSplitterMode();
+		}
+
+		public String[] getDeltaStreams() {
+			if (deltaStreams.length <= 0) return null;
+			return deltaStreams;
+		}
+
+		public void setDeltaStreams(String[] deltaStreams) {
+			this.deltaStreams = deltaStreams;
+		}
+
+		public String[] getSegmentStreams() {
+			if (segmentStreams == null) return listOutputStreamNames();
+			if (segmentStreams.length <= 0) return listOutputStreamNames();
+			return segmentStreams;
+		}
+
+		public void setSegmentStreams(String[] segmentStreams) {
+			this.segmentStreams = segmentStreams;
+		}
 
 		/**
 		 * Parse iterator query. Project variables must correspond to wildcards 
@@ -130,7 +204,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		 * 			if parsing fails.
 		 */
 		public Query parseIteratorQuery(String query_string) throws QueryException {
-			LOG.debug("Attempting to read query as String " + query_string);
+			LOG.debug("Attempting to read query string: \n" + query_string);
 			Query query = QueryFactory.create(query_string);
 			if (query.isSelectType() && query.getProjectVars().size() > 0) {
 				return query;
@@ -151,7 +225,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		 * 			if parsing fails.
 		 */
 		public Query parseConstructQuery(String query_string, HashMap<String, String> seedElements) throws QueryException {
-			LOG.debug("Attempting to read query as String " + query_string);
+			LOG.debug("Attempting to read query string: \n" + query_string);
 			
 			if (seedElements==null) {
 				// replace all wildcards by blank nodes (Test parsing)
@@ -169,6 +243,22 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			} else {
 				throw new QueryException("Construct query must be either CONSTRUCT or DESCRIBE type.");
 			}
+		}
+		
+		/**
+		 * Parse update query. 
+		 * 
+		 * @param query_string 
+		 * 			Must be a valid SPARQL Update (INSERT / DELETE)
+		 * @return	
+		 * 			The parsed update.
+		 * @throws QueryException	
+		 * 			if parsing fails.
+		 */
+		public UpdateRequest parseUpdate(String query_string) {
+			LOG.debug("Attempting to read update string: \n" + query_string);
+			UpdateRequest update = UpdateFactory.create(query_string);
+			return update;
 		}
 		
 		public void initTDB(String path) {
@@ -190,22 +280,54 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		}
 
 		private void processStream() {
-			//parse / test all queries on init
-			Query iteratorQuery = parseIteratorQuery(this.iteratorQuery);
-			Query constructQuery = parseConstructQuery(this.constructQuery, null);
-			
-			//load streamed data into graphs
-			for (String name:listInputStreamNames()) {
-				tdbDataset.begin(ReadWrite.WRITE);
-				if (name.equals("")) {
-					tdbDataset.getDefaultModel().read(getInputStream(name), null, lang);
-				} else {
-					tdbDataset.getNamedModel(name).read(getInputStream(name), null, lang);
+			try {
+				//parse / test all queries on init
+				Query iteratorQuery = null;
+				UpdateRequest update = null;
+				if (mode == SplitterMode.ITERATE_CONSTRUCT) {
+					iteratorQuery = parseIteratorQuery(this.iteratorQuery);
+					parseConstructQuery(this.constructQuery, null);
+				} else if (mode == SplitterMode.RECURSIVE_UPDATE) {
+					update = parseUpdate(this.updateQuery);
 				}
-				tdbDataset.commit();
-				tdbDataset.end();
-			}
 
+				//load streamed data into graphs
+				for (String name:listInputStreamNames()) {
+					tdbDataset.begin(ReadWrite.WRITE);
+					if (name.equals(FINTAN_DEFAULT_STREAM_NAME)) {
+						//tdbDataset.getDefaultModel().read(getInputStream(name), null, lang);
+//TODO: TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+						tdbDataset.getNamedModel("http://input").read(getInputStream(name), null, lang);
+						tdbDataset.getDefaultModel().setNsPrefixes(tdbDataset.getNamedModel("http://input").getNsPrefixMap());
+//TODO: DELETE DEBUG STUFF ABOVE
+//TODO: Add multistream support to CLI Manager
+//TODO: Add support for INIT_UPDATE (execute ONCE, before recursion), mark first sentence with FILTER. Remove FILTER from recursion.
+					} else {
+						tdbDataset.getNamedModel(name).read(getInputStream(name), null, lang);
+						tdbDataset.getDefaultModel().setNsPrefixes(tdbDataset.getNamedModel(name).getNsPrefixMap());
+					}
+					tdbDataset.commit();
+					tdbDataset.end();
+				}
+
+				if (mode == SplitterMode.ITERATE_CONSTRUCT) {
+					executeIterateConstruct(iteratorQuery);
+				} else if (mode == SplitterMode.RECURSIVE_UPDATE) {
+					executeRecursiveUpdates(update);
+				}
+
+				for (String name:listOutputStreamNames()) {
+					getOutputStream(name).terminate();
+				}
+			} finally {
+				tdbDataset.close();
+			}
+			
+			
+		}
+
+		//constructQuery has to be reparsed for each iteration, and is not supplied
+		private void executeIterateConstruct(Query iteratorQuery) {
 			//execute iteratorQuery
 			tdbDataset.begin(ReadWrite.READ);
 			ResultSet rs = QueryExecutionFactory.create(iteratorQuery, tdbDataset).execSelect();
@@ -219,7 +341,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 				for (String var:rs.getResultVars()) {
 					seedElements.put(var, sol.get(var).toString());
 				}
-				constructQuery = parseConstructQuery(this.constructQuery, seedElements);
+				Query constructQuery = parseConstructQuery(this.constructQuery, seedElements);
 				
 				//execute CONSTRUCT or DESCRIBE query
 				Model resultModel = null;
@@ -260,14 +382,108 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 					}
 				}
 			}
-			for (String name:listOutputStreamNames()) {
-				getOutputStream(name).terminate();
-			}
 			tdbDataset.end();
-			tdbDataset.close();
+		}
+		
+		
+		private void executeRecursiveUpdates(UpdateRequest update) {
+			
+			//first: recursive Updates
+			while (doRecursiveUpdate(update)) {
+				//do nothing else
+			}
+			//then: terminate (after optionally supplying delta)
+			if (getDeltaStreams() == null) 
+				return;
+
+			
+			for (String name:getDeltaStreams()) {
+
+				//supplies a new in-memory model with the data from the TDB's model.
+				Model m = popStreamableModel(name);
+
+				if (m != null) {
+					try {
+						getOutputStream(name).write(m);
+					} catch (InterruptedException e) {
+						LOG.error("Error when writing graph <"+name+"> to delta stream: " +e);
+					}
+				} else {
+					LOG.info("Delta for stream <"+name+"> was empty.");
+				}
+			}
+
 			
 		}
 		
+		//executes one Update recursion
+		private boolean doRecursiveUpdate(UpdateRequest update) {
+			tdbDataset.begin(ReadWrite.WRITE);
+			for(Update operation : update.getOperations()) {
+				UpdateAction.execute(operation, tdbDataset);
+			}
+			tdbDataset.commit();
+			tdbDataset.end();
+			
+			
+			boolean changed = false;
+			
+			for (String name:getSegmentStreams()) {
+
+				//supplies a new in-memory model with the data from the TDB's model.
+				Model m = popStreamableModel(name);
+				
+				if (m != null) {
+					try {
+						getOutputStream(name).write(m);
+					} catch (InterruptedException e) {
+						LOG.error("Error when processing stream "+name+ ": " +e);
+					}
+					changed = true;
+				}
+			}
+
+			return changed;
+		}
+
+		//supplies a new in-memory model with the data from the TDB's model.
+		//deletes the Model from the Dataset.
+		private Model popStreamableModel(String name) {
+			if (getOutputStream(name) == null) {
+				LOG.error("Output is dropped, since the specified "
+						+ "output stream <"+name
+						+ "> has not been connected to the Splitter.");
+				return null;
+			} 
+
+			tdbDataset.begin(ReadWrite.WRITE);
+			
+			Model tdbModel;
+			if (name == FINTAN_DEFAULT_STREAM_NAME) {
+				tdbModel = tdbDataset.getDefaultModel();
+			} else {
+				tdbModel = tdbDataset.getNamedModel(name);
+			}
+			
+			if (tdbModel.isEmpty())
+				return null;
+			
+			Model m = ModelFactory.createDefaultModel();
+			//full prefixmap is stored in default graph.
+			m.setNsPrefixes(tdbDataset.getDefaultModel().getNsPrefixMap());
+			m.add(tdbModel);
+			
+			tdbModel.removeAll();
+
+			tdbDataset.commit();
+			tdbDataset.end();
+			
+			return m;
+			
+		}
+
+
+
 		@Override
 		public void start() {
 			run();
