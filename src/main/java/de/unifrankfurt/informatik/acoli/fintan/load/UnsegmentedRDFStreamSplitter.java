@@ -71,8 +71,11 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			if (conf.hasNonNull("constructQuery")) {
 				splitter.setConstructQuery(FintanCLIManager.readSourceAsString(conf.get("constructQuery").asText()));
 			}
-			if (conf.hasNonNull("updateQuery")) {
-				splitter.setUpdateQuery(FintanCLIManager.readSourceAsString(conf.get("updateQuery").asText()));
+			if (conf.hasNonNull("initUpdate")) {
+				splitter.setInitUpdate(FintanCLIManager.readSourceAsString(conf.get("initUpdate").asText()));
+			}
+			if (conf.hasNonNull("recursiveUpdate")) {
+				splitter.setRecursiveUpdate(FintanCLIManager.readSourceAsString(conf.get("recursiveUpdate").asText()));
 			}
 			if (conf.hasNonNull("segmentStreams")) {
 				ArrayList<String> segmentStreams = new ArrayList<String>();
@@ -122,15 +125,17 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		private String lang = "TTL";
 		private String constructQuery;
 		private String iteratorQuery;
-		private String updateQuery;
+		private String recursiveUpdate;
+		private String initUpdate;
 		private String[] deltaStreams;
 		private String[] segmentStreams;
 		
 		
 		public SplitterMode validateSplitterMode() {
-			if (updateQuery == null && iteratorQuery != null && constructQuery != null) {
+			if (initUpdate == null && recursiveUpdate == null && iteratorQuery != null && constructQuery != null) {
 				mode = SplitterMode.ITERATE_CONSTRUCT;
-			} else if (updateQuery != null && iteratorQuery == null && constructQuery == null) {
+			} else if (recursiveUpdate != null && iteratorQuery == null && constructQuery == null) {
+				//initUpdate is optional
 				mode = SplitterMode.RECURSIVE_UPDATE;
 			} else {
 				mode = SplitterMode.INVALID;
@@ -164,16 +169,26 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			validateSplitterMode();
 		}
 
-		public String getUpdateQuery() {
-			return updateQuery;
+		public String getRecursiveUpdate() {
+			return recursiveUpdate;
 		}
 
-		public void setUpdateQuery(String updateQuery) {
-			this.updateQuery = updateQuery;
+		public void setRecursiveUpdate(String updateQuery) {
+			this.recursiveUpdate = updateQuery;
+			validateSplitterMode();
+		}
+		
+		public String getInitUpdate() {
+			return initUpdate;
+		}
+
+		public void setInitUpdate(String updateQuery) {
+			this.initUpdate = updateQuery;
 			validateSplitterMode();
 		}
 
 		public String[] getDeltaStreams() {
+			if (deltaStreams == null) return null;
 			if (deltaStreams.length <= 0) return null;
 			return deltaStreams;
 		}
@@ -283,12 +298,15 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			try {
 				//parse / test all queries on init
 				Query iteratorQuery = null;
-				UpdateRequest update = null;
+				UpdateRequest recursiveUpdate = null;
+				UpdateRequest initUpdate = null;
 				if (mode == SplitterMode.ITERATE_CONSTRUCT) {
 					iteratorQuery = parseIteratorQuery(this.iteratorQuery);
 					parseConstructQuery(this.constructQuery, null);
 				} else if (mode == SplitterMode.RECURSIVE_UPDATE) {
-					update = parseUpdate(this.updateQuery);
+					recursiveUpdate = parseUpdate(this.recursiveUpdate);
+					if (this.initUpdate != null)
+						initUpdate = parseUpdate(this.initUpdate);
 				}
 
 				//load streamed data into graphs
@@ -301,7 +319,6 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 						tdbDataset.getDefaultModel().setNsPrefixes(tdbDataset.getNamedModel("http://input").getNsPrefixMap());
 //TODO: DELETE DEBUG STUFF ABOVE
 //TODO: Add multistream support to CLI Manager
-//TODO: Add support for INIT_UPDATE (execute ONCE, before recursion), mark first sentence with FILTER. Remove FILTER from recursion.
 					} else {
 						tdbDataset.getNamedModel(name).read(getInputStream(name), null, lang);
 						tdbDataset.getDefaultModel().setNsPrefixes(tdbDataset.getNamedModel(name).getNsPrefixMap());
@@ -313,7 +330,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 				if (mode == SplitterMode.ITERATE_CONSTRUCT) {
 					executeIterateConstruct(iteratorQuery);
 				} else if (mode == SplitterMode.RECURSIVE_UPDATE) {
-					executeRecursiveUpdates(update);
+					executeRecursiveUpdates(recursiveUpdate, initUpdate);
 				}
 
 				for (String name:listOutputStreamNames()) {
@@ -386,10 +403,18 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		}
 		
 		
-		private void executeRecursiveUpdates(UpdateRequest update) {
+		private void executeRecursiveUpdates(UpdateRequest recursiveUpdate, UpdateRequest initUpdate) {
+			if (initUpdate != null) {
+				tdbDataset.begin(ReadWrite.WRITE);
+				for(Update operation : initUpdate.getOperations()) {
+					UpdateAction.execute(operation, tdbDataset);
+				}
+				tdbDataset.commit();
+				tdbDataset.end();
+			}
 			
 			//first: recursive Updates
-			while (doRecursiveUpdate(update)) {
+			while (doRecursiveUpdate(recursiveUpdate)) {
 				//do nothing else
 			}
 			//then: terminate (after optionally supplying delta)
@@ -465,16 +490,16 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 				tdbModel = tdbDataset.getNamedModel(name);
 			}
 			
+			Model m;
 			if (tdbModel.isEmpty())
-				return null;
-			
-			Model m = ModelFactory.createDefaultModel();
-			//full prefixmap is stored in default graph.
-			m.setNsPrefixes(tdbDataset.getDefaultModel().getNsPrefixMap());
-			m.add(tdbModel);
-			
-			tdbModel.removeAll();
-
+				m = null;
+			else {
+				m = ModelFactory.createDefaultModel();
+				//full prefixmap is stored in default graph.
+				m.setNsPrefixes(tdbDataset.getDefaultModel().getNsPrefixMap());
+				m.add(tdbModel);
+				tdbModel.removeAll();
+			}
 			tdbDataset.commit();
 			tdbDataset.end();
 			
