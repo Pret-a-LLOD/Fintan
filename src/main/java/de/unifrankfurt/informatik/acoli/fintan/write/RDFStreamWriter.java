@@ -99,6 +99,7 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 				LOG.error("Error when reading from Stream: " +e);
 			}
 		}
+		out.close();
 
 	}
 	

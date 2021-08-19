@@ -350,6 +350,7 @@ public class TarqlStreamTransformer extends StreamTransformerGenericIO implement
 				LOG.error("Error when reading from Stream: " +e);
 			}
 		}
+		out.close();
 
 	}
 	private void outputSegment(PrintStream out, String[] args, String tsvsegment, String headerRow) {

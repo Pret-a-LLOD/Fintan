@@ -1,0 +1,47 @@
+{
+  "input" : null
+, "output" : null
+, "pipeline" : null
+, "streams" : [
+    {
+    	"streamID" : "readFile",
+    	"readsFromSource" : "samples/splitter/en-ud-train.conllu.gz.linked.ttl",
+    	"writesToInstance" : "sentenceSplitter",
+    	"writesToInstanceGraph" : "http://input"
+    },
+    {
+    	"streamID" : "splitSentences",
+    	"readsFromInstance" : "sentenceSplitter",
+    	"readsFromInstanceGraph" : "http://output",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : null
+    },
+    {
+    	"streamID" : "writeToSysOut",
+    	"readsFromInstance" : "ttlWriter",
+    	"readsFromInstanceGraph" : "",
+    	"writesToDestination" : "System.out"
+    }
+  ]
+, "components" : [
+    { 
+	  "componentInstance" : "sentenceSplitter",
+	  "class" : "UnsegmentedRDFStreamSplitter",
+	  "lang" : "ttl",
+	  "iteratorQuery" : null,
+	  "constructQuery" : null,
+	  "initUpdate" : "samples/splitter/update_init_construct_sentences.sparql",
+	  "recursiveUpdate" : "samples/splitter/update_recursive_construct_sentences.sparql",
+	  "segmentStreams" : null,
+	  "deltaStreams" : null,
+	  "tdbPath" : null,
+	  "delimiter" : "##TEST#INPUT##"
+	},
+	{ 
+	  "componentInstance" : "ttlWriter",
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
+	}
+  ]
+}

@@ -95,7 +95,7 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 		BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream()));
 		String ttlsegment = "";
 		try {
-			for(String line = ""; line !=null; line=in.readLine()) {
+			for(String line = in.readLine(); line !=null; line=in.readLine()) {
 				if (line.equals(segmentDelimiter)) {
 					outputSegment(ttlsegment, "");
 
@@ -105,11 +105,12 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 				}
 			}
 			//final segment in case there is no segmentDelimiter in last row
-			outputSegment(ttlsegment, "");
 		} catch (IOException e) {
 			LOG.error("Error when reading from Stream: " +e);
 		}
-
+		if (!ttlsegment.isBlank())
+			outputSegment(ttlsegment, "");
+		getOutputStream().terminate();
 	}
 	
 	private void outputSegment(String ttlsegment, String outputStreamName) {
