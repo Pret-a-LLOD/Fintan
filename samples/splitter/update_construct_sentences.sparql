@@ -11,9 +11,10 @@ DELETE {
     ?w ?wp ?wo .
   }
 } INSERT {
-  
+  GRAPH <http://output> {
     ?s ?sp ?so .
     ?w ?wp ?wo .
+   }
 } WHERE {
   GRAPH <http://input> {
     ?s a nif:Sentence .

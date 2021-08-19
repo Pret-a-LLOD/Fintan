@@ -3,6 +3,7 @@ package de.unifrankfurt.informatik.acoli.fintan.core;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,8 +17,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -48,13 +51,14 @@ public class FintanCLIManager {
 			"de.unifrankfurt.informatik.acoli.fintan.write",
 			"org.acoli.conll.rdf"
 	};
+
+	private static boolean sysInOccupied = false;
+	private static boolean sysOutOccupied = false;
 	
 	private ObjectNode config;
 	
-	private List<FintanStreamComponent> componentStack;
+	private HashMap<String, FintanStreamComponent> componentStack;
 	
-	OutputStream output;
-	InputStream input;
 	
 	public static void main(String[] args) throws Exception {
 		Options options = new Options();
@@ -81,14 +85,7 @@ public class FintanCLIManager {
 		man.start();
 	}
 	
-	
-	/**
-	 * Reads the content of a given path or URL as String. Can be used for reading queries etc.
-	 * @param pathOrURL
-	 * @return file content as String
-	 * @throws IOException if unreadable.
-	 */
-	public static String readSourceAsString (String pathOrURL) throws IOException {
+	public static InputStream parseAsInputStream(String pathOrURL) throws IOException {
 		InputStream inputStream;
 		File f = new File(pathOrURL);
 		if (f.canRead()) {
@@ -97,12 +94,60 @@ public class FintanCLIManager {
 			URL url = new URL(pathOrURL);
 			inputStream = url.openStream();
 		}
-		BufferedReader reader;
-		if (pathOrURL.endsWith(".gz")) {
-			reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(inputStream), StandardCharsets.UTF_8));
-		} else {
-			reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+		if (pathOrURL.endsWith(".gz")) 
+			inputStream = new GZIPInputStream(inputStream);
+		return inputStream;
+	}
+	
+	public static OutputStream parseAsOutputStream(String path) throws IOException {
+		OutputStream outputStream;
+		File f = new File(path);
+		if (!f.canWrite()) {
+			if (!f.createNewFile()) {
+				throw new IOException("Could not write to " + path);
+			}
 		}
+		outputStream = new FileOutputStream(f);
+		if (path.endsWith(".gz")) 
+			outputStream = new GZIPOutputStream(outputStream);
+		outputStream = new PrintStream(outputStream);
+		return outputStream;
+	}
+	
+	public static InputStream parseConfEntryAsInputStream(String confEntry) throws IOException {
+		InputStream input;
+		if (confEntry.equals("System.in")) {
+			if (sysInOccupied)
+				throw new IOException("System.in can only be defined as input for one Instance");
+			input = System.in;
+			sysInOccupied = true;
+		} else {
+			input = parseAsInputStream(confEntry);
+		}
+		return input;
+	}
+	
+	public static OutputStream parseConfEntryAsOutputStream(String confEntry) throws IOException {
+		OutputStream output;
+		if (confEntry.equals("System.out")) {
+			if (sysOutOccupied)
+				throw new IOException("System.out can only be defined as output for one Instance");
+			output = System.out;
+			sysOutOccupied = true;
+		} else {
+			output = parseAsOutputStream(confEntry);
+		}
+		return output;
+	}
+	
+	/**
+	 * Reads the content of a given path or URL as String. Can be used for reading queries etc.
+	 * @param pathOrURL
+	 * @return file content as String
+	 * @throws IOException if unreadable.
+	 */
+	public static String readSourceAsString (String pathOrURL) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(parseAsInputStream(pathOrURL)));
 		
 		StringBuilder out = new StringBuilder();
 		for (String line = reader.readLine(); line != null; line = reader.readLine())
@@ -126,102 +171,234 @@ public class FintanCLIManager {
 		config = (ObjectNode) node;
 	}
 
-	private InputStream parseConfAsInputStream(String confEntry) throws IOException {
-		InputStream input;
-		if (confEntry.equals("System.in")) {
-			input = System.in;
-		} else if (new File(confEntry).canRead()) {
-			if (confEntry.endsWith(".gz")) 
-				input = new GZIPInputStream(new FileInputStream(confEntry));
-			else
-				input = new FileInputStream(confEntry);
-		} else {
-			throw new IOException("Could not read from " + confEntry);
-		}
-		return input;
-	}
 	
-	private OutputStream parseConfAsOutputStream(String confEntry) throws IOException {
-		PrintStream output;
-		if (confEntry.equals("System.out")) {
-			output = System.out;
-		} else if (new File(confEntry).canWrite()) {
-			output = new PrintStream(confEntry);
-		} else if (new File(confEntry).createNewFile()) {
-			output = new PrintStream(confEntry);
-		} else {
-			throw new IOException("Could not write to " + confEntry);
-		}
-		return output;
-	}
 
 	public void buildComponentStack() throws IOException {
-		//READ INPUT PARAMETER
-		input = parseConfAsInputStream(config.get("input").asText());
-		
-		//READ OUTPUT PARAMETER
-		output = parseConfAsOutputStream(config.get("output").asText());
-		
-		//READ PIPELINE PARAMETER
-		if (!config.get("pipeline").isArray()) {
+		//validate
+		if (!validateConfig()) {
 			throw new IOException("File is no valid JSON config.");
 		}
 		
 		
-		
 		//BUILD COMPONENT STACK
 		if (componentStack == null) 
-			componentStack = new ArrayList<FintanStreamComponent>();
+			componentStack = new HashMap<String, FintanStreamComponent>();
 		else
 			componentStack.clear();
 		
+
+		//BUILD DEFAULT "PIPELINE" including default I/O
+		if (config.hasNonNull("pipeline"))
+			buildDefaultPipeline();
+		
+		//BUILD ALL OTHER COMPONENTS
+		if (config.hasNonNull("components"))
+			buildOtherComponents();
+		
+		//INTERLINK COMPONENTS as defined in "streams"
+		if (config.hasNonNull("streams"))
+			buildStreams();
+		
+		validateLinkState();
+	}
+	
+
+	/**
+	 * Only does basic validation of optional elements.
+	 * @return
+	 */
+	private boolean validateConfig() {
+		boolean valid = false;
+		boolean validPipeline = false;
+		boolean validStreams = false;
+		boolean validOtherComponents = false;
+		boolean validDefaultInput = false;
+		boolean validDefaultOutput = false;
+		if (config.hasNonNull("pipeline") && config.get("pipeline").isArray()) {
+			validPipeline = true;
+		}
+		if (config.hasNonNull("streams") && config.get("streams").isArray()) {
+			validStreams = true;
+		}
+		if (config.hasNonNull("components") && config.get("components").isArray()) {
+			validOtherComponents = true;
+		}
+		if (config.hasNonNull("input")) {
+			validDefaultInput = true;
+		}
+		if (config.hasNonNull("output")) {
+			validDefaultOutput = true;
+		}
+		
+		if (validPipeline && validDefaultInput && validDefaultOutput) {
+			//regular old CoNLL-RDF pipeline
+			valid = true;
+		}
+		
+		if (validStreams && (validOtherComponents || validPipeline)) {
+			//new version: in case other streams are defined, it is sufficient 
+			//if a valid pipeline or other components exist
+			valid = true;
+		}
+		
+		if (validOtherComponents && validDefaultInput && validDefaultOutput) {
+			//can only be valid, if there is only one component.
+			valid = true;
+		}
+		
+		return valid;
+	}
+
+	/**
+	 * Builds componentStack which is interlinked by default streams.
+	 * Also uses the default "input" and "output" streams as defined in the config.
+	 * @throws IOException if streams cannot be parsed
+	 */
+	private void buildDefaultPipeline() throws IOException {
+		//read default input parameter, can be null in case it is defined in "streams"
+		InputStream defaultInput = null;
+		if (config.hasNonNull("input"))
+			defaultInput = parseConfEntryAsInputStream(config.get("input").asText());
+
+		//read default output parameter, can be null in case it is defined in "streams"
+		OutputStream defaultOutput = null;
+		if (config.hasNonNull("output"))
+			defaultOutput = parseConfEntryAsOutputStream(config.get("output").asText());
+
 		// First inputStream is always main input
-		Object nextInput = input;
+		Object nextInput = defaultInput;
 		// Traverse pipeline array	
 		for (JsonNode pipelineElement:config.withArray("pipeline")) {
 			if (!pipelineElement.getNodeType().equals(JsonNodeType.OBJECT)) {
-				throw new IOException("File is no valid JSON config.");
+				throw new IOException("Elements in 'pipeline' must be object nodes.");
 			} 
-			
+
 			// Create FintanStreamComponents (StreamExtractor, Updater, Formatter ...)
 			FintanStreamComponent component = buildComponent((ObjectNode) pipelineElement);
-			componentStack.add(component);
-			
+			if (pipelineElement.hasNonNull("componentInstance")) {
+				String identifier = pipelineElement.get("componentInstance").asText();
+				if (componentStack.containsKey(identifier))
+					throw new IOException("'componentInstance' : '"+identifier+"' is not unique!");
+				componentStack.put(identifier, component);
+			} else {
+				componentStack.put(Integer.toString(component.hashCode()), component);
+			}
+
 			// Define Pipeline I/O
 			// always use previously defined input... first main input, later piped input
 			// currently late binding. Will terminate if streams are incompatible.
-			component.setInputStream(nextInput);
+			if (nextInput != null)
+				component.setInputStream(nextInput);
+			
 			if (componentStack.size() == config.withArray("pipeline").size()) {
 				// last component, final output
-				component.setOutputStream(output);
-			} else if (component instanceof StreamLoader) {
-				// Loader uses FintanStream as Output
-				FintanStreamHandler compOutput = new FintanStreamHandler();
-				component.setOutputStream(compOutput);
-				nextInput = compOutput;
-			} else if (component instanceof StreamRdfUpdater) {
-				// Updater uses FintanStream as Output
-				FintanStreamHandler compOutput = new FintanStreamHandler();
-				component.setOutputStream(compOutput);
-				nextInput = compOutput;
-			} else if (component instanceof StreamTransformerGenericIO) {
-				// GenericIO uses java OutputStreams
-				PipedOutputStream compOutput = new PipedOutputStream();
-				component.setOutputStream(compOutput);
-				nextInput = new PipedInputStream(compOutput);
-			} else if (component instanceof StreamWriter) {
-				// GenericIO uses java OutputStreams
-				PipedOutputStream compOutput = new PipedOutputStream();
-				component.setOutputStream(compOutput);
-				nextInput = new PipedInputStream(compOutput);
+				if (defaultOutput != null)
+					component.setOutputStream(defaultOutput);
+			} else {
+				nextInput = connectComponents(component, null, null, null);
+			}
+		}
+	}
+
+
+	private void buildOtherComponents() throws IOException {
+		for (JsonNode node:config.withArray("components")) {
+			if (!node.getNodeType().equals(JsonNodeType.OBJECT)) {
+				throw new IOException("Elements in 'components' must be object nodes.");
+			} 
+
+			String identifier = null;
+			if (node.hasNonNull("componentInstance")) {
+				identifier = node.get("componentInstance").asText();
+				if (componentStack.containsKey(identifier))
+					throw new IOException("'componentInstance' : '"+identifier+"' is not unique!");
+			} else {
+				throw new IOException("UNIQUE 'componentInstance' identifier must be specified for all 'components' outside default 'pipeline'");
+			}
+
+			// Create FintanStreamComponents (StreamExtractor, Updater, Formatter ...)
+			FintanStreamComponent component = buildComponent((ObjectNode) node);
+			componentStack.put(identifier, component);
+		}
+	}
+	
+	/**
+	 * connects Instances to Streams:
+	 * 1. sourceOutputStream to destinationInputStream
+	 * 2. sourceOutputStream to destinationFile
+	 * 3. sourceFile to destinationInputStream
+	 * @throws IOException
+	 */
+	private void buildStreams() throws IOException {
+		for (JsonNode node:config.withArray("streams")) {
+			
+			//basic validation
+			if (!node.getNodeType().equals(JsonNodeType.OBJECT)) {
+				throw new IOException("Elements in 'streams' must be object nodes.");
+			} 
+			if (node.hasNonNull("readsFromSource") && node.hasNonNull("readsFromInstance")) {
+				throw new IOException("Single stream cannot read from both an instance AND a file/url source.");
+			}
+			if (node.hasNonNull("writesToDestination") && node.hasNonNull("writesToInstance")) {
+				throw new IOException("Single stream cannot write to both an instance AND a file destination.");
+			}
+			if (node.hasNonNull("readsFromSource") && node.hasNonNull("writesToDestination")) {
+				throw new IOException("Fintan cannot write from a file/url source to a file destination. It does not support file copying.");
 			}
 			
+
+			FintanStreamComponent sourceComp = null;
+			String sourceGraph = null;
+			FintanStreamComponent destComp = null;
+			String destGraph = null;
+			InputStream inputStream = null;
+			OutputStream outputStream = null;
 			
-			// Define Pipeline I/O
-			// always use previously defined input... first main input, later piped input
+			if (node.hasNonNull("readsFromSource")) {
+				inputStream = parseConfEntryAsInputStream(node.get("readsFromSource").asText());
+			}
 			
+			if (node.hasNonNull("readsFromInstance")) {
+				sourceComp = componentStack.get(node.get("readsFromInstance").asText());
+				if (sourceComp == null) 
+					throw new IOException("Stream made reference to unspecified component '"
+							+node.get("readsFromInstance").asText()+"'");
+
+				if (node.hasNonNull("readsFromInstanceGraph")) {
+				    sourceGraph = node.get("readsFromInstanceGraph").asText();
+				}
+			}
 			
+			if (node.hasNonNull("writesToDestination")) {
+				outputStream = parseConfEntryAsOutputStream(node.get("writesToDestination").asText());
+			}
+			if (node.hasNonNull("writesToInstance")) {
+				destComp = componentStack.get(node.get("writesToInstance").asText());
+				if (destComp == null) 
+					throw new IOException("Stream made reference to unspecified component '"
+							+node.get("writesToInstance").asText()+"'");
+				
+				if (node.hasNonNull("writesToInstanceGraph")) {
+					destGraph = node.get("writesToInstanceGraph").asText();
+				}
+			}
+			
+			if (inputStream != null) {
+				destComp.setInputStream(inputStream, destGraph);
+			} else if (outputStream != null) {
+				sourceComp.setOutputStream(outputStream, sourceGraph);
+			} else {
+				connectComponents(sourceComp, sourceGraph, destComp, destGraph);
+			}
 		}
+		
+	}
+	
+
+	private void validateLinkState() {
+		// TODO Auto-generated method stub
+		//check whether there are unconnected components!
+		//possibly check for deadlocks using Fintan Ontology.
 	}
 
 	/**
@@ -238,51 +415,110 @@ public class FintanCLIManager {
 		try {
 			targetClass = Class.forName(conf.get("class").asText());
 		} catch (ClassNotFoundException e) {
-			LOG.info("Class not found: "+conf.get("class")+". Trying default packages.");
+			LOG.trace("Class not found: "+conf.get("class")+". Trying default packages.");
 			for (String pkg:DEFAULT_PACKAGES) {
 //			for (Package pkg:Package.getPackages()) {
 				try {
 					targetClass = Class.forName(pkg+"."+conf.get("class").asText());
-					LOG.info("Class loaded successfully: " + targetClass.getName());
+					LOG.trace("Class loaded successfully: " + targetClass.getName());
 					break;
 				} catch (ClassNotFoundException e1) {
-					LOG.info("Class "+conf.get("class")+" not in package "+pkg);
+					LOG.trace("Class "+conf.get("class")+" not in package "+pkg);
 				}
 			}
 		}
 		if (targetClass==null) System.exit(1);
+		FintanStreamComponent component;
 		try {
-			FintanStreamComponent component;
-			try {
-				component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
-				return component;
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				System.exit(1);
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-				System.exit(1);
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-				System.exit(1);
-			} catch (SecurityException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-			
+			component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
+			component.setConfig(conf);
+			return component;
+		} catch (IllegalArgumentException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		} catch (IOException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		} catch (InvocationTargetException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		} catch (NoSuchMethodException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		} catch (SecurityException e) {
+			LOG.error(e, e);
+			System.exit(1);
 		} catch (InstantiationException | IllegalAccessException e) {
 			LOG.error(e, e);
 			System.exit(1);
 		}
 		return null;
 	}
+	
+	/**
+	 * attempts to connect the provided stream slots of two FintanStreamComponents
+	 * @param sourceComp
+	 * 	the source component for which the OutputStream is to be defined.
+	 * @param sourceGraph
+	 * 	the stream/graph slot of the source Component for which the OutputStream is to be defined. 
+	 *  If null, then DefaultGraph
+	 * @param destComp
+	 * 	the destination component for which the InputStream is to be defined. 
+	 *  If null, then stream says unconnected.
+	 * @param destGraph
+	 *  the stream/graph slot of the destination Component for which the InputStream is to be defined. 
+	 *  If null, then DefaultGraph
+	 * @return the InputStream which can be connected to the next component. If it has already been connected successfully: null
+	 * @throws IOException
+	 * 	for various reasons. Esp. if slots of the Components are already occupied.
+	 */
+	private Object connectComponents(FintanStreamComponent sourceComp, String sourceGraph, FintanStreamComponent destComp, String destGraph) throws IOException {
+		if (sourceGraph == null) sourceGraph = FintanStreamComponent.FINTAN_DEFAULT_STREAM_NAME;
+		if (destGraph == null) destGraph = FintanStreamComponent.FINTAN_DEFAULT_STREAM_NAME;
+		if (sourceComp.getOutputStream(sourceGraph) != null) {
+			throw new IOException("OutputStream slot is already occupied for graph '"+sourceGraph+ "'");
+		}
+		
+		if (destComp != null) {
+			if (destComp.getInputStream(destGraph) != null) {
+				throw new IOException("InputStream slot is already occupied for graph '"+destGraph+ "'");
+			}
+		}
+		
+		Object nextInput = null;
+		if (sourceComp instanceof StreamLoader) {
+			// Loader uses FintanStream as Output
+			FintanStreamHandler compOutput = new FintanStreamHandler();
+			sourceComp.setOutputStream(compOutput, sourceGraph);
+			nextInput = compOutput;
+		} else if (sourceComp instanceof StreamRdfUpdater) {
+			// Updater uses FintanStream as Output
+			FintanStreamHandler compOutput = new FintanStreamHandler();
+			sourceComp.setOutputStream(compOutput, sourceGraph);
+			nextInput = compOutput;
+		} else if (sourceComp instanceof StreamTransformerGenericIO) {
+			// GenericIO uses java OutputStreams
+			PipedOutputStream compOutput = new PipedOutputStream();
+			sourceComp.setOutputStream(compOutput, sourceGraph);
+			nextInput = new PipedInputStream(compOutput);
+		} else if (sourceComp instanceof StreamWriter) {
+			// GenericIO uses java OutputStreams
+			PipedOutputStream compOutput = new PipedOutputStream();
+			sourceComp.setOutputStream(compOutput, sourceGraph);
+			nextInput = new PipedInputStream(compOutput);
+		}
+		
+		if (destComp != null && nextInput != null) {
+			destComp.setInputStream(nextInput, destGraph);
+			return null;
+		}
+		
+		return nextInput;
+	}
 
 
 	public void start() {
-		for (FintanStreamComponent component:componentStack) {
+		for (FintanStreamComponent component:componentStack.values()) {
 			Thread t = new Thread(component);
 	        t.start();
 		}

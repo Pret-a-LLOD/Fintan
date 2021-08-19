@@ -313,10 +313,10 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 				for (String name:listInputStreamNames()) {
 					tdbDataset.begin(ReadWrite.WRITE);
 					if (name.equals(FINTAN_DEFAULT_STREAM_NAME)) {
-						//tdbDataset.getDefaultModel().read(getInputStream(name), null, lang);
+						tdbDataset.getDefaultModel().read(getInputStream(name), null, lang);
 //TODO: TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-						tdbDataset.getNamedModel("http://input").read(getInputStream(name), null, lang);
-						tdbDataset.getDefaultModel().setNsPrefixes(tdbDataset.getNamedModel("http://input").getNsPrefixMap());
+//						tdbDataset.getNamedModel("http://input").read(getInputStream(name), null, lang);
+//						tdbDataset.getDefaultModel().setNsPrefixes(tdbDataset.getNamedModel("http://input").getNsPrefixMap());
 //TODO: DELETE DEBUG STUFF ABOVE
 //TODO: Add multistream support to CLI Manager
 					} else {

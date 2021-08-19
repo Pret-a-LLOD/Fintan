@@ -15,8 +15,10 @@ DELETE {
   GRAPH <http://input> {
     <http://start> nif:nextSentence ?s_next .
   }
-  ?s ?sp ?so .
-  ?w ?wp ?wo .
+  GRAPH <http://output> {
+    ?s ?sp ?so .
+    ?w ?wp ?wo .
+  }
 } WHERE {
   GRAPH <http://input> {
     <http://start> nif:nextSentence ?s .

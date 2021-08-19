@@ -1,8 +1,32 @@
 {
-"input" : "samples/splitter/en-ud-train.conllu.gz.linked.ttl"
+"input" : null
 , "output" : "System.out"
 , "pipeline" : [ 
 	{ 
+	  "componentInstance" : "ttlWriter",
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
+	}
+  ]
+, "streams" : [
+    {
+    	"streamID" : "readFile",
+    	"readsFromSource" : "samples/splitter/en-ud-train.conllu.gz.linked.ttl",
+    	"writesToInstance" : "sentenceSplitter",
+    	"writesToInstanceGraph" : "http://input"
+    },
+    {
+    	"streamID" : "optional label",
+    	"readsFromInstance" : "sentenceSplitter",
+    	"readsFromInstanceGraph" : "http://output",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : null
+    }
+  ]
+, "components" : [
+    { 
+	  "componentInstance" : "sentenceSplitter",
 	  "class" : "UnsegmentedRDFStreamSplitter",
 	  "lang" : "ttl",
 	  "iteratorQuery" : null,
@@ -13,11 +37,6 @@
 	  "deltaStreams" : null,
 	  "tdbPath" : null,
 	  "delimiter" : "##TEST#INPUT##"
-	},
-	{ 
-	  "class" : "RDFStreamWriter",
-	  "lang" : "ttl",
-	  "delimiter" : "##TEST#OUTPUT##"
 	}
-]
+  ]
 }
