@@ -395,10 +395,20 @@ public class FintanCLIManager {
 	}
 	
 
-	private void validateLinkState() {
-		// TODO Auto-generated method stub
-		//check whether there are unconnected components!
-		//possibly check for deadlocks using Fintan Ontology.
+	/**
+	 * Checks whether all components are linked to at least one Input and one Output stream.
+	 * @throws IOException
+	 */
+	private void validateLinkState() throws IOException {
+		// TODO possibly check for deadlocks using Fintan Ontology.
+		for (String key:componentStack.keySet()) {
+			FintanStreamComponent component = componentStack.get(key);
+			if (component.listInputStreamNames().length <=0)
+				throw new IOException("Component has no valid InputStream: "+key);
+
+			if (component.listOutputStreamNames().length <=0)
+				throw new IOException("Component has no valid OutputStream: "+key);
+		}
 	}
 
 	/**
