@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Map;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -54,6 +56,7 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 
 	private String lang = "TTL";
 	private String segmentDelimiter = FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL;
+	private Map<String, String> prefixMap;
 
 	public String getLang() {
 		return lang;
@@ -93,29 +96,44 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 		
 		// process default stream
 		BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream()));
-		String ttlsegment = "";
+		String rdfsegment = "";
 		try {
 			for(String line = in.readLine(); line !=null; line=in.readLine()) {
 				if (line.equals(segmentDelimiter)) {
-					outputSegment(ttlsegment, "");
+					outputSegment(rdfsegment, "");
 
-					ttlsegment = "";
+					rdfsegment = "";
 				} else {
-					ttlsegment+=line+"\n";
+					rdfsegment+=line+"\n";
 				}
 			}
 			//final segment in case there is no segmentDelimiter in last row
 		} catch (IOException e) {
 			LOG.error("Error when reading from Stream: " +e);
 		}
-		if (!ttlsegment.isBlank())
-			outputSegment(ttlsegment, "");
+		if (!rdfsegment.isBlank())
+			outputSegment(rdfsegment, "");
 		getOutputStream().terminate();
 	}
 	
-	private void outputSegment(String ttlsegment, String outputStreamName) {
+	private void outputSegment(String rdfsegment, String outputStreamName) {
 		Model m = ModelFactory.createDefaultModel();
-		m.read(new StringReader(ttlsegment), null, lang);
+		
+		//TODO: find a better way to assess existence of prefixes. 
+		//Exception handling may be slow.
+		try {
+			m.read(new StringReader(rdfsegment), null, lang);
+		} catch (org.apache.jena.riot.RiotException e) {
+			//probably missing prefixes.
+			if (prefixMap != null) {
+				m.setNsPrefixes(prefixMap);
+				StringWriter prefixWright = new StringWriter();
+				m.write(prefixWright, lang);
+				rdfsegment = prefixWright + rdfsegment;
+			}
+			m.read(new StringReader(rdfsegment), null, lang);
+		}
+		prefixMap = m.getNsPrefixMap();
 		try {
 			getOutputStream(outputStreamName).write(m);
 		} catch (InterruptedException e) {

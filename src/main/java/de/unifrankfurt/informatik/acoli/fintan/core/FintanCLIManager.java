@@ -63,16 +63,23 @@ public class FintanCLIManager {
 	public static void main(String[] args) throws Exception {
 		Options options = new Options();
 		options.addRequiredOption("c", "config", true, "Specify JSON config file");
-		
+		options.addOption("p", "params", true, "Specify optional parameters for JSON config file.");
+		options.getOption("p").setOptionalArg(true);
+		options.getOption("p").setArgs(100);
 		
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = parser.parse(options, args);
 		
 		FintanCLIManager man = new FintanCLIManager();
 		
+		String[] params = new String[] {};
+		if(cmd.hasOption("p")) {
+			params = cmd.getOptionValues("p");
+		}
+		
 		if(cmd.hasOption("c")) {
 			try {
-				man.readConfig(cmd.getOptionValue("c"));
+				man.readConfig(cmd.getOptionValue("c"), params);
 			} catch (IOException e) {
 				throw new Exception("Error when reading config file "+new File(cmd.getOptionValue("c")).getAbsolutePath(), e);
 			}
@@ -156,15 +163,17 @@ public class FintanCLIManager {
 	}
 
 
-	public void readConfig(String path) throws IOException {
+	public void readConfig(String path, String[] params) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(Feature.ALLOW_COMMENTS, true);
 
-		File file = new File(path);
-		if (!file.canRead()) {
-			throw new IOException("File cannot be read.");
+		String jsonConf = readSourceAsString(path);
+		
+		for (int i = 0; i < params.length; i++) {
+			jsonConf = jsonConf.replace("<$param" + i + ">", params[i]);
 		}
-		JsonNode node = objectMapper.readTree(file);
+		
+		JsonNode node = objectMapper.readTree(jsonConf);
 		if (!node.getNodeType().equals(JsonNodeType.OBJECT)) {
 			throw new IOException("File is no valid JSON config.");
 		}
