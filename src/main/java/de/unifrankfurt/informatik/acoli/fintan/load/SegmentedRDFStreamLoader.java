@@ -89,8 +89,13 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 			SegmentedRDFStreamLoader loader = new SegmentedRDFStreamLoader();
 			loader.setSegmentDelimiter(segmentDelimiter);
 			loader.setLang(lang);
-			loader.setInputStream(getInputStream(name));
-			loader.setOutputStream(getOutputStream(name));
+			try {
+				loader.setInputStream(getInputStream(name));
+				loader.setOutputStream(getOutputStream(name));
+			} catch (IOException e) {
+				LOG.error(e, e);
+				System.exit(1);
+			}
 			new Thread(loader).start();
 		}
 		
@@ -125,6 +130,11 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 			m.read(new StringReader(rdfsegment), null, lang);
 		} catch (org.apache.jena.riot.RiotException e) {
 			//probably missing prefixes.
+			//assemble prefixes:
+			// - add PrefixMap to empty model 
+			// - write empty (prefix-only) serialization 
+			// - concatenate empty (prefix-only) serialization with rdfsegment
+			// - attempt to read again
 			if (prefixMap != null) {
 				m.setNsPrefixes(prefixMap);
 				StringWriter prefixWright = new StringWriter();

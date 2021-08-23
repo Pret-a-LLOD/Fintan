@@ -296,8 +296,13 @@ public class TarqlStreamTransformer extends StreamTransformerGenericIO implement
 			tsv2ttl.setBaseIRI(baseIRI);
 			tsv2ttl.setWriteBase(writeBase);
 			tsv2ttl.setDedup(dedup);
-			tsv2ttl.setInputStream(getInputStream(name));
-			tsv2ttl.setOutputStream(getOutputStream(name));
+			try {
+				tsv2ttl.setInputStream(getInputStream(name));
+				tsv2ttl.setOutputStream(getOutputStream(name));
+			} catch (IOException e) {
+				LOG.error(e, e);
+				System.exit(1);
+			}
 			new Thread(tsv2ttl).start();
 		}
 

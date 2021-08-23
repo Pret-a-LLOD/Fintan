@@ -79,8 +79,13 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 			RDFStreamWriter writer = new RDFStreamWriter();
 			writer.setSegmentDelimiter(segmentDelimiter);
 			writer.setLang(lang);
-			writer.setInputStream(getInputStream(name));
-			writer.setOutputStream(getOutputStream(name));
+			try {
+				writer.setInputStream(getInputStream(name));
+				writer.setOutputStream(getOutputStream(name));
+			} catch (IOException e) {
+				LOG.error(e, e);
+				System.exit(1);
+			}
 			new Thread(writer).start();
 		}
 		PrintStream out = new PrintStream(getOutputStream());

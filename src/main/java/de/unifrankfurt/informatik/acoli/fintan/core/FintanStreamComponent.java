@@ -1,5 +1,6 @@
 package de.unifrankfurt.informatik.acoli.fintan.core;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -39,11 +40,11 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 		return inputStreams.get(name);
 	}
 
-	public void setInputStream(In inputStream) {
+	public void setInputStream(In inputStream) throws IOException {
 		this.inputStreams.put(FINTAN_DEFAULT_STREAM_NAME, inputStream);
 	}
 	
-	public void setInputStream(In inputStream, String name) {
+	public void setInputStream(In inputStream, String name) throws IOException {
 		this.inputStreams.put(name, inputStream);
 	}
 
@@ -55,11 +56,11 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 		return outputStreams.get(name);
 	}
 
-	public void setOutputStream(Out outputStream) {
+	public void setOutputStream(Out outputStream) throws IOException {
 		this.outputStreams.put(FINTAN_DEFAULT_STREAM_NAME, outputStream);
 	}
 	
-	public void setOutputStream(Out outputStream, String name) {
+	public void setOutputStream(Out outputStream, String name) throws IOException {
 		this.outputStreams.put(name, outputStream);
 	}
 	
