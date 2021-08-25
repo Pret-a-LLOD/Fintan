@@ -2,6 +2,7 @@ package de.unifrankfurt.informatik.acoli.fintan.write;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.StringWriter;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +19,7 @@ import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
  * For convenience, Fintan's treatment of named streams works in default configuration:
  * 	- for each matching pair of named streams, a separate Thread is spawned 
  * 		which converts the stream independently
- *  - input streams without matching outputstreams are dropped.
+ *  - input streams without matching output streams are dropped.
  * @author CF
  *
  */
@@ -34,6 +35,9 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 		if (conf.hasNonNull("delimiter")) {
 			writer.setSegmentDelimiter(conf.get("delimiter").asText());
 		}
+		if (conf.hasNonNull("prefixDeduplication")) {
+			writer.setPrefixDeduplication(conf.get("prefixDeduplication").asBoolean());
+		}
 		return writer;
 	}
 
@@ -48,6 +52,7 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 
 	private String lang = "TTL";
 	private String segmentDelimiter = null;
+	private boolean prefixDeduplication = false;
 	
 	public String getLang() {
 		return lang;
@@ -66,6 +71,14 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 	}
 	
 	
+	public boolean isPrefixDeduplication() {
+		return prefixDeduplication;
+	}
+
+	public void setPrefixDeduplication(boolean prefixDeduplication) {
+		this.prefixDeduplication = prefixDeduplication;
+	}
+
 	private void processStream() {
 		// Spawn loaders for parallel processing, in case there are multiple streams.
 		for (String name:listInputStreamNames()) {
@@ -79,6 +92,7 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 			RDFStreamWriter writer = new RDFStreamWriter();
 			writer.setSegmentDelimiter(segmentDelimiter);
 			writer.setLang(lang);
+			writer.setPrefixDeduplication(prefixDeduplication);
 			try {
 				writer.setInputStream(getInputStream(name));
 				writer.setOutputStream(getOutputStream(name));
@@ -88,18 +102,42 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 			}
 			new Thread(writer).start();
 		}
+		
+		
 		PrintStream out = new PrintStream(getOutputStream());
+		String prefixCacheOut = new String();
+		
 		while (getInputStream().canRead()) {
 			try {
 				Model m = getInputStream().read();
-
 				//read may return null in case the queue has been emptied and terminated since asking for canRead()
-				if (m != null) {
-					m.write(out, lang);
-					if (segmentDelimiter != null) {
-						out.println(segmentDelimiter);
+				if (m == null) continue;
+				
+				if (prefixDeduplication) {
+					String outString = new String();
+					StringWriter buffer = new StringWriter();
+					m.write(buffer, lang);
+					String prefixCacheTMP = new String();
+					for (String buffLine:buffer.toString().split("\n")) {
+						if (buffLine.trim().startsWith("@prefix")) {
+							prefixCacheTMP += buffLine+"\n";
+						} else if (!buffLine.trim().isEmpty()) {
+								outString += buffLine+"\n";
+						}
 					}
+					if (!prefixCacheTMP.equals(prefixCacheOut)) {
+						prefixCacheOut = prefixCacheTMP;
+						outString = prefixCacheTMP + outString;
+					}
+					out.println(outString);
+				} else {
+					m.write(out, lang);
 				}
+				
+				if (segmentDelimiter != null) {
+					out.println(segmentDelimiter);
+				}
+				
 			} catch (InterruptedException e) {
 				LOG.error("Error when reading from Stream: " +e);
 			}

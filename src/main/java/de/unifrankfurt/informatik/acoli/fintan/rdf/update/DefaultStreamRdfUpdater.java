@@ -51,6 +51,91 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
 
 public class DefaultStreamRdfUpdater extends StreamRdfUpdater implements FintanStreamComponentFactory {
 
+
+
+	@Override
+	public FintanStreamComponent buildFromJsonConf(ObjectNode conf) {
+		// READ THREAD PARAMETERS
+				int threads = 0;
+				if (conf.get("threads") != null)
+					threads = conf.get("threads").asInt(0);
+				DefaultStreamRdfUpdater updater = new DefaultStreamRdfUpdater("","",threads);
+
+				// READ LOOKAHEAD PARAMETERS
+				if (conf.get("lookahead") != null) {
+					int lookahead_snts = conf.get("lookahead").asInt(0);
+					if (lookahead_snts > 0)
+						updater.activateLookahead(lookahead_snts);
+				}
+
+				// READ LOOKBACK PARAMETERS
+				if (conf.get("lookback") != null) {
+					int lookback_snts = conf.get("lookback").asInt(0);
+					if (lookback_snts > 0)
+						updater.activateLookback(lookback_snts);
+				}
+
+				// READ ALL UPDATES
+				// should be <#UPDATEFILENAMEORSTRING, #UPDATESTRING, #UPDATEITER>
+				List<Triple<String, String, String>> updates = new ArrayList<Triple<String, String, String>>();
+				for (JsonNode update:conf.withArray("updates")) {
+					String freq = update.get("iter").asText("1");
+					if (freq.equals("u"))
+						freq = "*";
+					try {
+						Integer.parseInt(freq);
+					} catch (NumberFormatException e) {
+						if (!"*".equals(freq))
+							throw e;
+					}
+					String path = update.get("path").asText();
+					updates.add(new Triple<String, String, String>(path, path, freq));
+				}
+				try {
+					updater.parseUpdates(updates);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					LOG.error("Error when parsing Updates", e1);
+				}
+
+				// READ ALL MODELS
+				for (JsonNode model:conf.withArray("models")) {
+					List<String> models = new ArrayList<String>();
+					String uri = model.get("source").asText();
+					if (!uri.equals("")) models.add(uri);
+					uri = model.get("graph").asText();
+					if (!uri.equals("")) models.add(uri);
+					if (models.size()==1) {
+						try {
+							updater.loadGraph(new URI(models.get(0)), new URI(models.get(0)));
+						} catch (Exception e) {
+							LOG.error("Error when reading Model at " + models.get(0), e);
+							System.exit(1);
+						}
+					} else if (models.size()==2){
+						try {
+							updater.loadGraph(new URI(models.get(0)), new URI(models.get(1)));
+						} catch (Exception e) {
+							LOG.error("Error when reading Model at " + models.get(0), e);
+							System.exit(1);
+						}
+					} else if (models.size()>2){
+						LOG.error("Error while loading model: Please specify model source URI and graph destination.");
+						System.exit(1);
+					}
+					models.removeAll(models);
+				}
+
+				return updater;
+	}
+
+	
+	@Override
+	public FintanStreamComponent buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	protected static final List<Integer> CHECKINTERVAL = new ArrayList<Integer>() {{add(3); add(10); add(25); add(50); add(100); add(200); add(500);}};
 	protected static final Logger LOG = LogManager.getLogger(DefaultStreamRdfUpdater.class.getName());
 	protected static final int MAXITERATE = 999; // maximum update iterations allowed until the update loop is cancelled and an error message is thrown - to prevent faulty update scripts running in an endless loop
@@ -530,80 +615,5 @@ public class DefaultStreamRdfUpdater extends StreamRdfUpdater implements FintanS
 		}
 	}
 
-	@Override
-	public FintanStreamComponent buildFromJsonConf(ObjectNode conf) {
-		// READ THREAD PARAMETERS
-				int threads = 0;
-				if (conf.get("threads") != null)
-					threads = conf.get("threads").asInt(0);
-				DefaultStreamRdfUpdater updater = new DefaultStreamRdfUpdater("","",threads);
-
-				// READ LOOKAHEAD PARAMETERS
-				if (conf.get("lookahead") != null) {
-					int lookahead_snts = conf.get("lookahead").asInt(0);
-					if (lookahead_snts > 0)
-						updater.activateLookahead(lookahead_snts);
-				}
-
-				// READ LOOKBACK PARAMETERS
-				if (conf.get("lookback") != null) {
-					int lookback_snts = conf.get("lookback").asInt(0);
-					if (lookback_snts > 0)
-						updater.activateLookback(lookback_snts);
-				}
-
-				// READ ALL UPDATES
-				// should be <#UPDATEFILENAMEORSTRING, #UPDATESTRING, #UPDATEITER>
-				List<Triple<String, String, String>> updates = new ArrayList<Triple<String, String, String>>();
-				for (JsonNode update:conf.withArray("updates")) {
-					String freq = update.get("iter").asText("1");
-					if (freq.equals("u"))
-						freq = "*";
-					try {
-						Integer.parseInt(freq);
-					} catch (NumberFormatException e) {
-						if (!"*".equals(freq))
-							throw e;
-					}
-					String path = update.get("path").asText();
-					updates.add(new Triple<String, String, String>(path, path, freq));
-				}
-				try {
-					updater.parseUpdates(updates);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					LOG.error("Error when parsing Updates", e1);
-				}
-
-				// READ ALL MODELS
-				for (JsonNode model:conf.withArray("models")) {
-					List<String> models = new ArrayList<String>();
-					String uri = model.get("source").asText();
-					if (!uri.equals("")) models.add(uri);
-					uri = model.get("graph").asText();
-					if (!uri.equals("")) models.add(uri);
-					if (models.size()==1) {
-						try {
-							updater.loadGraph(new URI(models.get(0)), new URI(models.get(0)));
-						} catch (Exception e) {
-							LOG.error("Error when reading Model at " + models.get(0), e);
-							System.exit(1);
-						}
-					} else if (models.size()==2){
-						try {
-							updater.loadGraph(new URI(models.get(0)), new URI(models.get(1)));
-						} catch (Exception e) {
-							LOG.error("Error when reading Model at " + models.get(0), e);
-							System.exit(1);
-						}
-					} else if (models.size()>2){
-						LOG.error("Error while loading model: Please specify model source URI and graph destination.");
-						System.exit(1);
-					}
-					models.removeAll(models);
-				}
-
-				return updater;
-	}
 
 }

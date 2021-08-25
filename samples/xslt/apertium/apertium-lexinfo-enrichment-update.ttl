@@ -1,0 +1,611 @@
+@prefix apertium: <http://wiki.apertium.org/wiki/Bidix#> .
+@prefix conll: <https://github.com/acoli-repo/conll-rdf/blob/master/owl/conll.ttl#> .
+@prefix lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix synsem: <http://www.w3.org/ns/ontolex-synsem#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+apertium:A conll:replace [ lexinfo:partOfSpeech lexinfo:adjective ] .
+
+apertium:ABBR conll:replace [ lexinfo:termType lexinfo:abbreviation ] .
+
+apertium:ABL conll:replace [ lexinfo:case lexinfo:ablativeCase ] .
+
+apertium:ACR conll:replace [ lexinfo:termType lexinfo:acronym ] .
+
+apertium:ADJ conll:replace [ lexinfo:partOfSpeech lexinfo:adjective ] .
+
+apertium:ADP conll:replace [ lexinfo:partOfSpeech lexinfo:adposition ] .
+
+apertium:Acc conll:replace [ lexinfo:case lexinfo:accusativeCase ] .
+
+apertium:Adp conll:replace [ lexinfo:partOfSpeech lexinfo:adposition ] .
+
+apertium:Adv conll:replace [ lexinfo:partOfSpeech lexinfo:adverb ] .
+
+apertium:CC conll:replace [ lexinfo:partOfSpeech lexinfo:coordinatingConjunction ] .
+
+apertium:CS conll:replace [ lexinfo:partOfSpeech lexinfo:subordinatingConjunction ] .
+
+apertium:Coll conll:replace [ lexinfo:number lexinfo:collective ] .
+
+apertium:Comp conll:replace [ lexinfo:degree lexinfo:comparative ] .
+
+apertium:DET conll:replace [ lexinfo:partOfSpeech lexinfo:determiner ] .
+
+apertium:Du conll:replace [ lexinfo:number lexinfo:dual ] .
+
+apertium:Du1 conll:replace [ lexinfo:number lexinfo:dual ;
+            lexinfo:person lexinfo:firstPerson ] .
+
+apertium:Du2 conll:replace [ lexinfo:number lexinfo:dual ;
+            lexinfo:person lexinfo:secondPerson ] .
+
+apertium:Du3 conll:replace [ lexinfo:number lexinfo:dual ;
+            lexinfo:person lexinfo:thirdPerson ] .
+
+apertium:ERG conll:replace [ lexinfo:case lexinfo:ergativeCase ] .
+
+apertium:Ess conll:replace [ lexinfo:case lexinfo:essiveCase ] .
+
+apertium:Fem conll:replace [ lexinfo:gender lexinfo:feminine ] .
+
+apertium:GEN conll:replace [ lexinfo:case lexinfo:genitiveCase ] .
+
+apertium:Gen conll:replace [ lexinfo:case lexinfo:genitiveCase ] .
+
+apertium:IV conll:replace [ synsem:synBehavior [ a lexinfo:IntransitiveFrame ] ] .
+
+apertium:Imprt conll:replace [ lexinfo:mood lexinfo:imperative ] .
+
+apertium:Inf conll:replace [ lexinfo:verbFormMood lexinfo:infinitive ] .
+
+apertium:Loc conll:replace [ lexinfo:case lexinfo:locativeCase ] .
+
+apertium:Mal conll:replace [ lexinfo:gender lexinfo:masculine ] .
+
+apertium:N conll:replace [ lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:Nom conll:replace [ lexinfo:case lexinfo:nominativeCase ] .
+
+apertium:Num conll:replace [ lexinfo:partOfSpeech lexinfo:numeral ] .
+
+apertium:Pcle conll:replace [ lexinfo:partOfSpeech lexinfo:particle ] .
+
+apertium:Pers conll:replace [ lexinfo:partOfSpeech lexinfo:personalPronoun ] .
+
+apertium:Pl conll:replace [ lexinfo:number lexinfo:plural ] .
+
+apertium:Pl1 conll:replace [ lexinfo:number lexinfo:plural ;
+            lexinfo:person lexinfo:firstPerson ] .
+
+apertium:Pl2 conll:replace [ lexinfo:number lexinfo:plural ;
+            lexinfo:person lexinfo:secondPerson ] .
+
+apertium:Pl3 conll:replace [ lexinfo:number lexinfo:plural ;
+            lexinfo:person lexinfo:thirdPerson ] .
+
+apertium:Po conll:replace [ lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Pr conll:replace [ lexinfo:partOfSpeech lexinfo:preposition ] .
+
+apertium:Pron conll:replace [ lexinfo:partOfSpeech lexinfo:pronoun ] .
+
+apertium:Prop conll:replace [ lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:Prs conll:replace [ lexinfo:tense lexinfo:present ] .
+
+apertium:Prt conll:replace [ lexinfo:tense lexinfo:preterite ] .
+
+apertium:PxDu1 conll:replace [ lexinfo:number lexinfo:dual ;
+            lexinfo:person lexinfo:firstPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxDu2 conll:replace [ lexinfo:number lexinfo:dual ;
+            lexinfo:person lexinfo:secondPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxDu3 conll:replace [ lexinfo:number lexinfo:dual ;
+            lexinfo:person lexinfo:thirdPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxPl1 conll:replace [ lexinfo:number lexinfo:plural ;
+            lexinfo:person lexinfo:firstPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxPl2 conll:replace [ lexinfo:number lexinfo:plural ;
+            lexinfo:person lexinfo:secondPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxPl3 conll:replace [ lexinfo:number lexinfo:plural ;
+            lexinfo:person lexinfo:thirdPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxSg1 conll:replace [ lexinfo:number lexinfo:singular ;
+            lexinfo:person lexinfo:firstPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxSg2 conll:replace [ lexinfo:number lexinfo:singular ;
+            lexinfo:person lexinfo:secondPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:PxSg3 conll:replace [ lexinfo:number lexinfo:singular ;
+            lexinfo:person lexinfo:thirdPerson ;
+            lexinfo:referentType lexinfo:possessive ;
+            lexinfo:termElement lexinfo:suffix ] .
+
+apertium:Rabl conll:replace [ lexinfo:case lexinfo:ablativeCase ;
+            lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Racc conll:replace [ lexinfo:case lexinfo:accusativeCase ;
+            lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Rdat conll:replace [ lexinfo:case lexinfo:dativeCase ;
+            lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Rgen conll:replace [ lexinfo:case lexinfo:genitiveCase ;
+            lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Rins conll:replace [ lexinfo:case lexinfo:instrumentalCase ;
+            lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Rloc conll:replace [ lexinfo:case lexinfo:locativeCase ;
+            lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Rnom conll:replace [ lexinfo:case lexinfo:nominativeCase ;
+            lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:Sg conll:replace [ lexinfo:number lexinfo:singular ] .
+
+apertium:Sg1 conll:replace [ lexinfo:number lexinfo:singular ;
+            lexinfo:person lexinfo:firstPerson ] .
+
+apertium:Sg2 conll:replace [ lexinfo:number lexinfo:singular ;
+            lexinfo:person lexinfo:secondPerson ] .
+
+apertium:Sg3 conll:replace [ lexinfo:number lexinfo:singular ;
+            lexinfo:person lexinfo:thirdPerson ] .
+
+apertium:Superl conll:replace [ lexinfo:degree lexinfo:superlative ] .
+
+apertium:TV conll:replace [ synsem:synBehavior [ a lexinfo:TransitiveFrame ] ] .
+
+apertium:V conll:replace [ lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:aa conll:replace [ lexinfo:animacy lexinfo:animate ] .
+
+apertium:abb conll:replace [ lexinfo:termType lexinfo:abbreviation ] .
+
+apertium:abbr conll:replace [ lexinfo:termType lexinfo:abbreviation ] .
+
+apertium:abl conll:replace [ lexinfo:case lexinfo:ablativeCase ] .
+
+apertium:acc conll:replace [ lexinfo:case lexinfo:accusativeCase ] .
+
+apertium:acr conll:replace [ lexinfo:termType lexinfo:acronym ] .
+
+apertium:actv conll:replace [ lexinfo:voice lexinfo:activeVoice ] .
+
+apertium:add_comp conll:replace [ lexinfo:degree lexinfo:comparative ] .
+
+apertium:add_ela conll:replace [ lexinfo:case lexinfo:elativeCase ] .
+
+apertium:add_sup conll:replace [ lexinfo:degree lexinfo:superlative ] .
+
+apertium:adj conll:replace [ lexinfo:partOfSpeech lexinfo:adjective ] .
+
+apertium:adv conll:replace [ lexinfo:partOfSpeech lexinfo:adverb ] .
+
+apertium:art conll:replace [ lexinfo:partOfSpeech lexinfo:article ] .
+
+apertium:atp conll:replace [ lexinfo:termElement lexinfo:prefix ] .
+
+apertium:caus conll:replace [ lexinfo:case lexinfo:causativeCase ] .
+
+apertium:cm conll:replace [ lexinfo:partOfSpeech lexinfo:comma ] .
+
+apertium:cnj conll:replace [ lexinfo:partOfSpeech lexinfo:conjunction ] .
+
+apertium:cnjcoo conll:replace [ lexinfo:partOfSpeech lexinfo:coordinatingConjunction ] .
+
+apertium:cnjsub conll:replace [ lexinfo:partOfSpeech lexinfo:subordinatingConjunction ] .
+
+apertium:coll conll:replace [ lexinfo:number lexinfo:collective ] .
+
+apertium:comma conll:replace [ lexinfo:partOfSpeech lexinfo:comma ] .
+
+apertium:comp conll:replace [ lexinfo:degree lexinfo:comparative ] .
+
+apertium:conj conll:replace [ lexinfo:partOfSpeech lexinfo:conjunction ] .
+
+apertium:cop conll:replace [ lexinfo:partOfSpeech lexinfo:copula ] .
+
+apertium:cs conll:replace [ lexinfo:partOfSpeech lexinfo:subordinatingConjunction ] .
+
+apertium:dat conll:replace [ lexinfo:case lexinfo:dativeCase ] .
+
+apertium:def conll:replace [ lexinfo:definiteness lexinfo:definite ] .
+
+apertium:det conll:replace [ lexinfo:partOfSpeech lexinfo:determiner ] .
+
+apertium:dst conll:replace [ lexinfo:partOfSpeech lexinfo:demonstrativeDeterminer ] .
+
+apertium:du conll:replace [ lexinfo:number lexinfo:dual ] .
+
+apertium:ela conll:replace [ lexinfo:case lexinfo:elativeCase ] .
+
+apertium:erg conll:replace [ lexinfo:case lexinfo:ergativeCase ] .
+
+apertium:ess conll:replace [ lexinfo:case lexinfo:essiveCase ] .
+
+apertium:f conll:replace [ lexinfo:gender lexinfo:feminine ] .
+
+apertium:fn conll:replace [ lexinfo:gender lexinfo:neuter ] .
+
+apertium:fti conll:replace [ lexinfo:mood lexinfo:indicative ;
+            lexinfo:tense lexinfo:future ] .
+
+apertium:fts conll:replace [ lexinfo:mood lexinfo:subjunctive ;
+            lexinfo:tense lexinfo:future ] .
+
+apertium:gen conll:replace [ lexinfo:case lexinfo:genitiveCase ] .
+
+apertium:ij conll:replace [ lexinfo:partOfSpeech lexinfo:interjection ] .
+
+apertium:ill conll:replace [ lexinfo:case lexinfo:illativeCase ] .
+
+apertium:imperf conll:replace [ lexinfo:aspect lexinfo:imperfective ] .
+
+apertium:impf conll:replace [ lexinfo:aspect lexinfo:imperfective ;
+            lexinfo:verbFormMood lexinfo:participle ] .
+
+apertium:indef conll:replace [ lexinfo:definiteness lexinfo:indefinite ] .
+
+apertium:inf conll:replace [ lexinfo:verbFormMood lexinfo:infinitive ] .
+
+apertium:ins conll:replace [ lexinfo:case lexinfo:instrumentalCase ] .
+
+apertium:interj conll:replace [ lexinfo:partOfSpeech lexinfo:interjection ] .
+
+apertium:iv conll:replace [ synsem:synBehavior [ a lexinfo:IntransitiveFrame ] ] .
+
+apertium:lpar conll:replace [ lexinfo:partOfSpeech lexinfo:openParenthesis ] .
+
+apertium:m conll:replace [ lexinfo:gender lexinfo:masculine ] .
+
+apertium:ma conll:replace [ lexinfo:animacy lexinfo:animate ;
+            lexinfo:gender lexinfo:masculine ] .
+
+apertium:mi conll:replace [ lexinfo:animacy lexinfo:inanimate ;
+            lexinfo:gender lexinfo:masculine ] .
+
+apertium:mod conll:replace [ lexinfo:partOfSpeech lexinfo:modal ] .
+
+apertium:nn conll:replace [ lexinfo:animacy lexinfo:inanimate ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:nom conll:replace [ lexinfo:case lexinfo:nominativeCase ] .
+
+apertium:np conll:replace [ lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:nt conll:replace [ lexinfo:gender lexinfo:neuter ] .
+
+apertium:num conll:replace [ lexinfo:partOfSpeech lexinfo:numeral ] .
+
+apertium:obl conll:replace [ lexinfo:case lexinfo:obliqueCase ] .
+
+apertium:p1 conll:replace [ lexinfo:person lexinfo:firstPerson ] .
+
+apertium:p2 conll:replace [ lexinfo:person lexinfo:secondPerson ] .
+
+apertium:p3 conll:replace [ lexinfo:person lexinfo:thirdPerson ] .
+
+apertium:pass conll:replace [ lexinfo:voice lexinfo:passiveVoice ] .
+
+apertium:past conll:replace [ lexinfo:tense lexinfo:past ] .
+
+apertium:past3p conll:replace [ lexinfo:person lexinfo:thirdPerson ;
+            lexinfo:tense lexinfo:past ] .
+
+apertium:perf conll:replace [ lexinfo:aspect lexinfo:perfective ] .
+
+apertium:pers conll:replace [ lexinfo:partOfSpeech lexinfo:personalPronoun ] .
+
+apertium:pii conll:replace [ lexinfo:mood lexinfo:indicative ;
+            lexinfo:tense lexinfo:imperfect ] .
+
+apertium:pl conll:replace [ lexinfo:number lexinfo:plural ] .
+
+apertium:pos conll:replace [ lexinfo:referentType lexinfo:possessive ] .
+
+apertium:posi conll:replace [ lexinfo:degree lexinfo:positive ] .
+
+apertium:post conll:replace [ lexinfo:partOfSpeech lexinfo:postposition ] .
+
+apertium:pr conll:replace [ lexinfo:partOfSpeech lexinfo:preposition ] .
+
+apertium:pref conll:replace [ lexinfo:termElement lexinfo:prefix ] .
+
+apertium:prep conll:replace [ lexinfo:partOfSpeech lexinfo:preposition ] .
+
+apertium:pres conll:replace [ lexinfo:mood lexinfo:indicative ;
+            lexinfo:tense lexinfo:present ] .
+
+apertium:pret conll:replace [ lexinfo:tense lexinfo:preterite ] .
+
+apertium:pri conll:replace [ lexinfo:mood lexinfo:indicative ;
+            lexinfo:tense lexinfo:present ] .
+
+apertium:prn conll:replace [ lexinfo:partOfSpeech lexinfo:pronoun ] .
+
+apertium:pron conll:replace [ lexinfo:partOfSpeech lexinfo:pronoun ] .
+
+apertium:prs conll:replace [ lexinfo:mood lexinfo:subjunctive ;
+            lexinfo:tense lexinfo:present ] .
+
+apertium:punct conll:replace [ lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:ref conll:replace [ lexinfo:partOfSpeech lexinfo:reflexivePersonalPronoun ] .
+
+apertium:rel conll:replace [ lexinfo:partOfSpeech lexinfo:relativePronoun ] .
+
+apertium:rpar conll:replace [ lexinfo:partOfSpeech lexinfo:closeParenthesis ] .
+
+apertium:sbj conll:replace [ lexinfo:mood lexinfo:subjunctive ] .
+
+apertium:sg conll:replace [ lexinfo:number lexinfo:singular ] .
+
+apertium:subj conll:replace [ a lexinfo:Subject ] .
+
+apertium:sup conll:replace [ lexinfo:degree lexinfo:superlative ] .
+
+apertium:tv conll:replace [ synsem:synBehavior [ a lexinfo:TransitiveFrame ] ] .
+
+apertium:unc conll:replace [ lexinfo:number lexinfo:massNoun ] .
+
+apertium:vbmod conll:replace [ lexinfo:partOfSpeech lexinfo:modal ] .
+
+apertium:voc conll:replace [ lexinfo:case lexinfo:vocativeCase ] .
+
+apertium:Cmp conll:replace [ lexinfo:morphosyntacticProperty apertium:Cmp ;
+            lexinfo:termType lexinfo:compound ] .
+
+apertium:Cond conll:replace [ lexinfo:morphosyntacticProperty apertium:Cond ;
+            lexinfo:verbFormMood lexinfo:conditional ] .
+
+apertium:Der_eapmi conll:replace [ lexinfo:morphosyntacticProperty apertium:Der_eapmi ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:Der_las conll:replace [ lexinfo:morphosyntacticProperty apertium:Der_las ;
+            lexinfo:partOfSpeech lexinfo:adjective ] .
+
+apertium:Der_muš conll:replace [ lexinfo:morphosyntacticProperty apertium:Der_muš ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:Der_vuohta conll:replace [ lexinfo:morphosyntacticProperty apertium:Der_vuohta ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:G3 conll:replace [ lexinfo:morphosyntacticProperty apertium:G3 ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:ND conll:replace [ lexinfo:number apertium:ND ] .
+
+apertium:Neg conll:replace [ lexinfo:morphosyntacticProperty apertium:Neg ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:Org conll:replace [ lexinfo:morphosyntacticProperty apertium:Org ;
+            lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:PD conll:replace [ lexinfo:person apertium:PD ] .
+
+apertium:Plc conll:replace [ lexinfo:morphosyntacticProperty apertium:Plc ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:PrfPrc conll:replace [ lexinfo:morphosyntacticProperty apertium:PrfPrc ;
+            lexinfo:verbFormMood lexinfo:participle ] .
+
+apertium:PrsPrc conll:replace [ lexinfo:morphosyntacticProperty apertium:PrsPrc ;
+            lexinfo:verbFormMood lexinfo:participle ] .
+
+apertium:Qst conll:replace [ lexinfo:morphosyntacticProperty apertium:Qst ;
+            lexinfo:partOfSpeech lexinfo:particle ] .
+
+apertium:RCmpnd conll:replace [ lexinfo:morphosyntacticProperty apertium:RCmpnd ;
+            lexinfo:termElement lexinfo:wordElement ] .
+
+apertium:Sup conll:replace [ lexinfo:verbFormMood apertium:Sup ] .
+
+apertium:Sur conll:replace [ lexinfo:partOfSpeech apertium:Sur ] .
+
+apertium:VAbess conll:replace [ lexinfo:case apertium:VAbess ] .
+
+apertium:VGen conll:replace [ lexinfo:morphosyntacticProperty apertium:VGen ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:ant conll:replace [ lexinfo:morphosyntacticProperty apertium:ant ;
+            lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:apos conll:replace [ lexinfo:morphosyntacticProperty apertium:apos ;
+            lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:clt conll:replace [ lexinfo:morphosyntacticProperty apertium:clt ;
+            lexinfo:termType lexinfo:bound ] .
+
+apertium:cmp conll:replace [ lexinfo:morphosyntacticProperty apertium:cmp ;
+            lexinfo:termType lexinfo:compound ] .
+
+apertium:cog conll:replace [ lexinfo:morphosyntacticProperty apertium:cog ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:dash conll:replace [ lexinfo:morphosyntacticProperty apertium:dash ;
+            lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:detnt conll:replace [ lexinfo:morphosyntacticProperty apertium:detnt ;
+            lexinfo:partOfSpeech lexinfo:determiner ] .
+
+apertium:dual conll:replace [ lexinfo:number apertium:dual ] .
+
+apertium:emph conll:replace [ lexinfo:morphosyntacticProperty apertium:emph ;
+            lexinfo:partOfSpeech lexinfo:particle ] .
+
+apertium:fut conll:replace [ lexinfo:morphosyntacticProperty apertium:fut ;
+            lexinfo:tense lexinfo:future ] .
+
+apertium:fut2 conll:replace [ lexinfo:morphosyntacticProperty apertium:fut2 ;
+            lexinfo:tense lexinfo:future ] .
+
+apertium:futI conll:replace [ lexinfo:morphosyntacticProperty apertium:futI ;
+            lexinfo:tense lexinfo:future ] .
+
+apertium:gna conll:replace [ lexinfo:morphosyntacticProperty apertium:gna ;
+            lexinfo:partOfSpeech lexinfo:adverb ] .
+
+apertium:guio conll:replace [ lexinfo:morphosyntacticProperty apertium:guio ;
+            lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:hyd conll:replace [ lexinfo:morphosyntacticProperty apertium:hyd ;
+            lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:ifi conll:replace [ lexinfo:morphosyntacticProperty apertium:ifi ;
+            lexinfo:tense lexinfo:preterite ] .
+
+apertium:imp conll:replace [ lexinfo:mood apertium:imp ] .
+
+apertium:loc conll:replace [ lexinfo:case lexinfo:locativeCase ;
+            lexinfo:morphosyntacticProperty apertium:loc ] .
+
+apertium:lquest conll:replace [ lexinfo:morphosyntacticProperty apertium:lquest ;
+            lexinfo:partOfSpeech lexinfo:questionMark ] .
+
+apertium:lquot conll:replace [ lexinfo:morphosyntacticProperty apertium:lquot ;
+            lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:mf conll:replace [ lexinfo:gender apertium:mf ] .
+
+apertium:mfSG conll:replace [ lexinfo:gender apertium:mfSG ] .
+
+apertium:mfn conll:replace [ lexinfo:gender apertium:mfn ] .
+
+apertium:mod_ass conll:replace [ lexinfo:morphosyntacticProperty apertium:mod_ass ;
+            lexinfo:partOfSpeech lexinfo:particle ] .
+
+apertium:mod_ind conll:replace [ lexinfo:morphosyntacticProperty apertium:mod_ind ;
+            lexinfo:partOfSpeech lexinfo:particle ] .
+
+apertium:n conll:replace [ lexinfo:morphosyntacticProperty apertium:n ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:org conll:replace [ lexinfo:morphosyntacticProperty apertium:org ;
+            lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:pasv conll:replace [ lexinfo:morphosyntacticProperty apertium:pasv ;
+            lexinfo:voice lexinfo:passiveVoice ] .
+
+apertium:pat conll:replace [ lexinfo:morphosyntacticProperty apertium:pat ;
+            lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:pih conll:replace [ lexinfo:morphosyntacticProperty apertium:pih ;
+            lexinfo:tense lexinfo:imperfect ] .
+
+apertium:pp conll:replace [ lexinfo:morphosyntacticProperty apertium:pp ;
+            lexinfo:verbFormMood lexinfo:participle ] .
+
+apertium:pprs conll:replace [ lexinfo:morphosyntacticProperty apertium:pprs ;
+            lexinfo:partOfSpeech lexinfo:presentParticipleAdjective ] .
+
+apertium:prh conll:replace [ lexinfo:morphosyntacticProperty apertium:prh ;
+            lexinfo:tense lexinfo:present ] .
+
+apertium:pro conll:replace [ lexinfo:cliticness lexinfo:bound ;
+            lexinfo:morphosyntacticProperty apertium:pro ] .
+
+apertium:prx conll:replace [ lexinfo:morphosyntacticProperty apertium:prx ;
+            lexinfo:partOfSpeech lexinfo:demonstrativeDeterminer ] .
+
+apertium:pst conll:replace [ lexinfo:degree lexinfo:positive ;
+            lexinfo:morphosyntacticProperty apertium:pst ] .
+
+apertium:qst conll:replace [ lexinfo:morphosyntacticProperty apertium:qst ;
+            lexinfo:partOfSpeech lexinfo:particle ] .
+
+apertium:quot conll:replace [ lexinfo:morphosyntacticProperty apertium:quot ;
+            lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:quote conll:replace [ lexinfo:morphosyntacticProperty apertium:quote ;
+            lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:res conll:replace [ lexinfo:morphosyntacticProperty apertium:res ;
+            lexinfo:partOfSpeech lexinfo:reciprocalPronoun ] .
+
+apertium:rquot conll:replace [ lexinfo:morphosyntacticProperty apertium:rquot ;
+            lexinfo:partOfSpeech lexinfo:punctuation ] .
+
+apertium:sep conll:replace [ lexinfo:morphosyntacticProperty apertium:sep ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:short conll:replace [ lexinfo:morphosyntacticProperty apertium:short ;
+            lexinfo:partOfSpeech lexinfo:adjective ] .
+
+apertium:sint conll:replace [ lexinfo:morphosyntacticProperty apertium:sint ;
+            lexinfo:partOfSpeech lexinfo:adjective ] .
+
+apertium:sp conll:replace [ lexinfo:number apertium:sp ] .
+
+apertium:ssup conll:replace [ lexinfo:degree apertium:ssup ] .
+
+apertium:stem conll:replace [ lexinfo:termElement apertium:stem ] .
+
+apertium:subs conll:replace [ lexinfo:morphosyntacticProperty apertium:subs ;
+            lexinfo:partOfSpeech lexinfo:noun ] .
+
+apertium:supn conll:replace [ lexinfo:verbFormMood apertium:supn ] .
+
+apertium:top conll:replace [ lexinfo:morphosyntacticProperty apertium:top ;
+            lexinfo:partOfSpeech lexinfo:properNoun ] .
+
+apertium:un conll:replace [ lexinfo:gender apertium:un ] .
+
+apertium:uns conll:replace [ lexinfo:morphosyntacticProperty apertium:uns ;
+            lexinfo:termElement lexinfo:prefix ] .
+
+apertium:ut conll:replace [ lexinfo:gender lexinfo:neuter ;
+            lexinfo:morphosyntacticProperty apertium:ut ] .
+
+apertium:v conll:replace [ lexinfo:morphosyntacticProperty apertium:v ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vaux conll:replace [ lexinfo:morphosyntacticProperty apertium:vaux ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vbavea conll:replace [ lexinfo:morphosyntacticProperty apertium:vbavea ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vbdo conll:replace [ lexinfo:morphosyntacticProperty apertium:vbdo ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vbhaver conll:replace [ lexinfo:morphosyntacticProperty apertium:vbhaver ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vblex conll:replace [ lexinfo:morphosyntacticProperty apertium:vblex ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vbloc conll:replace [ lexinfo:morphosyntacticProperty apertium:vbloc ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vbser conll:replace [ lexinfo:morphosyntacticProperty apertium:vbser ;
+            lexinfo:partOfSpeech lexinfo:verb ] .
+
+apertium:vpart conll:replace [ lexinfo:morphosyntacticProperty apertium:vpart ;
+            lexinfo:partOfSpeech lexinfo:particle ] .
+

@@ -5,11 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.commons.cli.ParseException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
 
 /**
@@ -19,11 +24,23 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
  * @author CF
  *
  */
-public class IOStreamDuplicator extends StreamTransformerGenericIO {
+public class IOStreamDuplicator extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 	
 	protected static final Logger LOG = LogManager.getLogger(IOStreamDuplicator.class.getName());
 	
 	public static final int DEFAULT_BUFFER_SIZE = 8192;
+	
+	@Override
+	public FintanStreamComponent buildFromJsonConf(ObjectNode conf)
+			throws IOException, IllegalArgumentException, ParseException {
+		return new IOStreamDuplicator();
+	}
+
+	@Override
+	public FintanStreamComponent buildFromCLI(String[] args)
+			throws IOException, IllegalArgumentException, ParseException {
+		return new IOStreamDuplicator();
+	}
 
 	@Override
 	public void setInputStream(InputStream inputStream, String name) throws IOException {
@@ -65,6 +82,8 @@ public class IOStreamDuplicator extends StreamTransformerGenericIO {
 			System.exit(1);
 		}
 	}
+
+	
 
 
 

@@ -2,13 +2,19 @@ package de.unifrankfurt.informatik.acoli.fintan.rdf;
 
 import java.io.IOException;
 
+import org.apache.commons.cli.ParseException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanInputStream;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
+import de.unifrankfurt.informatik.acoli.fintan.genericIO.IOStreamDuplicator;
 
 /**
  * Duplicates the contents of default FintanInputStream to all attached OutputStreams.
@@ -17,11 +23,24 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
  * @author CF
  *
  */
-public class RDFStreamDuplicator extends StreamRdfUpdater {
+public class RDFStreamDuplicator extends StreamRdfUpdater implements FintanStreamComponentFactory {
 
 	
 	protected static final Logger LOG = LogManager.getLogger(RDFStreamDuplicator.class.getName());
 
+	@Override
+	public FintanStreamComponent buildFromJsonConf(ObjectNode conf)
+			throws IOException, IllegalArgumentException, ParseException {
+		return new RDFStreamDuplicator();
+	}
+
+	@Override
+	public FintanStreamComponent buildFromCLI(String[] args)
+			throws IOException, IllegalArgumentException, ParseException {
+		return new RDFStreamDuplicator();
+	}
+	
+	
 	@Override
 	public void setInputStream(FintanInputStream<Model> inputStream, String name) throws IOException {
 		throw new IOException();
@@ -31,6 +50,7 @@ public class RDFStreamDuplicator extends StreamRdfUpdater {
 		while (getInputStream().canRead()) {
 			try {
 				Model model_in = getInputStream().read();
+				if (model_in == null) continue;
 				for (String name:listOutputStreamNames()) {
 					Model model_out = ModelFactory.createDefaultModel();
 					model_out.add(model_in);

@@ -46,8 +46,7 @@ public class FintanCLIManager {
 			"de.unifrankfurt.informatik.acoli.fintan.core",
 			"de.unifrankfurt.informatik.acoli.fintan.genericIO",
 			"de.unifrankfurt.informatik.acoli.fintan.load",
-			"de.unifrankfurt.informatik.acoli.fintan.split",
-			"de.unifrankfurt.informatik.acoli.fintan.transform",
+			"de.unifrankfurt.informatik.acoli.fintan.rdf",
 			"de.unifrankfurt.informatik.acoli.fintan.write",
 			"org.acoli.conll.rdf"
 	};
@@ -110,6 +109,7 @@ public class FintanCLIManager {
 		OutputStream outputStream;
 		File f = new File(path);
 		if (!f.canWrite()) {
+			f.getParentFile().mkdirs();
 			if (!f.createNewFile()) {
 				throw new IOException("Could not write to " + path);
 			}
@@ -447,9 +447,14 @@ public class FintanCLIManager {
 			}
 		}
 		if (targetClass==null) System.exit(1);
-		FintanStreamComponent component;
+		FintanStreamComponent component = null;
 		try {
-			component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
+			try {
+				component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
+			} catch (Exception e) {
+				targetClass = Class.forName(targetClass.getCanonicalName()+"Factory");
+				component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
+			}
 			component.setConfig(conf);
 			return component;
 		} catch (IllegalArgumentException e) {
@@ -468,6 +473,12 @@ public class FintanCLIManager {
 			LOG.error(e, e);
 			System.exit(1);
 		} catch (InstantiationException | IllegalAccessException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		} catch (ParseException e) {
+			LOG.error(e, e);
+			System.exit(1);
+		} catch (ClassNotFoundException e) {
 			LOG.error(e, e);
 			System.exit(1);
 		}
