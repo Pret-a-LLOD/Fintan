@@ -129,7 +129,7 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 						prefixCacheOut = prefixCacheTMP;
 						outString = prefixCacheTMP + outString;
 					}
-					out.println(outString);
+					out.print(outString);
 				} else {
 					m.write(out, lang);
 				}

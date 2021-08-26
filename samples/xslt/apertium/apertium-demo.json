@@ -22,7 +22,7 @@
 	  "componentInstance" : "noLexinfoLinkRDF",
 	  "class" : "RDFStreamDuplicator"
 	},
-	{ "class" : "CoNLLRDFUpdater"
+	{ "class" : "RDFUpdater"
 	    , "models" : [
 			{"source":"samples/xslt/apertium/apertium-lexinfo-enrichment-update.ttl", "graph":"http://apertium-lexinfo-enrichment-update.ttl"}
 	    ]

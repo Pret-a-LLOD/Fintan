@@ -65,8 +65,8 @@ import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
  *  @author Christian Chiarcos {@literal chiarcos@informatik.uni-frankfurt.de}
  *  @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
  */
-public class CoNLLRDFUpdater extends StreamRdfUpdater {
-	static final Logger LOG = Logger.getLogger(CoNLLRDFUpdater.class);
+public class RDFUpdater extends StreamRdfUpdater {
+	static final Logger LOG = Logger.getLogger(RDFUpdater.class);
 	static final String DEFAULTUPDATENAME = "DIRECTUPDATE";
 	static final int MAXITERATE = 999;
 	static final List<Integer> CHECKINTERVAL = Arrays.asList(3, 10, 25, 50, 100, 200, 500);
@@ -106,7 +106,7 @@ public class CoNLLRDFUpdater extends StreamRdfUpdater {
 
 	private class UpdateThread extends Thread {
 		
-		private CoNLLRDFUpdater updater;
+		private RDFUpdater updater;
 		private int threadID;
 		private Dataset memDataset;
 		
@@ -122,7 +122,7 @@ public class CoNLLRDFUpdater extends StreamRdfUpdater {
 		 * @param id
 		 * 				The id of this Thread.
 		 */
-		public UpdateThread(CoNLLRDFUpdater updater, int id) {
+		public UpdateThread(RDFUpdater updater, int id) {
 			this.updater = updater;
 			threadID = id;
 			memDataset = DatasetFactory.create();
@@ -484,7 +484,7 @@ public class CoNLLRDFUpdater extends StreamRdfUpdater {
 	/**
 	 * Default Constructor providing empty data to the standard constructor.
 	 */
-	public CoNLLRDFUpdater() {
+	public RDFUpdater() {
 		this("", "", 0);
 	}
 	
@@ -505,7 +505,7 @@ public class CoNLLRDFUpdater extends StreamRdfUpdater {
 	 * 				Maximum amount of threads for execution.
 	 * 				default: threads = number of logical cores available to runtime
 	 */
-	public CoNLLRDFUpdater(String type, String path, int threads) {
+	public RDFUpdater(String type, String path, int threads) {
 		if (type.equals("TDB2")) {
 			//TODO
 			dataset = DatasetFactory.create();//TDB

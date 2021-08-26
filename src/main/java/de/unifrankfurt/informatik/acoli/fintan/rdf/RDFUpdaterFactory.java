@@ -18,21 +18,21 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
 
-public class CoNLLRDFUpdaterFactory implements FintanStreamComponentFactory {
-	static Logger LOG = Logger.getLogger(CoNLLRDFUpdaterFactory.class);
+public class RDFUpdaterFactory implements FintanStreamComponentFactory {
+	static Logger LOG = Logger.getLogger(RDFUpdaterFactory.class);
 	@Override
-	public CoNLLRDFUpdater buildFromCLI(String[] args) throws IOException, ParseException {
+	public RDFUpdater buildFromCLI(String[] args) throws IOException, ParseException {
 		//TODO removed.
 		return null;
 	}
 
 	@Override
-	public CoNLLRDFUpdater buildFromJsonConf(ObjectNode conf) throws IOException, ParseException {
+	public RDFUpdater buildFromJsonConf(ObjectNode conf) throws IOException, ParseException {
 		// READ THREAD PARAMETERS
 		int threads = 0;
 		if (conf.get("threads") != null)
 			threads = conf.get("threads").asInt(0);
-		CoNLLRDFUpdater updater = new CoNLLRDFUpdater("","",threads);
+		RDFUpdater updater = new RDFUpdater("","",threads);
 
 		// READ GRAPHSOUT PARAMETERS
 		if (conf.get("graphsoutDIR") != null) {
