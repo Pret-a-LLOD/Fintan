@@ -33,7 +33,6 @@ import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
 public class XSLTStreamTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 
 
-	@Override
 	public XSLTStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		XSLTStreamTransformer transformer = new XSLTStreamTransformer();
 		transformer.setConfig(conf);
@@ -58,7 +57,6 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 		return transformer;
 	}
 
-	@Override
 	public FintanStreamComponent buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
@@ -137,7 +135,6 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 		super.getOutputStream().close();
 	}
 
-	@Override
 	public void run() {
 		try {
 			processStream();	

@@ -68,7 +68,6 @@ public class TarqlStreamTransformer extends StreamTransformerGenericIO implement
 	
 	protected static final Logger LOG = LogManager.getLogger(TarqlStreamTransformer.class.getName());
 
-	@Override
 	public TarqlStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		TarqlStreamTransformer tsv2ttl = new TarqlStreamTransformer();
 		tsv2ttl.setConfig(conf);
@@ -113,7 +112,6 @@ public class TarqlStreamTransformer extends StreamTransformerGenericIO implement
 		return tsv2ttl;
 	}
 
-	@Override
 	public TarqlStreamTransformer buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
@@ -374,7 +372,6 @@ public class TarqlStreamTransformer extends StreamTransformerGenericIO implement
 		run();
 	}
 
-	@Override
 	public void run() {
 		try {
 			processStream();
