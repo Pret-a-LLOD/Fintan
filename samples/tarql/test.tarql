@@ -1,5 +1,0 @@
-CONSTRUCT {
-  ?col1_uri <http://test#pred> ?col2 .
-} WHERE {
-  BIND(URI(CONCAT('http://test#', ?col1)) as ?col1_uri)
-}

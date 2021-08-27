@@ -3,7 +3,6 @@ package de.unifrankfurt.informatik.acoli.fintan.core;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import sun.jvm.hotspot.runtime.Threads;
 
 
 public class FintanStreamHandler<T> implements FintanInputStream<T>, FintanOutputStream<T> {

@@ -14,12 +14,12 @@ import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory
 
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RDFUpdaterFactory implements FintanStreamComponentFactory {
-	static Logger LOG = Logger.getLogger(RDFUpdaterFactory.class);
+	static Logger LOG = LogManager.getLogger(RDFUpdaterFactory.class);
 	@Override
 	public RDFUpdater buildFromCLI(String[] args) throws IOException, ParseException {
 		//TODO removed.

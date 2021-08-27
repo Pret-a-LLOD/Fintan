@@ -33,7 +33,6 @@ import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
-import de.unifrankfurt.informatik.acoli.fintan.genericIO.TarqlStreamTransformer;
 
 /**
  * Load unsegmented RDF streams in the given serialization format. Default: TTL

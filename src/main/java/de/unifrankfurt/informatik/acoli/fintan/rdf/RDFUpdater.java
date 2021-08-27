@@ -55,7 +55,8 @@ import org.apache.jena.update.Update;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
@@ -66,7 +67,7 @@ import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
  *  @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
  */
 public class RDFUpdater extends StreamRdfUpdater {
-	static final Logger LOG = Logger.getLogger(RDFUpdater.class);
+	static final Logger LOG = LogManager.getLogger(RDFUpdater.class);
 	static final String DEFAULTUPDATENAME = "DIRECTUPDATE";
 	static final int MAXITERATE = 999;
 	static final List<Integer> CHECKINTERVAL = Arrays.asList(3, 10, 25, 50, 100, 200, 500);
