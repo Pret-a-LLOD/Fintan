@@ -59,7 +59,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanManager;
 
 
 /**
@@ -702,7 +702,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 			 */
 
 			try {
-				updateScript = FintanCLIManager.readSourceAsString(updateScriptRaw);
+				updateScript = FintanManager.readSourceAsString(updateScriptRaw);
 			} catch (Exception e) {
 				LOG.debug("Attempt to read Update from File/URL source failed. Attempting to parse as direct update.");
 				LOG.debug(e, e);

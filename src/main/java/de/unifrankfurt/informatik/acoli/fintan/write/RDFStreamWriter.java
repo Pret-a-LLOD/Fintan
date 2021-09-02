@@ -80,7 +80,7 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 	}
 
 	private void processStream() {
-		// Spawn loaders for parallel processing, in case there are multiple streams.
+		// Spawn writers for parallel processing, in case there are multiple streams.
 		for (String name:listInputStreamNames()) {
 			if (name == FINTAN_DEFAULT_STREAM_NAME) 
 				continue;

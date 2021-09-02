@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanCLIManager;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanManager;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
@@ -65,16 +65,16 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 				splitter.setLang(conf.get("lang").asText());
 			}
 			if (conf.hasNonNull("iteratorQuery")) {
-				splitter.setIteratorQuery(FintanCLIManager.readSourceAsString(conf.get("iteratorQuery").asText()));
+				splitter.setIteratorQuery(FintanManager.readSourceAsString(conf.get("iteratorQuery").asText()));
 			}
 			if (conf.hasNonNull("constructQuery")) {
-				splitter.setConstructQuery(FintanCLIManager.readSourceAsString(conf.get("constructQuery").asText()));
+				splitter.setConstructQuery(FintanManager.readSourceAsString(conf.get("constructQuery").asText()));
 			}
 			if (conf.hasNonNull("initUpdate")) {
-				splitter.setInitUpdate(FintanCLIManager.readSourceAsString(conf.get("initUpdate").asText()));
+				splitter.setInitUpdate(FintanManager.readSourceAsString(conf.get("initUpdate").asText()));
 			}
 			if (conf.hasNonNull("recursiveUpdate")) {
-				splitter.setRecursiveUpdate(FintanCLIManager.readSourceAsString(conf.get("recursiveUpdate").asText()));
+				splitter.setRecursiveUpdate(FintanManager.readSourceAsString(conf.get("recursiveUpdate").asText()));
 			}
 			if (conf.hasNonNull("segmentStreams")) {
 				ArrayList<String> segmentStreams = new ArrayList<String>();
