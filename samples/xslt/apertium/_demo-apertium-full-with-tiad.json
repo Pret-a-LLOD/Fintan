@@ -85,7 +85,7 @@
 	  "componentInstance" : "all_2tiad",
 	  "class" : "UnsegmentedRDF2TSVTransformer",
 	  "lang" : "ttl",
-	  "delimiterCSV" : null,
+	  "outFormat" : "tsv",
 	  "query" : "samples/xslt/apertium/ontolex2tsv.sparql"
 	} ,
 	{
