@@ -7,10 +7,10 @@
 	  "class" : "XSLTStreamTransformer",
 	  "delimiterIn" : null,
 	  "delimiterOut" : null,
-	  "xsl" : "samples/xslt/apertium/dix2src-ttl.xsl <$param0> <$param1>"
+	  "xsl" : "samples/xslt/apertium/dix2src-ttl.xsl LANG=<$param1> dc_source=<$param0>"
 	},
 	{
-	  "componentInstance" : "noLexinfoLink",
+	  "componentInstance" : "noLexinfoOut",
 	  "class" : "IOStreamDuplicator"
 	} ,
 	{ 
@@ -32,22 +32,25 @@
 	  "lang" : "ttl",
 	  "delimiter" : "",
 	  "prefixDeduplication" : true
-	} ,
+	},
 	{
-	  "componentInstance" : "withLexinfoLink",
+	  "componentInstance" : "withLexinfoOut",
 	  "class" : "IOStreamDuplicator"
 	}
 ]
 , "streams" : [
     {
-    	"readsFromInstance" : "noLexinfoLink",
-    	"readsFromInstanceGraph" : "http://toFile",
-    	"writesToDestination" : "samples/xslt/apertium/data/nolexinfo.ttl"
+    	"readsFromInstance" : "noLexinfoOut",
+    	"readsFromInstanceGraph" : "http://noLexinfoToFile",
+    	"writesToDestination" : "samples/xslt/apertium/data/src_noLexinfo.ttl"
     },
     {
-    	"readsFromInstance" : "withLexinfoLink",
-    	"readsFromInstanceGraph" : "http://toFile",
-    	"writesToDestination" : "samples/xslt/apertium/data/withlexinfo.ttl"
+    	"readsFromInstance" : "withLexinfoOut",
+    	"readsFromInstanceGraph" : "http://withLexinfoToFile",
+    	"writesToDestination" : "samples/xslt/apertium/data/src_Lexinfo.ttl"
     }
+  ]
+, "components" : [
+	
   ]
 }
