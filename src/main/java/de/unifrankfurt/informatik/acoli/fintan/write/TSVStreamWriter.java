@@ -8,7 +8,9 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.sparql.resultset.ResultsFormat;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +19,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanManager;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.CustomCSVFormat;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.JenaUtils;
 
 public class TSVStreamWriter extends StreamWriter implements FintanStreamComponentFactory{
 
@@ -27,22 +32,37 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 		writer.setConfig(conf);
 
 		if (conf.hasNonNull("query")) {
-			writer.setQuery(FintanManager.parseSelectQuery(FintanManager.readSourceAsString(conf.get("query").asText())));
+			writer.setQuery(JenaUtils.parseSelectQuery(IOUtils.readSourceAsString(conf.get("query").asText())));
 		}
 		if (conf.hasNonNull("delimiter")) {
 			writer.setSegmentDelimiter(conf.get("delimiter").asText());
 		}
-		if (conf.hasNonNull("escapeChar")) {
-			writer.setEscapeChar(conf.get("escapeChar").asText());
-		}
-		if (conf.hasNonNull("delimiterCSV")) {
-			writer.setDelimiterCSV(conf.get("delimiterCSV").asText());
-		}
-		if (conf.hasNonNull("quoteChar")) {
-			writer.setQuoteChar(conf.get("quoteChar").asText());
-		}
-		if (conf.hasNonNull("emptyChar")) {
-			writer.setEmptyChar(conf.get("emptyChar").asText());
+		if (conf.hasNonNull("outFormat")) {
+			writer.setJenaFormat(ResultsFormat.lookup(conf.get("outFormat").asText().toLowerCase()));
+			if (writer.getJenaFormat()==null) {
+				writer.setCustomFormat(CustomCSVFormat.lookup(conf.get("outFormat").asText()));
+				if (writer.getCustomFormat()==null) {
+					throw new IllegalArgumentException("'"+conf.get("outFormat").asText()+"' is no valid OutputFormat.");
+				}
+			}
+		} else {
+			String escapeChar=null;
+			String delimiterCSV=null; 
+			String quoteChar=null; 
+			String emptyChar=null;
+			if (conf.hasNonNull("escapeChar")) {
+				escapeChar = conf.get("escapeChar").asText();
+			}
+			if (conf.hasNonNull("delimiterCSV")) {
+				delimiterCSV = conf.get("delimiterCSV").asText();
+			}
+			if (conf.hasNonNull("quoteChar")) {
+				quoteChar = conf.get("quoteChar").asText();
+			}
+			if (conf.hasNonNull("emptyChar")) {
+				emptyChar = conf.get("emptyChar").asText();
+			}
+			writer.setCustomFormat(new CustomCSVFormat(escapeChar, delimiterCSV, quoteChar, emptyChar));
 		}
 		
 		return writer;
@@ -60,10 +80,8 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 
 	private Query query;
 	private String segmentDelimiter = null;
-	private String escapeChar = null;
-	private String delimiterCSV = "\t";
-	private String quoteChar = "";
-	private String emptyChar = "";
+	private CustomCSVFormat customFormat;
+	private ResultsFormat jenaFormat;
 	
 
 	public Query getQuery() {
@@ -82,47 +100,22 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 		this.segmentDelimiter = segmentDelimiter;
 	}
 
-	public String getEscapeChar() {
-		return escapeChar;
+	public CustomCSVFormat getCustomFormat() {
+		return customFormat;
 	}
 
-	public void setEscapeChar(String escapeChar) {
-		this.escapeChar = escapeChar;
+	public void setCustomFormat(CustomCSVFormat customFormat) {
+		this.customFormat = customFormat;
+	}
+
+	public ResultsFormat getJenaFormat() {
+		return jenaFormat;
+	}
+
+	public void setJenaFormat(ResultsFormat jenaFormat) {
+		this.jenaFormat = jenaFormat;
 	}
 	
-	public String getDelimiterCSV() {
-		return delimiterCSV;
-	}
-
-	public void setDelimiterCSV(String delimiterCSV) {
-		if (delimiterCSV == null)
-			this.delimiterCSV = "";
-		else
-			this.delimiterCSV = delimiterCSV;
-	}
-	
-	public String getQuoteChar() {
-		return quoteChar;
-	}
-
-	public void setQuoteChar(String quoteChar) {
-		if (quoteChar == null)
-			this.quoteChar = "";
-		else 
-			this.quoteChar = quoteChar;
-	}
-
-	public String getEmptyChar() {
-		return emptyChar;
-	}
-
-	public void setEmptyChar(String emptyChar) {
-		if (emptyChar == null)
-			this.emptyChar = "";
-		else
-			this.emptyChar = emptyChar;
-	}
-
 	private void processStream() {
 		
 		// Spawn writers for parallel processing, in case there are multiple streams.
@@ -138,10 +131,8 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 			writer.setConfig(getConfig());
 			writer.setQuery(query);
 			writer.setSegmentDelimiter(segmentDelimiter);
-			writer.setDelimiterCSV(delimiterCSV);
-			writer.setEscapeChar(escapeChar);
-			writer.setQuoteChar(quoteChar);
-			writer.setEmptyChar(emptyChar);
+			writer.setCustomFormat(customFormat);
+			writer.setJenaFormat(jenaFormat);
 			try {
 				writer.setInputStream(getInputStream(name));
 				writer.setOutputStream(getOutputStream(name));
@@ -165,26 +156,10 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 				if (m == null) continue;
 				
 				ResultSet rs = QueryExecutionFactory.create(query, m).execSelect();
-				List<String> cols = rs.getResultVars();
-				while(rs.hasNext()) {
-					QuerySolution sol = rs.next();
-					for(String col : cols) {
-						if(sol.get(col)==null) {
-							out.print(emptyChar+delimiterCSV);		
-						} else {
-							String outString = sol.get(col).toString();
-							if(escapeChar != null) {
-								if (!quoteChar.equals("")) {
-									outString = outString.replace(quoteChar, escapeChar+quoteChar);
-								} else if (!delimiterCSV.equals("")){
-									outString = outString.replace(delimiterCSV, escapeChar+delimiterCSV);
-								}
-							}
-							out.print(quoteChar+outString+quoteChar+delimiterCSV);
-						}
-					}
-					out.println();
-					out.flush();
+				if(jenaFormat != null) {
+					ResultSetFormatter.output(out, rs, jenaFormat);
+				} else {
+					JenaUtils.outputCustomCSV(out, rs, customFormat);
 				}
 				
 				if (segmentDelimiter != null) {

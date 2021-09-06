@@ -13,6 +13,9 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.sparql.resultset.ResultsFormat;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +25,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanManager;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.CustomCSVFormat;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.JenaUtils;
 import de.unifrankfurt.informatik.acoli.fintan.write.TSVStreamWriter;
 
 public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
@@ -35,20 +41,37 @@ public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO im
 			writer.setLang(conf.get("lang").asText());
 		}
 		if (conf.hasNonNull("query")) {
-			writer.setQuery(FintanManager.parseSelectQuery(FintanManager.readSourceAsString(conf.get("query").asText())));
+			writer.setQuery(JenaUtils.parseSelectQuery(IOUtils.readSourceAsString(conf.get("query").asText())));
 		}
-		if (conf.hasNonNull("escapeChar")) {
-			writer.setEscapeChar(conf.get("escapeChar").asText());
+		
+		if (conf.hasNonNull("outFormat")) {
+			writer.setJenaFormat(ResultsFormat.lookup(conf.get("outFormat").asText().toLowerCase()));
+			if (writer.getJenaFormat()==null) {
+				writer.setCustomFormat(CustomCSVFormat.lookup(conf.get("outFormat").asText()));
+				if (writer.getCustomFormat()==null) {
+					throw new IllegalArgumentException("'"+conf.get("outFormat").asText()+"' is no valid OutputFormat.");
+				}
+			}
+		} else {
+			String escapeChar=null;
+			String delimiterCSV=null; 
+			String quoteChar=null; 
+			String emptyChar=null;
+			if (conf.hasNonNull("escapeChar")) {
+				escapeChar = conf.get("escapeChar").asText();
+			}
+			if (conf.hasNonNull("delimiterCSV")) {
+				delimiterCSV = conf.get("delimiterCSV").asText();
+			}
+			if (conf.hasNonNull("quoteChar")) {
+				quoteChar = conf.get("quoteChar").asText();
+			}
+			if (conf.hasNonNull("emptyChar")) {
+				emptyChar = conf.get("emptyChar").asText();
+			}
+			writer.setCustomFormat(new CustomCSVFormat(escapeChar, delimiterCSV, quoteChar, emptyChar));
 		}
-		if (conf.hasNonNull("delimiterCSV")) {
-			writer.setDelimiterCSV(conf.get("delimiterCSV").asText());
-		}
-		if (conf.hasNonNull("quoteChar")) {
-			writer.setQuoteChar(conf.get("quoteChar").asText());
-		}
-		if (conf.hasNonNull("emptyChar")) {
-			writer.setEmptyChar(conf.get("emptyChar").asText());
-		}
+		
 		if (conf.hasNonNull("tdbPath")) {
 			writer.initTDB(conf.get("tdbPath").asText());
 		} else {
@@ -80,10 +103,8 @@ public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO im
 	private Dataset tdbDataset; 
 	private String lang = "TTL";
 	private Query query;
-	private String escapeChar = null;
-	private String delimiterCSV = "\t";
-	private String quoteChar = "";
-	private String emptyChar = "";
+	private CustomCSVFormat customFormat;
+	private ResultsFormat jenaFormat;
 	
 
 	public String getLang() {
@@ -102,48 +123,21 @@ public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO im
 		this.query = query;
 	}
 
-	public String getEscapeChar() {
-		return escapeChar;
+	public CustomCSVFormat getCustomFormat() {
+		return customFormat;
 	}
 
-	public void setEscapeChar(String escapeChar) {
-		this.escapeChar = escapeChar;
-	}
-	
-	public String getDelimiterCSV() {
-		return delimiterCSV;
+	public void setCustomFormat(CustomCSVFormat customFormat) {
+		this.customFormat = customFormat;
 	}
 
-	public void setDelimiterCSV(String delimiterCSV) {
-		if (delimiterCSV == null)
-			this.delimiterCSV = "";
-		else
-			this.delimiterCSV = delimiterCSV;
-	}
-	
-	public String getQuoteChar() {
-		return quoteChar;
+	public ResultsFormat getJenaFormat() {
+		return jenaFormat;
 	}
 
-	public void setQuoteChar(String quoteChar) {
-		if (quoteChar == null)
-			this.quoteChar = "";
-		else 
-			this.quoteChar = quoteChar;
+	public void setJenaFormat(ResultsFormat jenaFormat) {
+		this.jenaFormat = jenaFormat;
 	}
-
-	public String getEmptyChar() {
-		return emptyChar;
-	}
-
-	public void setEmptyChar(String emptyChar) {
-		if (emptyChar == null)
-			this.emptyChar = "";
-		else
-			this.emptyChar = emptyChar;
-	}
-	
-	
 
 	public void initTDB(String path) {
 		if (path == null) path = FintanManager.DEFAULT_TDB_PATH;
@@ -182,26 +176,10 @@ public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO im
 
 			tdbDataset.begin(ReadWrite.READ);
 			ResultSet rs = QueryExecutionFactory.create(query, tdbDataset).execSelect();
-			List<String> cols = rs.getResultVars();
-			while(rs.hasNext()) {
-				QuerySolution sol = rs.next();
-				for(String col : cols) {
-					if(sol.get(col)==null) {
-						out.print(emptyChar+delimiterCSV);		
-					} else {
-						String outString = sol.get(col).toString();
-						if(escapeChar != null) {
-							if (!quoteChar.equals("")) {
-								outString = outString.replace(quoteChar, escapeChar+quoteChar);
-							} else if (!delimiterCSV.equals("")){
-								outString = outString.replace(delimiterCSV, escapeChar+delimiterCSV);
-							}
-						}
-						out.print(quoteChar+outString+quoteChar+delimiterCSV);
-					}
-				}
-				out.println();
-				out.flush();
+			if(jenaFormat != null) {
+				ResultSetFormatter.output(out, rs, jenaFormat);
+			} else {
+				JenaUtils.outputCustomCSV(out, rs, customFormat);
 			}
 			tdbDataset.end();
 

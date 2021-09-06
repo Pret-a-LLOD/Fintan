@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
+
 public class FintanManager {
 	
 	//TODO: adapt to multiple streams + JSON
@@ -51,8 +53,6 @@ public class FintanManager {
 	
 	public static final String DEFAULT_TDB_PATH = "tdb/";
 
-	private static boolean sysInOccupied = false;
-	private static boolean sysOutOccupied = false;
 	
 	private ObjectNode config;
 	
@@ -90,104 +90,12 @@ public class FintanManager {
 		man.buildComponentStack();
 		man.start();
 	}
-	
-	public static InputStream parseAsInputStream(String pathOrURL) throws IOException {
-		InputStream inputStream;
-		File f = new File(pathOrURL);
-		if (f.canRead()) {
-			inputStream = new FileInputStream(f);
-		} else {
-			URL url = new URL(pathOrURL);
-			inputStream = url.openStream();
-		}
-		if (pathOrURL.endsWith(".gz")) 
-			inputStream = new GZIPInputStream(inputStream);
-		return inputStream;
-	}
-	
-	public static OutputStream parseAsOutputStream(String path) throws IOException {
-		OutputStream outputStream;
-		File f = new File(path);
-		if (!f.canWrite()) {
-			f.getParentFile().mkdirs();
-			if (!f.createNewFile()) {
-				throw new IOException("Could not write to " + path);
-			}
-		}
-		outputStream = new FileOutputStream(f);
-		if (path.endsWith(".gz")) 
-			outputStream = new GZIPOutputStream(outputStream);
-		outputStream = new PrintStream(outputStream);
-		return outputStream;
-	}
-	
-	public static InputStream parseConfEntryAsInputStream(String confEntry) throws IOException {
-		InputStream input;
-		if (confEntry.equals("System.in")) {
-			if (sysInOccupied)
-				throw new IOException("System.in can only be defined as input for one Instance");
-			input = System.in;
-			sysInOccupied = true;
-		} else {
-			input = parseAsInputStream(confEntry);
-		}
-		return input;
-	}
-	
-	public static OutputStream parseConfEntryAsOutputStream(String confEntry) throws IOException {
-		OutputStream output;
-		if (confEntry.equals("System.out")) {
-			if (sysOutOccupied)
-				throw new IOException("System.out can only be defined as output for one Instance");
-			output = System.out;
-			sysOutOccupied = true;
-		} else {
-			output = parseAsOutputStream(confEntry);
-		}
-		return output;
-	}
-	
-	/**
-	 * Reads the content of a given path or URL as String. Can be used for reading queries etc.
-	 * @param pathOrURL
-	 * @return file content as String
-	 * @throws IOException if unreadable.
-	 */
-	public static String readSourceAsString (String pathOrURL) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(parseAsInputStream(pathOrURL)));
-		
-		StringBuilder out = new StringBuilder();
-		for (String line = reader.readLine(); line != null; line = reader.readLine())
-			out.append(line + "\n");
-		return out.toString();
-	}
-	
-	/**
-	 * Parse a select query. 
-	 * 
-	 * @param query_string 
-	 * 			Must be a Select query with at least one project variable.
-	 * @return	
-	 * 			The parsed query.
-	 * @throws QueryException	
-	 * 			if parsing fails.
-	 */
-	public static Query parseSelectQuery(String query_string) throws QueryException {
-		LOG.debug("Attempting to read query string: \n" + query_string);
-		Query query = QueryFactory.create(query_string);
-		if (query.isSelectType() && query.getProjectVars().size() > 0) {
-			return query;
-		} else {
-			throw new QueryException("Query must be a SELECT query.");
-		}
-	}
-
 
 	public void readConfig(String path, String[] params) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(Feature.ALLOW_COMMENTS, true);
 
-		String jsonConf = readSourceAsString(path);
+		String jsonConf = IOUtils.readSourceAsString(path);
 		
 		for (int i = 0; i < params.length; i++) {
 			jsonConf = jsonConf.replace("<$param" + i + ">", params[i]);
@@ -287,12 +195,12 @@ public class FintanManager {
 		//read default input parameter, can be null in case it is defined in "streams"
 		InputStream defaultInput = null;
 		if (config.hasNonNull("input"))
-			defaultInput = parseConfEntryAsInputStream(config.get("input").asText());
+			defaultInput = IOUtils.parseConfEntryAsInputStream(config.get("input").asText());
 
 		//read default output parameter, can be null in case it is defined in "streams"
 		OutputStream defaultOutput = null;
 		if (config.hasNonNull("output"))
-			defaultOutput = parseConfEntryAsOutputStream(config.get("output").asText());
+			defaultOutput = IOUtils.parseConfEntryAsOutputStream(config.get("output").asText());
 
 		// First inputStream is always main input
 		Object nextInput = defaultInput;
@@ -384,7 +292,7 @@ public class FintanManager {
 			OutputStream outputStream = null;
 			
 			if (node.hasNonNull("readsFromSource")) {
-				inputStream = parseConfEntryAsInputStream(node.get("readsFromSource").asText());
+				inputStream = IOUtils.parseConfEntryAsInputStream(node.get("readsFromSource").asText());
 			}
 			
 			if (node.hasNonNull("readsFromInstance")) {
@@ -399,7 +307,7 @@ public class FintanManager {
 			}
 			
 			if (node.hasNonNull("writesToDestination")) {
-				outputStream = parseConfEntryAsOutputStream(node.get("writesToDestination").asText());
+				outputStream = IOUtils.parseConfEntryAsOutputStream(node.get("writesToDestination").asText());
 			}
 			if (node.hasNonNull("writesToInstance")) {
 				destComp = componentStack.get(node.get("writesToInstance").asText());

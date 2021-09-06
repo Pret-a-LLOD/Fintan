@@ -31,6 +31,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanManager;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
+import de.unifrankfurt.informatik.acoli.fintan.core.util.JenaUtils;
 
 /**
  * Load unsegmented RDF streams in the given serialization format. Default: TTL
@@ -63,16 +65,16 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 				splitter.setLang(conf.get("lang").asText());
 			}
 			if (conf.hasNonNull("iteratorQuery")) {
-				splitter.setIteratorQuery(FintanManager.readSourceAsString(conf.get("iteratorQuery").asText()));
+				splitter.setIteratorQuery(IOUtils.readSourceAsString(conf.get("iteratorQuery").asText()));
 			}
 			if (conf.hasNonNull("constructQuery")) {
-				splitter.setConstructQuery(FintanManager.readSourceAsString(conf.get("constructQuery").asText()));
+				splitter.setConstructQuery(IOUtils.readSourceAsString(conf.get("constructQuery").asText()));
 			}
 			if (conf.hasNonNull("initUpdate")) {
-				splitter.setInitUpdate(FintanManager.readSourceAsString(conf.get("initUpdate").asText()));
+				splitter.setInitUpdate(IOUtils.readSourceAsString(conf.get("initUpdate").asText()));
 			}
 			if (conf.hasNonNull("recursiveUpdate")) {
-				splitter.setRecursiveUpdate(FintanManager.readSourceAsString(conf.get("recursiveUpdate").asText()));
+				splitter.setRecursiveUpdate(IOUtils.readSourceAsString(conf.get("recursiveUpdate").asText()));
 			}
 			if (conf.hasNonNull("segmentStreams")) {
 				ArrayList<String> segmentStreams = new ArrayList<String>();
@@ -213,7 +215,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		 */
 		public Query parseIteratorQuery(String query_string) throws QueryException {
 			try {
-				return FintanManager.parseSelectQuery(query_string);
+				return JenaUtils.parseSelectQuery(query_string);
 			} catch (QueryException e) {
 				throw new QueryException("Iterator query must be a SELECT query."
 						+ "with explicit columns corresponding to the construct query wildcards.",e);
