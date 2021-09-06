@@ -44,7 +44,8 @@
 	  "componentInstance" : "ttlLoader",
 	  "class" : "SegmentedRDFStreamLoader",
 	  "lang" : "ttl",
-	  "delimiter" : ""
+	  "delimiter" : "",
+	  "globalPrefixes" : false
 	} ,
 	{ 
 	  "componentInstance" : "src_update",
@@ -87,11 +88,7 @@
 	  "lang" : "ttl",
 	  "outFormat" : "tsv",
 	  "query" : "samples/xslt/apertium/ontolex2tsv.sparql"
-	} ,
-	{
-	  "componentInstance" : "tiad_Dupl",
-	  "class" : "IOStreamDuplicator"
-	}
+	} 
   ]
   
   
@@ -201,11 +198,7 @@
     },
     {
     	"readsFromInstance" : "all_2tiad",
-    	"writesToInstance" : "tiad_Dupl"
-    },
-    {
-    	"readsFromInstance" : "tiad_Dupl",
-    	"writesToDestination" : "System.out"
+    	"writesToDestination" : "samples/xslt/apertium/data/tiad.tsv"
     },
     
     
@@ -235,11 +228,6 @@
     	"readsFromInstance" : "trans_Dupl",
     	"readsFromInstanceGraph" : "http://trans.ttl",
     	"writesToDestination" : "samples/xslt/apertium/data/trans.ttl"
-    },
-    {
-    	"readsFromInstance" : "tiad_Dupl",
-    	"readsFromInstanceGraph" : "http://tiad.tsv",
-    	"writesToDestination" : "samples/xslt/apertium/data/tiad.tsv"
     }
   ]
 }
