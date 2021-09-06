@@ -103,6 +103,9 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 			new Thread(writer).start();
 		}
 		
+		//terminate in case there is no default stream. 
+		//named streams are handled in subthreads.
+		if (getOutputStream()==null) return;
 		
 		PrintStream out = new PrintStream(getOutputStream());
 		String prefixCacheOut = new String();

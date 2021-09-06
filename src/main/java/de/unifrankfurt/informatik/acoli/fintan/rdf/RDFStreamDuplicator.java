@@ -1,6 +1,7 @@
 package de.unifrankfurt.informatik.acoli.fintan.rdf;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.jena.rdf.model.Model;
@@ -11,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanInputStream;
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
 import de.unifrankfurt.informatik.acoli.fintan.genericIO.IOStreamDuplicator;
@@ -29,13 +29,13 @@ public class RDFStreamDuplicator extends StreamRdfUpdater implements FintanStrea
 	protected static final Logger LOG = LogManager.getLogger(RDFStreamDuplicator.class.getName());
 
 	@Override
-	public FintanStreamComponent buildFromJsonConf(ObjectNode conf)
+	public RDFStreamDuplicator buildFromJsonConf(ObjectNode conf)
 			throws IOException, IllegalArgumentException, ParseException {
 		return new RDFStreamDuplicator();
 	}
 
 	@Override
-	public FintanStreamComponent buildFromCLI(String[] args)
+	public RDFStreamDuplicator buildFromCLI(String[] args)
 			throws IOException, IllegalArgumentException, ParseException {
 		return new RDFStreamDuplicator();
 	}
@@ -43,7 +43,11 @@ public class RDFStreamDuplicator extends StreamRdfUpdater implements FintanStrea
 	
 	@Override
 	public void setInputStream(FintanInputStream<Model> inputStream, String name) throws IOException {
-		throw new IOException();
+		if (name == null || FINTAN_DEFAULT_STREAM_NAME.equals(name)) {
+			setInputStream(inputStream);
+		} else {
+			throw new IOException("Only default InputStream is supported for "+RDFStreamDuplicator.class.getName());
+		}
 	}
 	
 	private void processStream() {

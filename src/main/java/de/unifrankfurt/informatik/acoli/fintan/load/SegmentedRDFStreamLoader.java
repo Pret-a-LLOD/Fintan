@@ -99,6 +99,10 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 			new Thread(loader).start();
 		}
 		
+		//terminate in case there is no default stream. 
+		//named streams are handled in subthreads.
+		if (getOutputStream()==null) return;
+		
 		// process default stream
 		BufferedReader in = new BufferedReader(new InputStreamReader(getInputStream()));
 		String rdfsegment = "";

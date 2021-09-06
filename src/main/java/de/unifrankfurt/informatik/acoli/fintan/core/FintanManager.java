@@ -13,12 +13,7 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -27,6 +22,9 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryException;
+import org.apache.jena.query.QueryFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,6 +48,8 @@ public class FintanManager {
 			"de.unifrankfurt.informatik.acoli.fintan.write",
 			"org.acoli.conll.rdf"
 	};
+	
+	public static final String DEFAULT_TDB_PATH = "tdb/";
 
 	private static boolean sysInOccupied = false;
 	private static boolean sysOutOccupied = false;
@@ -160,6 +160,26 @@ public class FintanManager {
 		for (String line = reader.readLine(); line != null; line = reader.readLine())
 			out.append(line + "\n");
 		return out.toString();
+	}
+	
+	/**
+	 * Parse a select query. 
+	 * 
+	 * @param query_string 
+	 * 			Must be a Select query with at least one project variable.
+	 * @return	
+	 * 			The parsed query.
+	 * @throws QueryException	
+	 * 			if parsing fails.
+	 */
+	public static Query parseSelectQuery(String query_string) throws QueryException {
+		LOG.debug("Attempting to read query string: \n" + query_string);
+		Query query = QueryFactory.create(query_string);
+		if (query.isSelectType() && query.getProjectVars().size() > 0) {
+			return query;
+		} else {
+			throw new QueryException("Query must be a SELECT query.");
+		}
 	}
 
 
@@ -451,7 +471,7 @@ public class FintanManager {
 		try {
 			try {
 				component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
-			} catch (Exception e) {
+			} catch (ClassCastException e) {
 				targetClass = Class.forName(targetClass.getCanonicalName()+"Factory");
 				component = ((FintanStreamComponentFactory) targetClass.getDeclaredConstructor().newInstance()).buildFromJsonConf(conf);
 			}

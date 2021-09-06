@@ -1,24 +1,14 @@
 package de.unifrankfurt.informatik.acoli.fintan.write;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryException;
-import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,14 +27,24 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 		writer.setConfig(conf);
 
 		if (conf.hasNonNull("query")) {
-			writer.setQuery(parseSelectQuery(FintanManager.readSourceAsString(conf.get("query").asText())));
+			writer.setQuery(FintanManager.parseSelectQuery(FintanManager.readSourceAsString(conf.get("query").asText())));
 		}
 		if (conf.hasNonNull("delimiter")) {
 			writer.setSegmentDelimiter(conf.get("delimiter").asText());
 		}
+		if (conf.hasNonNull("escapeChar")) {
+			writer.setEscapeChar(conf.get("escapeChar").asText());
+		}
 		if (conf.hasNonNull("delimiterCSV")) {
 			writer.setDelimiterCSV(conf.get("delimiterCSV").asText());
 		}
+		if (conf.hasNonNull("quoteChar")) {
+			writer.setQuoteChar(conf.get("quoteChar").asText());
+		}
+		if (conf.hasNonNull("emptyChar")) {
+			writer.setEmptyChar(conf.get("emptyChar").asText());
+		}
+		
 		return writer;
 	}
 
@@ -52,26 +52,6 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 	public TSVStreamWriter buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	/**
-	 * Parse a select query. 
-	 * 
-	 * @param query_string 
-	 * 			Must be a Select query with at least one project variable.
-	 * @return	
-	 * 			The parsed query.
-	 * @throws QueryException	
-	 * 			if parsing fails.
-	 */
-	public static Query parseSelectQuery(String query_string) throws QueryException {
-		LOG.debug("Attempting to read query string: \n" + query_string);
-		Query query = QueryFactory.create(query_string);
-		if (query.isSelectType() && query.getProjectVars().size() > 0) {
-			return query;
-		} else {
-			throw new QueryException("Query must be a SELECT query.");
-		}
 	}
 	
 	protected static final Logger LOG = LogManager.getLogger(TSVStreamWriter.class.getName());
@@ -155,9 +135,13 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 			}
 
 			TSVStreamWriter writer = new TSVStreamWriter();
-			writer.setSegmentDelimiter(segmentDelimiter);
+			writer.setConfig(getConfig());
 			writer.setQuery(query);
+			writer.setSegmentDelimiter(segmentDelimiter);
 			writer.setDelimiterCSV(delimiterCSV);
+			writer.setEscapeChar(escapeChar);
+			writer.setQuoteChar(quoteChar);
+			writer.setEmptyChar(emptyChar);
 			try {
 				writer.setInputStream(getInputStream(name));
 				writer.setOutputStream(getOutputStream(name));
@@ -167,6 +151,10 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 			}
 			new Thread(writer).start();
 		}
+		
+		//terminate in case there is no default stream. 
+		//named streams are handled in subthreads.
+		if (getOutputStream()==null) return;
 		
 		PrintStream out = new PrintStream(getOutputStream());
 		
@@ -178,7 +166,6 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 				
 				ResultSet rs = QueryExecutionFactory.create(query, m).execSelect();
 				List<String> cols = rs.getResultVars();
-				
 				while(rs.hasNext()) {
 					QuerySolution sol = rs.next();
 					for(String col : cols) {

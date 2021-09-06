@@ -2,7 +2,6 @@ package de.unifrankfurt.informatik.acoli.fintan.load;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +29,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanManager;
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
 
@@ -111,10 +109,6 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
-		
-		
-		public static final String DEFAULT_TDB_PATH = "tdb/";
 
 		
 		public enum SplitterMode {ITERATE_CONSTRUCT, RECURSIVE_UPDATE, INVALID}
@@ -218,13 +212,11 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		 * 			if parsing fails.
 		 */
 		public Query parseIteratorQuery(String query_string) throws QueryException {
-			LOG.debug("Attempting to read query string: \n" + query_string);
-			Query query = QueryFactory.create(query_string);
-			if (query.isSelectType() && query.getProjectVars().size() > 0) {
-				return query;
-			} else {
+			try {
+				return FintanManager.parseSelectQuery(query_string);
+			} catch (QueryException e) {
 				throw new QueryException("Iterator query must be a SELECT query."
-						+ "with explicit columns corresponding to the construct query wildcards.");
+						+ "with explicit columns corresponding to the construct query wildcards.",e);
 			}
 		}
 		
@@ -276,7 +268,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		}
 		
 		public void initTDB(String path) {
-			if (path == null) path = DEFAULT_TDB_PATH;
+			if (path == null) path = FintanManager.DEFAULT_TDB_PATH;
 			if (!path.endsWith("/")) path+="/";
 			File f = new File(path+this.getClass().getName()+this.hashCode()+"/");
 			if (f.exists() && f.isDirectory()) {
@@ -327,11 +319,11 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 					executeRecursiveUpdates(recursiveUpdate, initUpdate);
 				}
 
+			} finally {
+				tdbDataset.close();
 				for (String name:listOutputStreamNames()) {
 					getOutputStream(name).terminate();
 				}
-			} finally {
-				tdbDataset.close();
 			}
 			
 			
