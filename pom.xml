@@ -1,141 +1,144 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>de.unifrankfurt.informatik.acoli</groupId>
-  <artifactId>fintan-backend</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+	<groupId>de.unifrankfurt.informatik.acoli</groupId>
+	<artifactId>fintan-backend</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-  <name>fintan-backend</name>
-  <url>http://maven.apache.org</url>
+	<name>fintan-backend</name>
+	<url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-  </properties>
-  
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<!-- see also https://www.baeldung.com/maven-version-collision -->
+		<jena.version>3.13.1</jena.version>
+	</properties>
 
-  <dependencies>
-  
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-    
-    <dependency>
-	  <groupId>org.apache.jena</groupId>
-	  <artifactId>jena-cmds</artifactId>
-	  <version>3.13.1</version>
-    </dependency>
-    
-    <dependency>
-	  <groupId>org.apache.jena</groupId>
-	  <artifactId>apache-jena-libs</artifactId>
-	  <type>pom</type>
-	  <version>3.13.1</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>2.12.1</version>
-    </dependency>
-    
-	 <dependency>
-		<groupId>de.unifrankfurt.informatik.acoli</groupId>
-	    <artifactId>fintan-core</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<exclusions>
-            <exclusion>
-                <groupId>org.apache.jena</groupId>
-	  <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
 
-    <dependency>
-		<groupId>org.acoli.conll.rdf</groupId>
-	    <artifactId>conll-rdf</artifactId>
-		<version>1.0-SNAPSHOT</version>
-		<exclusions>
-            <exclusion>
-                <groupId>org.apache.jena</groupId>
-	  <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    
-    <dependency>
-	  <groupId>org.deri.tarql</groupId>
-	  <artifactId>tarql</artifactId>
-	  <version>1.2</version>
-		<exclusions>
-            <exclusion>
-                <groupId>org.apache.jena</groupId>
-	  <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    
-    <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
-	<dependency>
-		<groupId>net.sf.saxon</groupId>
-		<artifactId>Saxon-HE</artifactId>
-		<version>9.9.1-7</version>
-		<exclusions>
-            <exclusion>
-                <groupId>org.apache.jena</groupId>
-	  <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
-	</dependency>
-  </dependencies>
-  
-  
-  <build>
-	<plugins>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-shade-plugin</artifactId>
-			<version>3.2.4</version>
-			<configuration>
-				<filters>
-					<filter>
-						<artifact>*:*</artifact>
-						<excludes>
-							<exclude>META-INF/*.SF</exclude>
-							<exclude>META-INF/*.DSA</exclude>
-							<exclude>META-INF/*.RSA</exclude>
-						</excludes>
-					</filter>
-				</filters>
-				<!-- Additional configuration. -->
-			</configuration>
-			<executions>
-				<execution>
-					<phase>package</phase>
-					<goals>
-						<goal>shade</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-jar-plugin</artifactId>
-			<version>2.4</version>
-			<configuration>
-				<archive>
-					<manifest>
-						<mainClass>de.unifrankfurt.informatik.acoli.fintan.FintanCLIManager</mainClass>
-					</manifest>
-				</archive>
-			</configuration>
-		</plugin>
-	</plugins>
-    </build>   
+	<dependencies>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.12.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-cmds</artifactId>
+			<version>${jena.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-libs</artifactId>
+			<type>pom</type>
+			<version>${jena.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>de.unifrankfurt.informatik.acoli</groupId>
+			<artifactId>fintan-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.acoli.conll.rdf</groupId>
+			<artifactId>conll-rdf</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.deri.tarql</groupId>
+			<artifactId>tarql</artifactId>
+			<version>1.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>Saxon-HE</artifactId>
+			<version>9.9.1-7</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+<!-- see also https://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar/6743609#6743609 -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.4</version>
+				<configuration>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+					<!-- Additional configuration. -->
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>de.unifrankfurt.informatik.acoli.fintan.FintanCLIManager</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
