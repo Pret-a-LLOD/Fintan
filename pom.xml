@@ -43,18 +43,33 @@
 		<groupId>de.unifrankfurt.informatik.acoli</groupId>
 	    <artifactId>fintan-core</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<exclusions>
+            <exclusion>
+                <groupId>org.apache.jena</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
 
     <dependency>
 		<groupId>org.acoli.conll.rdf</groupId>
 	    <artifactId>conll-rdf</artifactId>
 		<version>1.0-SNAPSHOT</version>
+		<exclusions>
+            <exclusion>
+                <groupId>org.apache.jena</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
     
     <dependency>
 	  <groupId>org.deri.tarql</groupId>
 	  <artifactId>tarql</artifactId>
 	  <version>1.2</version>
+		<exclusions>
+            <exclusion>
+                <groupId>org.apache.jena</groupId>
+            </exclusion>
+        </exclusions>
     </dependency>
     
     <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
@@ -62,6 +77,11 @@
 		<groupId>net.sf.saxon</groupId>
 		<artifactId>Saxon-HE</artifactId>
 		<version>9.9.1-7</version>
+		<exclusions>
+            <exclusion>
+                <groupId>org.apache.jena</groupId>
+            </exclusion>
+        </exclusions>
 	</dependency>
   </dependencies>
   

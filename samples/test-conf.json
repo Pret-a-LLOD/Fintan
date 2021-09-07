@@ -45,7 +45,7 @@
 	  "class" : "SegmentedRDFStreamLoader",
 	  "lang" : "ttl",
 	  "delimiter" : "",
-	  "globalPrefixes" : false
+	  "globalPrefixes" : true
 	} ,
 	{ 
 	  "componentInstance" : "src_update",
