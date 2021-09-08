@@ -10,22 +10,16 @@
 	{ 
 	  "componentInstance" : "dix2src",
 	  "class" : "XSLTStreamTransformer",
-	  "delimiterIn" : null,
-	  "delimiterOut" : null,
 	  "xsl" : "samples/xslt/apertium/dix2src-ttl.xsl LANG=<$param1> dc_source=<$param0>"
 	},
 	{ 
 	  "componentInstance" : "dix2tgt",
 	  "class" : "XSLTStreamTransformer",
-	  "delimiterIn" : null,
-	  "delimiterOut" : null,
 	  "xsl" : "samples/xslt/apertium/dix2tgt-ttl.xsl LANG=<$param2> dc_source=<$param0>"
 	},
 	{ 
 	  "componentInstance" : "dix2trans",
 	  "class" : "XSLTStreamTransformer",
-	  "delimiterIn" : null,
-	  "delimiterOut" : null,
 	  "xsl" : "samples/xslt/apertium/dix2trans-ttl.xsl SRC_LANG=<$param1> TGT_LANG=<$param2> dc_source=<$param0>"
 	},
 	{

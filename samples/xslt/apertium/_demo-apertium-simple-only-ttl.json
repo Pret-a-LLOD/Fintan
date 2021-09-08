@@ -5,8 +5,6 @@
 
 	{ 
 	  "class" : "XSLTStreamTransformer",
-	  "delimiterIn" : null,
-	  "delimiterOut" : null,
 	  "xsl" : "samples/xslt/apertium/dix2src-ttl.xsl LANG=<$param1> dc_source=<$param0>"
 	},
 	{

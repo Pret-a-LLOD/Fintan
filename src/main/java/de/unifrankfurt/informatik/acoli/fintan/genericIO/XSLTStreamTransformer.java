@@ -36,12 +36,6 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 	public XSLTStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		XSLTStreamTransformer transformer = new XSLTStreamTransformer();
 		transformer.setConfig(conf);
-		if (conf.hasNonNull("delimiterIn")) {
-			transformer.setSegmentDelimiterIn(conf.get("delimiterIn").asText());
-		}
-		if (conf.hasNonNull("delimiterOut")) {
-			transformer.setSegmentDelimiterOut(conf.get("delimiterOut").asText());
-		}
 		if (conf.hasNonNull("xsl")) {
 			String xslArgString = "-xsl:"+conf.get("xsl").asText();
 			transformer.setXslArgs(xslArgString.split("\\s+"));
@@ -52,12 +46,12 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 				e.printStackTrace();
 			}
 		} else {
-			throw new IOException("XSLTStreamTransformer requires xsl parameter to be defined.");
+			throw new IllegalArgumentException("XSLTStreamTransformer requires xsl parameter to be defined.");
 		}
 		return transformer;
 	}
 
-	public FintanStreamComponent buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+	public XSLTStreamTransformer buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -66,26 +60,7 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 	private Processor processor;
 	private XsltExecutable stylesheet;
 	
-	
-	private String segmentDelimiterIn = FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL;
-	private String segmentDelimiterOut = FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL;
 	private String[] xslArgs;
-
-	public String getSegmentDelimiterIn() {
-		return segmentDelimiterIn;
-	}
-
-	public void setSegmentDelimiterIn(String segmentDelimiter) {
-		this.segmentDelimiterIn = segmentDelimiter;
-	}
-	
-	public String getSegmentDelimiterOut() {
-		return segmentDelimiterOut;
-	}
-
-	public void setSegmentDelimiterOut(String segmentDelimiter) {
-		this.segmentDelimiterOut = segmentDelimiter;
-	}
 	
 	
 	public String[] getXslArgs() {
@@ -139,8 +114,8 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 		try {
 			processStream();	
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(0);
+			LOG.error(e, e);
+			System.exit(1);
 		}
 	}
 
@@ -148,21 +123,4 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 	public void start() {
 		run();
 	}
-
-	public static void main(String[] args) throws Exception {
-		System.err.println("synopsis: XSLTStreamLoader -xsl:PATH [param=value]*");
-		XSLTStreamTransformer transformer = new XSLTStreamTransformer();
-
-		long start = System.currentTimeMillis();
-
-		transformer.setInputStream(System.in);
-		transformer.setOutputStream(System.out);
-		transformer.loadStylesheet(args);
-
-		transformer.processStream();
-		System.err.println(((System.currentTimeMillis()-start)/1000 + " seconds"));
-	}
-
-
-
 }
