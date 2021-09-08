@@ -507,8 +507,8 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 			try {
 				processStream();
 			} catch (Exception e) {
-				tdbDataset.close();
 				LOG.error(e, e);
+				tdbDataset.close();
 				System.exit(1);
 			}
 		}
