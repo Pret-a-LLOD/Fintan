@@ -132,7 +132,7 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 		} catch (IOException e) {
 			LOG.error("Error when reading from Stream: " +e);
 		}
-		if (!rdfsegment.isBlank())
+		if (!rdfsegment.trim().isEmpty())
 			outputSegment(rdfsegment, "");
 		getOutputStream().terminate();
 	}
