@@ -3,7 +3,7 @@
 , "output" : "System.out"
 , "pipeline" : [ 
 	{ 
-	  "class" : "UnsegmentedRDFStreamSplitter",
+	  "class" : "RDFStreamSplitterTDB",
 	  "lang" : "ttl",
 	  "iteratorQuery" : "samples/splitter/iterate_sentences.sparql",
 	  "constructQuery" : "samples/splitter/construct_sentences.sparql",

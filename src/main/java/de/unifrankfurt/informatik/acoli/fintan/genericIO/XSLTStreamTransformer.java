@@ -16,10 +16,8 @@ import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.trans.CommandLineOptions;
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
-import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
 
 /**
  * Stream component which reads XML data and applies XSLT transformation to 

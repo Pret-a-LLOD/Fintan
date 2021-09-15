@@ -23,11 +23,8 @@ import org.deri.tarql.URLOptionsParser;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
-import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
-import de.unifrankfurt.informatik.acoli.fintan.write.RDFStreamWriter;
 import jena.cmd.ArgDecl;
 import jena.cmd.CmdGeneral;
 

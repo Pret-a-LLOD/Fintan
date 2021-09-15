@@ -20,7 +20,7 @@
 	  "dedup" : null
 	},
 	{ 
-	  "class" : "SegmentedRDFStreamLoader",
+	  "class" : "RDFStreamLoader",
 	  "lang" : "ttl",
 	  "delimiter" : "##TEST#MIDDLE##"
 	},

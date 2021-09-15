@@ -1,4 +1,4 @@
-{
+{ 
 "input" : null
 , "output" : null
 , "pipeline" : null
@@ -36,7 +36,7 @@
 	} ,
 	{ 
 	  "componentInstance" : "ttlLoader",
-	  "class" : "SegmentedRDFStreamLoader",
+	  "class" : "RDFStreamLoader",
 	  "lang" : "ttl",
 	  "delimiter" : "",
 	  "globalPrefixes" : true
@@ -78,7 +78,7 @@
 	} ,
 	{
 	  "componentInstance" : "all_2tiad",
-	  "class" : "UnsegmentedRDF2TSVTransformer",
+	  "class" : "SparqlStreamTransformerTDB",
 	  "lang" : "ttl",
 	  "outFormat" : "tsv",
 	  "query" : "samples/xslt/apertium/ontolex2tsv.sparql"
