@@ -20,12 +20,12 @@ import de.unifrankfurt.informatik.acoli.fintan.core.util.CustomCSVFormat;
 import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
 import de.unifrankfurt.informatik.acoli.fintan.core.util.JenaUtils;
 
-public class TSVStreamWriter extends StreamWriter implements FintanStreamComponentFactory{
+public class SparqlStreamWriter extends StreamWriter implements FintanStreamComponentFactory{
 
 
 	@Override
-	public TSVStreamWriter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
-		TSVStreamWriter writer = new TSVStreamWriter();
+	public SparqlStreamWriter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+		SparqlStreamWriter writer = new SparqlStreamWriter();
 		writer.setConfig(conf);
 
 		if (conf.hasNonNull("query")) {
@@ -66,12 +66,12 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 	}
 
 	@Override
-	public TSVStreamWriter buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+	public SparqlStreamWriter buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	protected static final Logger LOG = LogManager.getLogger(TSVStreamWriter.class.getName());
+	protected static final Logger LOG = LogManager.getLogger(SparqlStreamWriter.class.getName());
 
 	
 
@@ -124,7 +124,7 @@ public class TSVStreamWriter extends StreamWriter implements FintanStreamCompone
 				continue;
 			}
 
-			TSVStreamWriter writer = new TSVStreamWriter();
+			SparqlStreamWriter writer = new SparqlStreamWriter();
 			writer.setConfig(getConfig());
 			writer.setQuery(query);
 			writer.setSegmentDelimiter(segmentDelimiter);
