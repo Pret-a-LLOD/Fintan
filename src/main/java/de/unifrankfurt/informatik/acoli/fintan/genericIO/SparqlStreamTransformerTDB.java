@@ -4,16 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.sparql.resultset.ResultsFormat;
 import org.apache.jena.tdb.TDBFactory;
@@ -28,13 +25,12 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
 import de.unifrankfurt.informatik.acoli.fintan.core.util.CustomCSVFormat;
 import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
 import de.unifrankfurt.informatik.acoli.fintan.core.util.JenaUtils;
-import de.unifrankfurt.informatik.acoli.fintan.write.TSVStreamWriter;
 
-public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
+public class SparqlStreamTransformerTDB extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 
 	@Override
-	public UnsegmentedRDF2TSVTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
-		UnsegmentedRDF2TSVTransformer writer = new UnsegmentedRDF2TSVTransformer();
+	public SparqlStreamTransformerTDB buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+		SparqlStreamTransformerTDB writer = new SparqlStreamTransformerTDB();
 		writer.setConfig(conf);
 
 		if (conf.hasNonNull("lang")) {
@@ -82,7 +78,7 @@ public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO im
 	}
 
 	@Override
-	public UnsegmentedRDF2TSVTransformer buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+	public SparqlStreamTransformerTDB buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -92,11 +88,11 @@ public class UnsegmentedRDF2TSVTransformer extends StreamTransformerGenericIO im
 		if (name == null || FINTAN_DEFAULT_STREAM_NAME.equals(name)) {
 			setOutputStream(outputStream);
 		} else {
-			throw new IOException("Only default OutputStream is supported for "+UnsegmentedRDF2TSVTransformer.class.getName());
+			throw new IOException("Only default OutputStream is supported for "+SparqlStreamTransformerTDB.class.getName());
 		}
 	}
 	
-	protected static final Logger LOG = LogManager.getLogger(TSVStreamWriter.class.getName());
+	protected static final Logger LOG = LogManager.getLogger(SparqlStreamTransformerTDB.class.getName());
 
 	
 

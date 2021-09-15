@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
-import de.unifrankfurt.informatik.acoli.fintan.load.SegmentedRDFStreamLoader;
 
 /**
  * Writes FintanStreams to any provided RDF serialization.

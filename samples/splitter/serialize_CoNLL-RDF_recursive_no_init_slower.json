@@ -26,7 +26,7 @@
 , "components" : [
     { 
 	  "componentInstance" : "sentenceSplitter",
-	  "class" : "UnsegmentedRDFStreamSplitter",
+	  "class" : "RDFStreamSplitterTDB",
 	  "lang" : "ttl",
 	  "iteratorQuery" : null,
 	  "constructQuery" : null,

@@ -3,7 +3,6 @@ package de.unifrankfurt.informatik.acoli.fintan.load;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Map;
@@ -15,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponent;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
 
@@ -28,13 +26,13 @@ import de.unifrankfurt.informatik.acoli.fintan.core.StreamLoader;
  * @author CF
  *
  */
-public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStreamComponentFactory{
+public class RDFStreamLoader extends StreamLoader implements FintanStreamComponentFactory{
 
 	//Factory methods
 	
 	@Override
-	public SegmentedRDFStreamLoader buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
-		SegmentedRDFStreamLoader loader = new SegmentedRDFStreamLoader();
+	public RDFStreamLoader buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+		RDFStreamLoader loader = new RDFStreamLoader();
 		loader.setConfig(conf);
 		if (conf.hasNonNull("lang")) {
 			loader.setLang(conf.get("lang").asText());
@@ -49,12 +47,12 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 	}
 
 	@Override
-	public SegmentedRDFStreamLoader buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+	public RDFStreamLoader buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	protected static final Logger LOG = LogManager.getLogger(SegmentedRDFStreamLoader.class.getName());
+	protected static final Logger LOG = LogManager.getLogger(RDFStreamLoader.class.getName());
 
 
 	private String lang = "TTL";
@@ -97,7 +95,7 @@ public class SegmentedRDFStreamLoader extends StreamLoader implements FintanStre
 				continue;
 			}
 			
-			SegmentedRDFStreamLoader loader = new SegmentedRDFStreamLoader();
+			RDFStreamLoader loader = new RDFStreamLoader();
 			loader.setSegmentDelimiter(segmentDelimiter);
 			loader.setLang(lang);
 			loader.setGlobalPrefixes(globalPrefixes);

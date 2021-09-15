@@ -14,7 +14,7 @@
 	  "class" : "IOStreamDuplicator"
 	},
 	{ 
-	  "class" : "SegmentedRDFStreamLoader",
+	  "class" : "RDFStreamLoader",
 	  "lang" : "ttl",
 	  "delimiter" : ""
 	},

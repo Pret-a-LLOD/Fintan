@@ -1,7 +1,6 @@
 package de.unifrankfurt.informatik.acoli.fintan.rdf;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.jena.rdf.model.Model;
@@ -14,7 +13,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanInputStream;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
-import de.unifrankfurt.informatik.acoli.fintan.genericIO.IOStreamDuplicator;
 
 /**
  * Duplicates the contents of default FintanInputStream to all attached OutputStreams.

@@ -52,13 +52,13 @@ import de.unifrankfurt.informatik.acoli.fintan.core.util.JenaUtils;
  * @author CF
  *
  */
-public class UnsegmentedRDFStreamSplitter extends StreamLoader implements FintanStreamComponentFactory {
+public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamComponentFactory {
 	
-		protected static final Logger LOG = LogManager.getLogger(UnsegmentedRDFStreamSplitter.class.getName());
+		protected static final Logger LOG = LogManager.getLogger(RDFStreamSplitterTDB.class.getName());
 		
 		@Override
-		public UnsegmentedRDFStreamSplitter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
-			UnsegmentedRDFStreamSplitter splitter = new UnsegmentedRDFStreamSplitter();
+		public RDFStreamSplitterTDB buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
+			RDFStreamSplitterTDB splitter = new RDFStreamSplitterTDB();
 			splitter.setConfig(conf);
 			
 			if (conf.hasNonNull("lang")) {
@@ -107,7 +107,7 @@ public class UnsegmentedRDFStreamSplitter extends StreamLoader implements Fintan
 		}
 
 		@Override
-		public UnsegmentedRDFStreamSplitter buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
+		public RDFStreamSplitterTDB buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 			// TODO Auto-generated method stub
 			return null;
 		}

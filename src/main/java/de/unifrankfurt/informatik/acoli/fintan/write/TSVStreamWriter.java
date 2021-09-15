@@ -2,11 +2,9 @@ package de.unifrankfurt.informatik.acoli.fintan.write;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.List;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
@@ -16,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanManager;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamWriter;
 import de.unifrankfurt.informatik.acoli.fintan.core.util.CustomCSVFormat;
