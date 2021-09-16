@@ -26,34 +26,37 @@ public class RDFUpdaterFactory implements FintanStreamComponentFactory {
 	}
 
 	@Override
-	public RDFUpdater buildFromJsonConf(ObjectNode conf) throws IOException, ParseException {
+	public RDFUpdater buildFromJsonConf(ObjectNode conf) throws IOException, ParseException, IllegalArgumentException {
 		// READ THREAD PARAMETERS
 		int threads = 0;
 		if (conf.get("threads") != null)
 			threads = conf.get("threads").asInt(0);
 		RDFUpdater updater = new RDFUpdater("","",threads);
 
-		// READ GRAPHSOUT PARAMETERS
-		if (conf.get("graphsoutDIR") != null) {
-			String graphOutputDir = conf.get("graphsoutDIR").asText("");
-			if (!graphOutputDir.equals("")) {
-				List<String> graphOutputSentences = new ArrayList<String>();
-				for (JsonNode snt:conf.withArray("graphsoutSNT")) {
-					graphOutputSentences.add(snt.asText());
-				}
-				updater.activateGraphsOut(graphOutputDir, graphOutputSentences);
-			}
-		}
+//		// READ GRAPHSOUT PARAMETERS (unsupported in default Updater, reserved for CoNLL-RDF at the moment)
+//		if (conf.get("graphsoutDIR") != null) {
+//			String graphOutputDir = conf.get("graphsoutDIR").asText("");
+//			if (!graphOutputDir.equals("")) {
+//				List<String> graphOutputSentences = new ArrayList<String>();
+//				for (JsonNode snt:conf.withArray("graphsoutSNT")) {
+//					graphOutputSentences.add(snt.asText());
+//				}
+//				updater.activateGraphsOut(graphOutputDir, graphOutputSentences);
+//			}
+//		}
 
 		// READ TRIPLESOUT PARAMETERS
 		if (conf.get("triplesoutDIR") != null) {
 			String triplesOutputDir = conf.get("triplesoutDIR").asText("");
 			if (!triplesOutputDir.equals("")) {
-				List<String> triplesOutputSentences = new ArrayList<String>();
+				List<String> triplesOutputSegments = new ArrayList<String>();
 				for (JsonNode snt:conf.withArray("triplesoutSNT")) {
-					triplesOutputSentences.add(snt.asText());
+					triplesOutputSegments.add(snt.asText());
 				}
-				updater.activateTriplesOut(triplesOutputDir, triplesOutputSentences);
+				if (conf.get("triplesoutSNTclass") != null) {
+					updater.setTriplesOutSegmentClass(conf.get("triplesoutSNTclass").asText());
+				}
+				updater.activateTriplesOut(triplesOutputDir, triplesOutputSegments);
 			}
 		}
 
@@ -69,13 +72,6 @@ public class RDFUpdaterFactory implements FintanStreamComponentFactory {
 			int lookback_snts = conf.get("lookback").asInt(0);
 			if (lookback_snts > 0)
 				updater.activateLookback(lookback_snts);
-		}
-
-		// READ PREFIX DEDUPLICATION
-		if (conf.get("prefixDeduplication") != null) {
-			Boolean prefixDeduplication = conf.get("prefixDeduplication").asBoolean();
-			if (prefixDeduplication)
-				updater.activatePrefixDeduplication();
 		}
 
 		// READ ALL UPDATES

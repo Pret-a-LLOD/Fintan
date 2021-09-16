@@ -1,4 +1,7 @@
 /*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ * 
+ * forked from CoNLLRDFUpdater
  * Copyright [2017] [ACoLi Lab, Prof. Dr. Chiarcos, Goethe University Frankfurt]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,8 +63,8 @@ import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
 
 
 /**
- *  @author Christian Chiarcos {@literal chiarcos@informatik.uni-frankfurt.de}
  *  @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
+ *  @author Christian Chiarcos {@literal chiarcos@informatik.uni-frankfurt.de}
  */
 public class RDFUpdater extends StreamRdfUpdater {
 	static final Logger LOG = LogManager.getLogger(RDFUpdater.class);
@@ -73,28 +77,29 @@ public class RDFUpdater extends StreamRdfUpdater {
 	// Configuration Variables with defaults set
 	private boolean prefixDeduplication = false;
 	private int threads = 0;
-	private int lookahead_snts = 0;
-	private int lookback_snts = 0;
+	private int lookahead_sgts = 0;
+	private int lookback_sgts = 0;
 	private File graphOutputDir = null;
 	private File triplesOutputDir = null;
 
 	//for updates
 	private final List<Triple<String, String, String>> updates = Collections.synchronizedList(new ArrayList<Triple<String, String, String>>());
 	//For graphsout and triplesout
-	private final List<String> graphOutputSentences = Collections.synchronizedList(new ArrayList<String>());
-	private final List<String> triplesOutputSentences = Collections.synchronizedList(new ArrayList<String>());
+	private final List<String> graphOutputSegments = Collections.synchronizedList(new ArrayList<String>());
+	private final List<String> triplesOutputSegments = Collections.synchronizedList(new ArrayList<String>());
+	private String triplesOutSegmentClass = "http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#Sentence"; //defaults to CoNLL-RDF's nif:Sentence
 
 	// for thread handling
 	private boolean running = false;
 	private final List<UpdateThread> updateThreads = Collections.synchronizedList(new ArrayList<UpdateThread>());
-	// Buffer providing each thread with its respective sentence(s) to process
-	// <List:lookbackBuffer>, <String:currentSentence>, <List:lookaheadBuffer>
-	private final List<Triple<List<Model>, Model, List<Model>>> sentBufferThreads = Collections.synchronizedList(new ArrayList<Triple<List<Model>, Model, List<Model>>>());
+	// Buffer providing each thread with its respective segment(s) to process
+	// <List:lookbackBuffer>, <String:currentSegment>, <List:lookaheadBuffer>
+	private final List<Triple<List<Model>, Model, List<Model>>> segtBufferThreads = Collections.synchronizedList(new ArrayList<Triple<List<Model>, Model, List<Model>>>());
 
-	private final List<Model> sentBufferLookahead = Collections.synchronizedList(new ArrayList<Model>());
-	private final List<Model> sentBufferLookback = Collections.synchronizedList(new ArrayList<Model>());
-	// Buffer for outputting sentences in original order
-	private final List<Pair<Integer, Model>> sentBufferOut = Collections.synchronizedList(new ArrayList<Pair<Integer, Model>>()); 
+	private final List<Model> segtBufferLookahead = Collections.synchronizedList(new ArrayList<Model>());
+	private final List<Model> segtBufferLookback = Collections.synchronizedList(new ArrayList<Model>());
+	// Buffer for outputting segments in original order
+	private final List<Pair<Integer, Model>> segtBufferOut = Collections.synchronizedList(new ArrayList<Pair<Integer, Model>>()); 
 
 	//for statistics
 	private final List<List<Pair<Integer,Long>>> dRTs = Collections.synchronizedList(new ArrayList<List<Pair<Integer,Long>>>());
@@ -141,10 +146,10 @@ public class RDFUpdater extends StreamRdfUpdater {
 				//Execute Thread
 
 				Model out = null;
-				LOG.trace("NOW Processing on thread "+threadID+": outputbuffersize "+sentBufferOut.size());
-				Triple<List<Model>, Model, List<Model>> sentBufferThread = sentBufferThreads.get(threadID);
+				LOG.trace("NOW Processing on thread "+threadID+": outputbuffersize "+segtBufferOut.size());
+				Triple<List<Model>, Model, List<Model>> segtBufferThread = segtBufferThreads.get(threadID);
 				try {
-					loadBuffer(sentBufferThread);
+					loadBuffer(segtBufferThread);
 					
 					List<Pair<Integer,Long> > ret = executeUpdates(updates);
 					if (dRTs.get(threadID).isEmpty())
@@ -155,7 +160,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 									dRTs.get(threadID).get(x).getKey() + ret.get(x).getKey(),
 									dRTs.get(threadID).get(x).getValue() + ret.get(x).getValue()));
 					
-					out = unloadBuffer(sentBufferThread);
+					out = unloadBuffer(segtBufferThread);
 				} catch (Exception e) {
 //					memDataset.begin(ReadWrite.WRITE);
 					memDataset.getDefaultModel().removeAll();
@@ -163,18 +168,19 @@ public class RDFUpdater extends StreamRdfUpdater {
 					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookahead").removeAll();
 //					memDataset.commit();
 //					memDataset.end();
-					e.printStackTrace();
+
+					LOG.error(e, e);
 //					continue;
 				}
 
 				
 				
-				// synchronized write access to sentBuffer in order to avoid corruption
+				// synchronized write access to segtBuffer in order to avoid corruption
 				synchronized(updater) {
-				LOG.trace("NOW PRINTING on thread "+threadID+": outputbuffersize "+sentBufferOut.size());
-				for (int i = 0; i < sentBufferOut.size(); i++) {
-					if (sentBufferOut.get(i).getLeft() == threadID) {
-						sentBufferOut.set(i, new ImmutablePair<Integer, Model>(-1, out));
+				LOG.trace("NOW PRINTING on thread "+threadID+": outputbuffersize "+segtBufferOut.size());
+				for (int i = 0; i < segtBufferOut.size(); i++) {
+					if (segtBufferOut.get(i).getLeft() == threadID) {
+						segtBufferOut.set(i, new ImmutablePair<Integer, Model>(-1, out));
 						break;
 					}
 				}				
@@ -190,8 +196,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 						wait();
 					}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error(e, e);
 				}
 			}
 		}
@@ -202,22 +207,22 @@ public class RDFUpdater extends StreamRdfUpdater {
 		 * 			the model to be read.
 		 * @throws Exception
 		 */
-		private void loadBuffer(Triple<List<Model>, Model, List<Model>> sentBufferThread) throws Exception { //TODO: adjust for TXN-Models
+		private void loadBuffer(Triple<List<Model>, Model, List<Model>> segtBufferThread) throws Exception { //TODO: adjust for TXN-Models
 			//load ALL
 			try {
 //				memDataset.begin(ReadWrite.WRITE);
 				
 				// for lookback
-				for (Model m:sentBufferThread.getLeft()) {
+				for (Model m:segtBufferThread.getLeft()) {
 					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookback").add(m);
 				}
 				
-				// for current sentence
-				memDataset.getDefaultModel().add(sentBufferThread.getMiddle());
+				// for current segment
+				memDataset.getDefaultModel().add(segtBufferThread.getMiddle());
 
 				// for lookahead
-				for (Model sent:sentBufferThread.getRight()) {
-					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookahead").add(sent);
+				for (Model segt:segtBufferThread.getRight()) {
+					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookahead").add(segt);
 				}
 				
 //				memDataset.commit();
@@ -225,7 +230,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 //				memAccessor.add(m);
 //				memDataset.getDefaultModel().setNsPrefixes(m.getNsPrefixMap());
 			} catch (Exception ex) {
-				LOG.error("Exception while reading: " + sentBufferThread.getMiddle());
+				LOG.error("Exception while reading: " + segtBufferThread.getMiddle());
 				throw ex;
 			} finally {
 //				memDataset.end();
@@ -242,10 +247,10 @@ public class RDFUpdater extends StreamRdfUpdater {
 		 * 			Output Writer.
 		 * @throws Exception
 		 */
-		private Model unloadBuffer(Triple<List<Model>, Model, List<Model>> sentBufferThread) throws Exception { //TODO: adjust for TXN-Models
+		private Model unloadBuffer(Triple<List<Model>, Model, List<Model>> segtBufferThread) throws Exception { //TODO: adjust for TXN-Models
 			Model out = ModelFactory.createDefaultModel();
-//START		ARTIFACT
-//			String buffer = sentBufferThread.getMiddle();
+//START		ARTIFACT for writing comments
+//			String buffer = segtBufferThread.getMiddle();
 			try {
 //				BufferedReader in = new BufferedReader(new StringReader(buffer));
 //				String line;
@@ -284,36 +289,31 @@ public class RDFUpdater extends StreamRdfUpdater {
 		 */
 		private List<Pair<Integer, Long>> executeUpdates(List<Triple<String, String, String>> updates) { 
 
-			String sent = new String();
+			String segt = new String();
 			boolean graphsout = false;
 			boolean triplesout = false;
 			if (graphOutputDir != null || triplesOutputDir != null) {
 				try {
-				sent = memDataset.getDefaultModel().listSubjectsWithProperty(
-								memDataset.getDefaultModel().getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), 
-								memDataset.getDefaultModel().getProperty("http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#Sentence")
-							).next().getLocalName();
+				segt = readFirstSegmentID(memDataset.getDefaultModel());
 				} catch (Exception e) {
-					sent = "none";
+					segt = "none";
 				}
-				if (graphOutputSentences.contains(sent)){
+				if (graphOutputSegments.contains(segt)){
 					graphsout = true;
 				}
 
-				if (triplesOutputSentences.contains(sent)){
+				if (triplesOutputSegments.contains(segt)){
 					triplesout = true;
 				}
 				if (graphsout) try {
-						produceDot(memDataset.getDefaultModel(), "INIT", null, sent, 0, 0, 0);
+						produceDot(memDataset.getDefaultModel(), "INIT", null, segt, 0, 0, 0);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LOG.error(e, e);
 					}
 				if (triplesout) try {
-						produceNTRIPLES(memDataset.getDefaultModel(), "INIT", null, sent, 0, 0, 0);
+						produceNTRIPLES(memDataset.getDefaultModel(), "INIT", null, segt, 0, 0, 0);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LOG.error(e, e);
 					}
 			}
 			List<Pair<Integer,Long> > result = new ArrayList<Pair<Integer,Long> >();
@@ -351,29 +351,29 @@ public class RDFUpdater extends StreamRdfUpdater {
 								//							memDataset.end();
 								if (cLdM.hasChanged() && (!dMS.equals(memDataset.getDefaultModel().toString()))) {
 									if (graphsout) try {
-										produceDot(defaultModel, update.getLeft(), operation.toString(), sent, upd_id, iter_id, step);
+										produceDot(defaultModel, update.getLeft(), operation.toString(), segt, upd_id, iter_id, step);
 									} catch (IOException e) {
 										LOG.error("Error while producing DOT for update No. "+upd_id+": "+update.getLeft());
-										e.printStackTrace();
+										LOG.error(e, e);
 									}
 									if (triplesout) try {
-										produceNTRIPLES(defaultModel, update.getLeft(), operation.toString(), sent, upd_id, iter_id, step);
+										produceNTRIPLES(defaultModel, update.getLeft(), operation.toString(), segt, upd_id, iter_id, step);
 									} catch (IOException e) {
 										LOG.error("Error while producing NTRIPLES for update No. "+upd_id+": "+update.getLeft());
-										e.printStackTrace();
+										LOG.error(e, e);
 									}
 								}
 								step++;
 							}
 						} else { //execute updates en bloc
 							//						memDataset.begin(ReadWrite.WRITE);
-							UpdateAction.execute(updateRequest, memDataset); //REMOVE THE PARAMETERS sent_id, upd_id, iter_id to use deshoe's original file names
+							UpdateAction.execute(updateRequest, memDataset); //REMOVE THE PARAMETERS segt_id, upd_id, iter_id to use deshoe's original file names
 							//						memDataset.commit();
 							//						memDataset.end();
 						}
 					} catch (Exception e) {
 						LOG.error("Error while processing update No. "+upd_id+": "+update.getLeft());
-						e.printStackTrace();
+						LOG.error(e, e);
 					}
 					
 					
@@ -441,22 +441,22 @@ public class RDFUpdater extends StreamRdfUpdater {
 		 * 			The update source filename.
 		 * @param updateQuery
 		 * 			The update query string.
-		 * @param sent
-		 * 			The sentence ID.
+		 * @param segt
+		 * 			The segment ID.
 		 * @param upd_id
 		 * 			The update ID.
 		 * @param iter_id
-		 * 			The ID of the current iteration of the given update on the given sentence.
+		 * 			The ID of the current iteration of the given update on the given segment.
 		 * @param step
 		 * 			The single isolated query step of the current update.
 		 * @throws IOException
 		 */
-		private void produceNTRIPLES(Model m, String updateSrc, String updateQuery, String sent, int upd_id, int iter_id, int step) throws IOException {
+		private void produceNTRIPLES(Model m, String updateSrc, String updateQuery, String segt, int upd_id, int iter_id, int step) throws IOException {
 			if (triplesOutputDir != null) {
 				String updateName = (new File(updateSrc)).getName();
 				updateName = (updateName != null && !updateName.isEmpty()) ? updateName : UUID.randomUUID().toString();
 				
-				File outputFile = new File(triplesOutputDir, sent
+				File outputFile = new File(triplesOutputDir, segt
 								+"__U"+String.format("%03d", upd_id)
 								+"_I" +String.format("%04d", iter_id)
 								+"_S" +String.format("%03d", step)
@@ -536,41 +536,41 @@ public class RDFUpdater extends StreamRdfUpdater {
 	}
 
 	/**
-	 * Activates the lookahead mode for caching a fixed number of additional sentences per thread.
+	 * Activates the lookahead mode for caching a fixed number of additional segments per thread.
 	 * @param lookahead_snts
-	 * 			the number of additional sentences to be cached
+	 * 			the number of additional segments to be cached
 	 */
-	public void activateLookahead(int lookahead_snts) {
-		if (lookahead_snts < 0) lookahead_snts = 0;
-		this.lookahead_snts = lookahead_snts;
+	public void activateLookahead(int lookahead_sgts) {
+		if (lookahead_sgts < 0) lookahead_sgts = 0;
+		this.lookahead_sgts = lookahead_sgts;
 	}
 	public int getLookahead() {
-		return lookahead_snts;
+		return lookahead_sgts;
 	}
 
 	/**
-	 * Activates the lookback mode for caching a fixed number of preceding sentences per thread.
+	 * Activates the lookback mode for caching a fixed number of preceding segments per thread.
 	 * @param lookback_snts
-	 * 			the number of preceding sentences to be cached
+	 * 			the number of preceding segments to be cached
 	 */
-	public void activateLookback(int lookback_snts) {
-		if (lookback_snts < 0) lookback_snts = 0;
-		this.lookback_snts = lookback_snts;
+	public void activateLookback(int lookback_sgts) {
+		if (lookback_sgts < 0) lookback_sgts = 0;
+		this.lookback_sgts = lookback_sgts;
 	}
 	public int getLookback() {
-		return lookback_snts;
+		return lookback_sgts;
 	}
 
 	/**
 	 * Activates the graphsout mode for single graphviz .dot files per execution step.
 	 * @param dir
 	 * 			folder to store .dot files
-	 * @param sentences
-	 * 			List of sentenceIDs to be included in graphsout mode (s23_0, s4_0 ...)
+	 * @param segments
+	 * 			List of segmentIDs to be included in graphsout mode (s23_0, s4_0 ...)
 	 * @throws IOException
 	 */
-	public void activateGraphsOut(String dir, List<String> sentences) throws IOException {
-		graphOutputSentences.clear();
+	public void activateGraphsOut(String dir, List<String> segments) throws IOException {
+		graphOutputSegments.clear();
 		graphOutputDir = new File(dir.toLowerCase());
 		if (graphOutputDir.exists() || graphOutputDir.mkdirs()) {
 			if (! graphOutputDir.isDirectory()) {
@@ -581,25 +581,39 @@ public class RDFUpdater extends StreamRdfUpdater {
 			graphOutputDir = null;
 			throw new IOException("Error: Failed to create given -graphsout DIRECTORY: " + dir.toLowerCase());
 		}
-		graphOutputSentences.addAll(sentences);
+		graphOutputSegments.addAll(segments);
 	}
 	public File getGraphOutputDir() {
 		return graphOutputDir;
 	}
-	public String[] getGraphOutputSentences() {
-		return graphOutputSentences.toArray(new String[graphOutputSentences.size()]);
+	public String[] getGraphOutputSegments() {
+		return graphOutputSegments.toArray(new String[graphOutputSegments.size()]);
+	}
+	
+
+	public String getTriplesOutSegmentClass() {
+		return triplesOutSegmentClass;
+	}
+
+	public void setTriplesOutSegmentClass(String triplesOutSegmentClass) {
+		try {
+			new URI(triplesOutSegmentClass);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Segment class for triplesOut is no valid URI.", e);
+		}
+		this.triplesOutSegmentClass = triplesOutSegmentClass;
 	}
 
 	/**
 	 * Activates the triplesout mode for single ntriples-files per execution step.
 	 * @param dir
 	 * 			folder to store .dot files
-	 * @param sentences
-	 * 			List of sentenceIDs to be included in triplesout mode (s23_0, s4_0 ...)
+	 * @param segments
+	 * 			List of segmentIDs to be included in triplesout mode (s23_0, s4_0 ...)
 	 * @throws IOException
 	 */
-	public void activateTriplesOut(String dir, List<String> sentences) throws IOException {
-		triplesOutputSentences.clear();
+	public void activateTriplesOut(String dir, List<String> segments) throws IOException {
+		triplesOutputSegments.clear();
 		triplesOutputDir = new File(dir.toLowerCase());
 		if (triplesOutputDir.exists() || triplesOutputDir.mkdirs()) {
 			if (! triplesOutputDir.isDirectory()) {
@@ -610,13 +624,13 @@ public class RDFUpdater extends StreamRdfUpdater {
 			triplesOutputDir = null;
 			throw new IOException("Error: Failed to create given -triplesout DIRECTORY: " + dir.toLowerCase());
 		}
-		triplesOutputSentences.addAll(sentences);
+		triplesOutputSegments.addAll(segments);
 	}
 	public File getTriplesOutputDir() {
 		return triplesOutputDir;
 	}
-	public String[] getTriplesOutputSentences() {
-		return triplesOutputSentences.toArray(new String[triplesOutputSentences.size()]);
+	public String[] getTriplesOutputSegments() {
+		return triplesOutputSegments.toArray(new String[triplesOutputSegments.size()]);
 	}
 
 	/**
@@ -660,16 +674,9 @@ public class RDFUpdater extends StreamRdfUpdater {
 		}
 		LOG.info("done...");
 	}
-	public boolean hasGraph(String name) {
-		return dataset.containsNamedModel(name);
-	}
-	public Model getGraph(String name) {
-		//TODO return a copy instead of a reference
-		return dataset.getNamedModel(name);
-	}
 
 	/**
-	 * Define a set of updates to be executed for each sentence processed by this CoNLLRDFUpdater.
+	 * Define a set of updates to be executed for each segment processed by this CoNLLRDFUpdater.
 	 * Existing updates will be overwritten by calling this function.
 	 * @param updatesRaw
 	 * 			The new set of updates as a List of String Triples. Each Triple has the following form:
@@ -774,8 +781,8 @@ public class RDFUpdater extends StreamRdfUpdater {
 	/**
 	 * Processes CoNLL-RDF on the local dataset using the predfined updates and threads.
 	 * Streams data from a buffered reader to a buffered writer. Distributes the processing 
-	 * across available threads. Each thread handles one sentence at a time.
-	 * Caches and outputs the resulting sentences in-order.
+	 * across available threads. Each thread handles one segment at a time.
+	 * Caches and outputs the resulting segments in-order.
 	 * @throws IOException
 	 */
 	protected void processStream() throws IOException {
@@ -789,34 +796,34 @@ public class RDFUpdater extends StreamRdfUpdater {
 				Model buffer = getInputStream().read();
 				if (buffer == null) continue;
 
-				// GRAPH OUTPUT determine first sentence's id, if none were specified
-				if ((graphOutputDir != null) && (graphOutputSentences.isEmpty())) {
-					String sentID = readFirstSentenceID(buffer);
-					graphOutputSentences.add(sentID);
-					LOG.debug("Graph Output defaults to first sentence: " + sentID);
+				// GRAPH OUTPUT determine first segment's id, if none were specified
+				if ((graphOutputDir != null) && (graphOutputSegments.isEmpty())) {
+					String segtID = readFirstSegmentID(buffer);
+					graphOutputSegments.add(segtID);
+					LOG.debug("Graph Output defaults to first segment: " + segtID);
 				}
-				// TRIPLES OUTPUT determine first sentence's id, if none were specified
-				if ((triplesOutputDir != null) && (triplesOutputSentences.isEmpty())) {
-					String sentID = readFirstSentenceID(buffer);
-					triplesOutputSentences.add(sentID);
-					LOG.debug("Triples Output defaults to first sentence: " + sentID);
+				// TRIPLES OUTPUT determine first segment's id, if none were specified
+				if ((triplesOutputDir != null) && (triplesOutputSegments.isEmpty())) {
+					String segtID = readFirstSegmentID(buffer);
+					triplesOutputSegments.add(segtID);
+					LOG.debug("Triples Output defaults to first segment: " + segtID);
 				}
 
 				//lookahead
-				//add ALL sentences to sentBufferLookahead
-				sentBufferLookahead.add(buffer);
-				if (sentBufferLookahead.size() > lookahead_snts) {
+				//add ALL segments to segtBufferLookahead
+				segtBufferLookahead.add(buffer);
+				if (segtBufferLookahead.size() > lookahead_sgts) {
 					//READY TO PROCESS 
-					// remove first sentence from buffer and process it.
-					// !!if lookahead = 0 then only current buffer is in sentBufferLookahead!!
-					executeThread(sentBufferLookahead.remove(0));
+					// remove first segment from buffer and process it.
+					// !!if lookahead = 0 then only current buffer is in segtBufferLookahead!!
+					executeThread(segtBufferLookahead.remove(0));
 				}		
 				
 				//lookback
 				//needs to consider lookahead buffer. The full buffer size needs to be lookahead + lookback.
-				if (lookback_snts > 0) {
-					while (sentBufferLookback.size() >= lookback_snts + sentBufferLookahead.size()) sentBufferLookback.remove(0);
-					sentBufferLookback.add(buffer);
+				if (lookback_sgts > 0) {
+					while (segtBufferLookback.size() >= lookback_sgts + segtBufferLookahead.size()) segtBufferLookback.remove(0);
+					segtBufferLookback.add(buffer);
 				}
 
 				flushOutputBuffer();
@@ -828,10 +835,10 @@ public class RDFUpdater extends StreamRdfUpdater {
 
 
 		// LOOKAHEAD work down remaining buffer
-		while (sentBufferLookahead.size()>0) {
-			executeThread(sentBufferLookahead.remove(0));
-			if (lookback_snts > 0) {
-				while (sentBufferLookback.size() >= lookback_snts + sentBufferLookahead.size()) sentBufferLookback.remove(0);
+		while (segtBufferLookahead.size()>0) {
+			executeThread(segtBufferLookahead.remove(0));
+			if (lookback_sgts > 0) {
+				while (segtBufferLookback.size() >= lookback_sgts + segtBufferLookahead.size()) segtBufferLookback.remove(0);
 			}
 		}
 			
@@ -882,14 +889,14 @@ public class RDFUpdater extends StreamRdfUpdater {
 	}
 
 	/**
-	 * Retrieve the first "Sentence ID" (nif-core#Sentence -property) from the buffer and return it
+	 * Retrieve the first "Segment ID" from the buffer and return it
 	 */
-	private String readFirstSentenceID(Model m) {
-		String sentID = m.listSubjectsWithProperty(
+	private String readFirstSegmentID(Model m) {
+		String segtID = m.listSubjectsWithProperty(
 				m.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), 
-				m.getProperty("http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#Sentence")
+				m.getProperty(triplesOutSegmentClass)
 			).next().getLocalName();
-		return sentID;
+		return segtID;
 	}
 
 	private void initThreads() {
@@ -902,20 +909,20 @@ public class RDFUpdater extends StreamRdfUpdater {
 		for (int i = 0; i < threads; i++) {
 			updateThreads.add(null);
 			dataset.addNamedModel("http://thread"+i, ModelFactory.createDefaultModel());
-			sentBufferThreads.add(new ImmutableTriple<List<Model>, Model, List<Model>>(
+			segtBufferThreads.add(new ImmutableTriple<List<Model>, Model, List<Model>>(
 					new ArrayList<Model>(), null, new ArrayList<Model>()));
 			dRTs.add(Collections.synchronizedList(new ArrayList<Pair<Integer,Long> >()));
 		}
 	}
 
 	private synchronized void flushOutputBuffer() {
-		LOG.trace("OutBufferSize: "+sentBufferOut.size());
+		LOG.trace("OutBufferSize: "+segtBufferOut.size());
 
-		while (!sentBufferOut.isEmpty()) {
-			if (sentBufferOut.get(0).getLeft() >= 0) break;
+		while (!segtBufferOut.isEmpty()) {
+			if (segtBufferOut.get(0).getLeft() >= 0) break;
 			
 			try {
-				getOutputStream().write(sentBufferOut.remove(0).getRight());
+				getOutputStream().write(segtBufferOut.remove(0).getRight());
 			} catch (InterruptedException e) {
 				LOG.error("Resuming from interrupted thread when reading from default Stream: " +e);
 			}
@@ -923,54 +930,54 @@ public class RDFUpdater extends StreamRdfUpdater {
 	}
 
 	private void executeThread(Model buffer) {
-		MutableTriple<List<Model>, Model, List<Model>>sentBufferThread =
+		MutableTriple<List<Model>, Model, List<Model>>segtBufferThread =
 				new MutableTriple<List<Model>, Model, List<Model>>(
 				new ArrayList<Model>(), null, new ArrayList<Model>());
-		//sentBufferLookback only needs to be filled up to the current sentence.
-		//All other sentences are for further lookahead iterations
-//		sentBufferThread.getLeft().addAll(sentBufferLookback);
-		for (int i = 0; i < sentBufferLookback.size() - sentBufferLookahead.size(); i++) {
-			sentBufferThread.getLeft().add(sentBufferLookback.get(i));
+		//segtBufferLookback only needs to be filled up to the current segment.
+		//All other segments are for further lookahead iterations
+//		segtBufferThread.getLeft().addAll(segtBufferLookback);
+		for (int i = 0; i < segtBufferLookback.size() - segtBufferLookahead.size(); i++) {
+			segtBufferThread.getLeft().add(segtBufferLookback.get(i));
 		}
-		sentBufferThread.setMiddle(buffer);
-		sentBufferThread.getRight().addAll(sentBufferLookahead);
+		segtBufferThread.setMiddle(buffer);
+		segtBufferThread.getRight().addAll(segtBufferLookahead);
 		int i = 0;
 
 		while(i < updateThreads.size()) {
 			LOG.trace("ThreadState " + i + ": "+((updateThreads.get(i)!=null)?updateThreads.get(i).getState():"null"));
 			if (updateThreads.get(i) == null) {
-				sentBufferThreads.set(i, sentBufferThread);
-				sentBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last sentences to the end of the output queue.
+				segtBufferThreads.set(i, segtBufferThread);
+				segtBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last segments to the end of the output queue.
 				updateThreads.set(i, new UpdateThread(this, i));
 				updateThreads.get(i).start();
 				LOG.trace("restart "+i);
-				LOG.trace("OutBufferSize: "+sentBufferOut.size());
+				LOG.trace("OutBufferSize: "+segtBufferOut.size());
 				break;
 			} else 
 				if (updateThreads.get(i).getState() == Thread.State.WAITING) {
 				synchronized(updateThreads.get(i)) {
-				sentBufferThreads.set(i, sentBufferThread);
-				sentBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last sentences to the end of the output queue.
+				segtBufferThreads.set(i, segtBufferThread);
+				segtBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last segments to the end of the output queue.
 				updateThreads.get(i).notify();
 				}
 				LOG.trace("wake up "+i);
 				break;
 			} else 
 				if (updateThreads.get(i).getState() == Thread.State.NEW) {
-				sentBufferThreads.set(i, sentBufferThread);
-				sentBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last sentences to the end of the output queue.
+				segtBufferThreads.set(i, segtBufferThread);
+				segtBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last segments to the end of the output queue.
 				updateThreads.get(i).start();
 				LOG.trace("start "+i);
-				LOG.trace("OutBufferSize: "+sentBufferOut.size());
+				LOG.trace("OutBufferSize: "+segtBufferOut.size());
 				break;
 			} else 
 				if (updateThreads.get(i).getState() == Thread.State.TERMINATED) {
-				sentBufferThreads.set(i, sentBufferThread);
-				sentBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last sentences to the end of the output queue.
+				segtBufferThreads.set(i, segtBufferThread);
+				segtBufferOut.add(new ImmutablePair<Integer, Model>(i, null)); //add last segments to the end of the output queue.
 				updateThreads.set(i, new UpdateThread(this, i));
 				updateThreads.get(i).start();
 				LOG.trace("restart "+i);
-				LOG.trace("OutBufferSize: "+sentBufferOut.size());
+				LOG.trace("OutBufferSize: "+segtBufferOut.size());
 				break;
 			}
 			
@@ -982,7 +989,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 						wait(20);
 					}
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					LOG.error(e, e);
 				} finally {
 					i = 0;
 				}
