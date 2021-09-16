@@ -537,7 +537,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 
 	/**
 	 * Activates the lookahead mode for caching a fixed number of additional segments per thread.
-	 * @param lookahead_snts
+	 * @param lookahead_sgts
 	 * 			the number of additional segments to be cached
 	 */
 	public void activateLookahead(int lookahead_sgts) {
@@ -550,7 +550,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 
 	/**
 	 * Activates the lookback mode for caching a fixed number of preceding segments per thread.
-	 * @param lookback_snts
+	 * @param lookback_sgts
 	 * 			the number of preceding segments to be cached
 	 */
 	public void activateLookback(int lookback_sgts) {
