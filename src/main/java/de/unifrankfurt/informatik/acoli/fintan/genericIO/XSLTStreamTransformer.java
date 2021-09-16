@@ -2,6 +2,8 @@ package de.unifrankfurt.informatik.acoli.fintan.genericIO;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -52,6 +54,24 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 	public XSLTStreamTransformer buildFromCLI(String[] args) throws IOException, IllegalArgumentException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public void setInputStream(InputStream inputStream, String name) throws IOException {
+		if (name == null || FINTAN_DEFAULT_STREAM_NAME.equals(name)) {
+			setInputStream(inputStream);
+		} else {
+			throw new IOException("Only default InputStream is supported for "+XSLTStreamTransformer.class.getName());
+		}
+	}
+	
+	@Override
+	public void setOutputStream(OutputStream outputStream, String name) throws IOException {
+		if (name == null || FINTAN_DEFAULT_STREAM_NAME.equals(name)) {
+			setOutputStream(outputStream);
+		} else {
+			throw new IOException("Only default OutputStream is supported for "+XSLTStreamTransformer.class.getName());
+		}
 	}
 	
 	
