@@ -54,9 +54,6 @@
 	{ 
 	  "componentInstance" : "tgt_update",
 	  "class" : "RDFUpdater"
-	    , "models" : [
-			{"source":"samples/xslt/apertium/apertium-lexinfo-enrichment-update.ttl", "graph":"http://apertium-lexinfo-enrichment-update.ttl"}
-	    ]
 		, "updates" : [
 			{"path":"samples/xslt/apertium/apertium-pos.sparql", "iter":"1"}
 		]
@@ -127,6 +124,18 @@
     	"writesToInstance" : "trans_Dupl"
     },
     
+    
+    {
+    	"readsFromSource" : "samples/xslt/apertium/apertium-lexinfo-enrichment-update.ttl",
+    	"writesToInstance" : "ttlLoader",
+    	"writesToInstanceGraph" : "http://apertium-lexinfo-enrichment-update.ttl"
+    },
+    {
+    	"readsFromInstance" : "ttlLoader",
+    	"readsFromInstanceGraph" : "http://apertium-lexinfo-enrichment-update.ttl",
+    	"writesToInstance" : "tgt_update",
+    	"writesToInstanceGraph" : "http://apertium-lexinfo-enrichment-update.ttl"
+    },
     
     
     {
