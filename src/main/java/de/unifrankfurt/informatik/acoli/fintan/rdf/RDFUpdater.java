@@ -58,6 +58,7 @@ import org.apache.jena.update.UpdateRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanInputStream;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
 import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
 
@@ -71,6 +72,8 @@ public class RDFUpdater extends StreamRdfUpdater {
 	static final String DEFAULTUPDATENAME = "DIRECTUPDATE";
 	static final int MAXITERATE = 999;
 	static final List<Integer> CHECKINTERVAL = Arrays.asList(3, 10, 25, 50, 100, 200, 500);
+	static final String LOOKBACK_GRAPH = "https://github.com/acoli-repo/conll-rdf/lookback";
+	static final String LOOKAHEAD_GRAPH = "https://github.com/acoli-repo/conll-rdf/lookahead";
 
 	private final Dataset dataset;
 
@@ -105,6 +108,18 @@ public class RDFUpdater extends StreamRdfUpdater {
 	private final List<List<Pair<Integer,Long>>> dRTs = Collections.synchronizedList(new ArrayList<List<Pair<Integer,Long>>>());
 	// iterations and execution time of each update in seconds
 
+	
+	@Override
+	public void setInputStream(FintanInputStream<Model> inputStream, String name) throws IOException {
+		if (name != null) {
+			if (LOOKBACK_GRAPH.equals(name) || LOOKAHEAD_GRAPH.equals(name)) {
+				throw new IOException("Cannot set lookback or lookahead graph as input streams for "+RDFUpdater.class.getName());
+			}
+		}
+		super.setInputStream(inputStream, name);
+	}
+	
+	
 
 	private class UpdateThread extends Thread {
 		
@@ -133,8 +148,8 @@ public class RDFUpdater extends StreamRdfUpdater {
 				String graph = iter.next();
 				memDataset.addNamedModel(graph, updater.dataset.getNamedModel(graph));
 			}
-			memDataset.addNamedModel("https://github.com/acoli-repo/conll-rdf/lookback", ModelFactory.createDefaultModel());
-			memDataset.addNamedModel("https://github.com/acoli-repo/conll-rdf/lookahead", ModelFactory.createDefaultModel());
+			memDataset.addNamedModel(LOOKBACK_GRAPH, ModelFactory.createDefaultModel());
+			memDataset.addNamedModel(LOOKAHEAD_GRAPH, ModelFactory.createDefaultModel());
 		}
 		
 		/**
@@ -164,8 +179,8 @@ public class RDFUpdater extends StreamRdfUpdater {
 				} catch (Exception e) {
 //					memDataset.begin(ReadWrite.WRITE);
 					memDataset.getDefaultModel().removeAll();
-					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookback").removeAll();
-					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookahead").removeAll();
+					memDataset.getNamedModel(LOOKBACK_GRAPH).removeAll();
+					memDataset.getNamedModel(LOOKAHEAD_GRAPH).removeAll();
 //					memDataset.commit();
 //					memDataset.end();
 
@@ -214,7 +229,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 				
 				// for lookback
 				for (Model m:segtBufferThread.getLeft()) {
-					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookback").add(m);
+					memDataset.getNamedModel(LOOKBACK_GRAPH).add(m);
 				}
 				
 				// for current segment
@@ -222,7 +237,7 @@ public class RDFUpdater extends StreamRdfUpdater {
 
 				// for lookahead
 				for (Model segt:segtBufferThread.getRight()) {
-					memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookahead").add(segt);
+					memDataset.getNamedModel(LOOKAHEAD_GRAPH).add(segt);
 				}
 				
 //				memDataset.commit();
@@ -266,8 +281,8 @@ public class RDFUpdater extends StreamRdfUpdater {
 			} finally {
 //				memDataset.begin(ReadWrite.WRITE);
 				memDataset.getDefaultModel().removeAll();
-				memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookback").removeAll();
-				memDataset.getNamedModel("https://github.com/acoli-repo/conll-rdf/lookahead").removeAll();
+				memDataset.getNamedModel(LOOKBACK_GRAPH).removeAll();
+				memDataset.getNamedModel(LOOKAHEAD_GRAPH).removeAll();
 //				memDataset.commit();
 //				memDataset.end();
 			}
@@ -786,6 +801,24 @@ public class RDFUpdater extends StreamRdfUpdater {
 	 * @throws IOException
 	 */
 	protected void processStream() throws IOException {
+		
+		//consume all named input streams into named graphs as external models
+		//merge with preexisting data in that graph.
+		for (String name:listInputStreamNames()) {
+			if (name == FINTAN_DEFAULT_STREAM_NAME) 
+				continue;
+			
+			while (getInputStream(name).canRead()) {
+				try {
+					Model m = getInputStream(name).read();
+					//read may return null in case the queue has been emptied and terminated since asking for canRead()
+					if (m == null) continue;
+					dataset.getNamedModel(name).add(m);
+				} catch (InterruptedException e) {
+					LOG.error("Error when reading from Stream: "+name, e);
+				}
+			}
+		}
 		initThreads();
 		running = true;
 
