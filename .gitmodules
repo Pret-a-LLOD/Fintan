@@ -1,6 +1,6 @@
 [submodule "backend"]
 	path = backend
-	url = https://github.com/acoli-repo/conll-rdf
+	url = https://github.com/acoli-repo/fintan-backend.git
 [submodule "loaders/llodifier"]
 	path = loaders/llodifier
 	url = https://github.com/acoli-repo/LLODifier.git
@@ -10,3 +10,6 @@
 [submodule "loaders/xml2conll"]
 	path = loaders/xml2conll
 	url = https://github.com/acoli-repo/xml2conll
+[submodule "core"]
+	path = core
+	url = https://github.com/acoli-repo/fintan-core.git
