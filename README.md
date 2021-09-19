@@ -1,5 +1,5 @@
 
-![Fintan](img/Fintan.PNG?style=centerme)
+![Fintan](img/Fintan.PNG)
 # Software Documentation
 This directory contains the documentation for the Fintan-backend and how to build and run it as a stand-alone software. It furthermore describes how to use Fintan in your own applications or create your own custom modules.
 
