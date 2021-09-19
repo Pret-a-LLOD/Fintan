@@ -5,7 +5,7 @@ This directory contains the documentation for the Fintan-backend and how to buil
 
 ## Software platform 
 
-![Fintan platform](img/software-plattform.PNG "Fintan platform")
+![Fintan platform](img/Fintan-platform.PNG "Fintan platform")
 
 The Fintan platform is an effort of combining existing converter frameworks with stream-based graph transformation (as originally developed in the context of [CoNLL-RDF](https://github.com/acoli-repo/) and a workflow management engine in order to create integrated transformation pipelines for various input and output formats. By making data conversion modular, we increase the reusability of granular transformation steps. By choosing a stream-based approach, specifically for processing RDF data, we also address scalability issues typically arising with large scale datasets on triple stores. 
 
