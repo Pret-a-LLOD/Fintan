@@ -1,3 +1,4 @@
+![Fintan](doc/img/Fintan.png)
 # Fintan
 Flexible INtegrated Transformation and Annotation eNgineering platform
 
