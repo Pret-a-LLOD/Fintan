@@ -2,6 +2,11 @@
 # Fintan
 Flexible INtegrated Transformation and Annotation eNgineering platform
 
+## Software Documentation
+[fintan-doc](https://github.com/acoli-repo/fintan-doc)
+
+## Notes
+
 - **Frontend** currently developed under https://github.com/unlp_nuig/teanga (not public)
 - **Backend** currently developed under https://github.com/acoli-repo/conll-rdf (public and released as CoNLL-RDF), it also contains
 	- several **loaders** (> 20 tabular formats, incl. tabular formats with XML extensions)
