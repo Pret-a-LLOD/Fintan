@@ -1,4 +1,4 @@
-![Fintan](doc/img/Fintan.png)
+![Fintan](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan.PNG)
 # Fintan
 Flexible INtegrated Transformation and Annotation eNgineering platform
 
