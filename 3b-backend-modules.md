@@ -2,15 +2,6 @@
 
 # Backend modules
 These components are not part of the Core API since they rely on additional dependencies apart from Apache Jena. They are managed as additional imports of the Fintan backend and included in the build script.
-## CoNLL-RDF
-As mentioned in previous sections, CoNLL-RDF is the spiritual predecessor of Fintan and shares many common functionalities, like stream-based graph processing. The software suite encompasses support for corpora in many formats:
-* any CoNLL dialect
-* Penn treebank-like bracket structures for syntax trees
-* mixed XML-TSV formats
-* TenTen
-* ...
-
-CoNLL-RDF is now also part of the Fintan backend. All classes and modules available in the CoNLL-RDF library are refactored to directly implement the Fintan core architecture. The JSON-configuration scheme is backward compatible with CoNLL-RDF, so no changes to existing configuration files need to be made. They can be directly loaded and processed by the FintanManager class. For instructions on how to use CoNLL-RDF, please refer to the tutorials in the CoNLL-RDF repository and publications referenced there.
 
 ## Read generic TSV/CSV data
 While CoNLL-RDF in principle does support any kind of TSV data, it is limited to converting it to the CoNLL-RDF data model. Using the Updater this can in principle be transformed into any other data model (e.g. OntoLex-Lemon, as we described for the Universal Morphologies in the previous report D3.2). However, this might not be the most efficient way of converting tabular data beyond the scope of text corpora and tab separated values..
@@ -41,7 +32,3 @@ In the current implementation, it supports only a single input and output stream
 * The parameters, values etc. can be passed on from the command line using the <$param0> wildcards as described in [Pipelines](2-run-pipelines.md).
 * The general syntax is the same as with the original Saxon CLI tools.
 
-## TBX2RDF
-TBX2RDFStreamTransformer
-
-## 

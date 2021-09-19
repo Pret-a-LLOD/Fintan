@@ -1,7 +1,6 @@
 [back to top](README.md)
 
 # Develop and run pipelines
-In the previous section we described the general architecture of Fintan and the layout of its repositories. Now we will focus on how to actually write transformation pipelines and how these look like in both the JSON configuration files, as well as the user interface.
 
 ## JSON configurations and I/O
 For writing pipelines, Fintan uses an extended version of the JSON configuration schema used for CoNLL-RDF. Simple pipelines with a single stream of data can still adhere to the original format. Fintan is thus backward compatible with all existing CoNLL-RDF pipelines:
@@ -94,7 +93,7 @@ Since Fintan is designed to work both within integrated containers and as a CLI 
 * `<$param1>` for the second command line argument
 ...
 
-The following section of the Apertium pipeline directly passes command line arguments to the respective XSL scripts (for more details, please refer to section 3):
+Example taken from the [Apertium demo](https://github.com/acoli-repo/fintan-backend/blob/master/samples/xslt/apertium/_apertium_demo.sh): 
 
 ```
   "components" : [

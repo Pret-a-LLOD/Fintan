@@ -10,7 +10,7 @@ As described in [Software concept](1-software-concept.md), Fintan primarily util
 
 ![Fintan Core class diagram (reduced)](img/core-classes.PNG "Fintan Core class diagram (reduced)")
 
-The class diagram in Figure 7 depicts how they interact with the Core API. The FintanManager instantiates a FintanStreamComponent by using its respective Factory interface. The `FintanStreamComponent` is generically typed for input and output but provides methods for handling named and default input and output streams. A `FintanStreamComponent` can be started by calling its `start()` method. The four main interface classes described above then specify the typing of their accepted I/O streams. 
+The class diagram depicts how they interact with the Core API. The FintanManager instantiates a FintanStreamComponent by using its respective Factory interface. The `FintanStreamComponent` is generically typed for input and output but provides methods for handling named and default input and output streams. A `FintanStreamComponent` can be started by calling its `start()` method. The four main interface classes described above then specify the typing of their accepted I/O streams. 
 
 In this section we will now describe the functional modules implementing these abstract classes and interfaces.
 
@@ -92,7 +92,7 @@ The Splitter has the following parameters which can be set in the JSON config:
 * `deltaStreams` for `RECURSIVE_UPDATE` mode specifies a list of graphs whose content should be streamed after the last recursion.
 
 ## RDF Updater
-The `RDFUpdater` class shares much of its baseline implementation and arguments with the preexisting `CoNLLRDFUpdater`. It is, however, not specifically tailored towards processing CoNLL-RDF. Instead of a stream of serialized CoNLL-RDF data, it directly consumes and produces Fintan’s segmented RDF streams, thus enabling it to work with any kind of RDF data. The basic processing principles are as follows (see also the Figure in the Splitter section):
+The `RDFUpdater` class shares much of its baseline implementation and arguments with the preexisting `CoNLLRDFUpdater`. It is, however, not specifically tailored towards processing CoNLL-RDF. Instead of a stream of serialized CoNLL-RDF data, it directly consumes and produces Fintan’s segmented RDF streams, thus enabling it to work with any kind of RDF data. The basic processing principles are as follows:
 
 * compile the set of provided update scripts 
 * prefetch external resources needed to process the streamed data (e.g. OLiA models). They can be supplied either as files or URLs, or as named input streams. External models are always fully consumed and stored before the actual transformation of segments starts.

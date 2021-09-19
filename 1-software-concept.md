@@ -7,7 +7,7 @@ This directory contains the documentation for the Fintan-backend and how to buil
 
 ![Fintan platform](img/Fintan-platform.PNG "Fintan platform")
 
-The Fintan platform is an effort of combining existing converter frameworks with stream-based graph transformation (as originally developed in the context of [CoNLL-RDF](https://github.com/acoli-repo/) and a workflow management engine in order to create integrated transformation pipelines for various input and output formats. By making data conversion modular, we increase the reusability of granular transformation steps. By choosing a stream-based approach, specifically for processing RDF data, we also address scalability issues typically arising with large scale datasets on triple stores. 
+The Fintan platform is an effort of combining existing converter frameworks with stream-based graph transformation (as originally developed in the context of [CoNLL-RDF](https://github.com/acoli-repo/conll-rdf) and a workflow management engine in order to create integrated transformation pipelines for various input and output formats. By making data conversion modular, we increase the reusability of granular transformation steps. By choosing a stream-based approach, specifically for processing RDF data, we also address scalability issues typically arising with large scale datasets on triple stores. 
 
 
 ## Architecture and Implementation
@@ -15,9 +15,7 @@ The Fintan platform is an effort of combining existing converter frameworks with
 
 ![Fintan architecture](img/repo-architecture.PNG)
 
-In order to achieve these implementation goals, we designed a modular architecture which aids a decentralized development process. With Fintan inheriting some of the core functionalities from CoNLL-RDF, we decided to keep the general design paradigms intact and stay within the Java-based environment including the Apache Jena API for graph transformation. However, since CoNLL-RDF is designed as a self-contained tool which is focused on TSV-based input formats, Fintan establishes an additional abstraction layer. 
-
-The Fintan architecture comprises four interdependent layers which are addressed in the subsequent sections (cf. Figure 5).
+The Fintan architecture comprises four interdependent layers which are addressed in the subsequent sections.
 
 ### Fintan Core API
 The Fintan Core API defines four distinct classes which encapsulate methods for data streaming and ensure their interoperability:

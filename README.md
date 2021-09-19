@@ -3,7 +3,7 @@ This directory contains the documentation for the Fintan-backend and how to buil
 
 ## Table of Contents:
 
-[Quick start and how to build](../README.md)
+[Quick Start Guide](quick-start.md)
 
 [1. Software concept](1-software-concept.md)
 
@@ -13,7 +13,6 @@ This directory contains the documentation for the Fintan-backend and how to buil
 
 [3.b Fintan Backend Modules (External API)](3b-backend-modules.md)
 
-[3.c Build your own custom modules](3c-build-custom-modules.md)
 
 
 ## Authors and Maintainers
