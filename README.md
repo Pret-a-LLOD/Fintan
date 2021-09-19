@@ -1,4 +1,6 @@
 ![Fintan](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan.PNG)
+## Software Documentation
+[fintan-doc](https://github.com/acoli-repo/fintan-doc)
 ## Authors and Maintainers
 * **Christian Fäth** - faeth@em.uni-frankfurt.de
 * **Christian Chiarcos** - chiarcos@informatik.uni-frankfurt.de
