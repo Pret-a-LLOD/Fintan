@@ -1,3 +1,4 @@
+![Fintan](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan.PNG)
 ## Quick start and demo
 ### Install
 ```shell
