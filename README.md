@@ -1,4 +1,5 @@
-# Fintan Software Documentation
+![Fintan](img/Fintan.png)
+# Software Documentation
 This directory contains the documentation for the Fintan-backend and how to build and run it as a stand-alone software. It furthermore describes how to use Fintan in your own applications or create your own custom modules.
 
 ## Table of Contents:
@@ -13,6 +14,7 @@ This directory contains the documentation for the Fintan-backend and how to buil
 
 [3.b Fintan Backend Modules (External API)](3b-backend-modules.md)
 
+[3.c Build your own custom modules](3c-build-custom-modules.md)
 
 
 ## Authors and Maintainers
