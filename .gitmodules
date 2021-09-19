@@ -13,3 +13,6 @@
 [submodule "core"]
 	path = core
 	url = https://github.com/acoli-repo/fintan-core.git
+[submodule "doc"]
+	path = doc
+	url = https://github.com/acoli-repo/fintan-doc.git
