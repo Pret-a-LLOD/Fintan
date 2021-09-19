@@ -1,7 +1,4 @@
-img[src$="centerme"] {
-  display:block;
-  margin: 0 auto;
-}
+
 ![Fintan](img/Fintan.PNG?style=centerme)
 # Software Documentation
 This directory contains the documentation for the Fintan-backend and how to build and run it as a stand-alone software. It furthermore describes how to use Fintan in your own applications or create your own custom modules.
