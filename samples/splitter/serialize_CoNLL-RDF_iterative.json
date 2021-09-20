@@ -11,8 +11,7 @@
 	  "recursiveUpdate" : null,
 	  "segmentStreams" : null,
 	  "deltaStreams" : null,
-	  "tdbPath" : null,
-	  "delimiter" : "##TEST#INPUT##"
+	  "tdbPath" : null
 	},
 	{ 
 	  "class" : "RDFStreamWriter",

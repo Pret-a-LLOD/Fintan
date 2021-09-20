@@ -34,8 +34,7 @@
 	  "recursiveUpdate" : "samples/splitter/update_no_init_recursive_construct_sentences.sparql",
 	  "segmentStreams" : null,
 	  "deltaStreams" : null,
-	  "tdbPath" : null,
-	  "delimiter" : "##TEST#INPUT##"
+	  "tdbPath" : null
 	},
 	{ 
 	  "componentInstance" : "ttlWriter",

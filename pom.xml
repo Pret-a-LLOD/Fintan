@@ -16,7 +16,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- see also https://www.baeldung.com/maven-version-collision -->
-		<jena.version>3.13.1</jena.version>
+		<jena.version>3.11.0</jena.version> <!-- required by tarql, since org.apache.jena.riot.system.StreamOps has been removed from future releases -->
 	</properties>
 
 
@@ -98,7 +98,7 @@
 		</dependency>
 	</dependencies>
 
-<!-- see also https://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar/6743609#6743609 -->
+	<!-- see also https://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar/6743609#6743609 -->
 	<build>
 		<plugins>
 			<plugin>
