@@ -8,7 +8,7 @@ Flexible INtegrated Transformation and Annotation eNgineering platform
 ## Notes
 
 - **Frontend** currently developed under https://github.com/unlp_nuig/teanga (not public)
-- **Service** 
+- **Service** for running Fintan pipelines inside integrated Docker containers
 - [**Backend**](https://github.com/acoli-repo/fintan-backend) 
 	- includes [**Core API**](https://github.com/acoli-repo/fintan-core) for stream-based graph processing.
 	- wraps fully integrated converter components
