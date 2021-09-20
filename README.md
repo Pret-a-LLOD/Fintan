@@ -8,10 +8,10 @@ Flexible INtegrated Transformation and Annotation eNgineering platform
 ## Notes
 
 - **Frontend** currently developed under https://github.com/unlp_nuig/teanga (not public)
-- **Backend** currently developed under https://github.com/acoli-repo/conll-rdf (public and released as CoNLL-RDF), it also contains
-	- several **Loaders** (> 20 tabular formats, incl. tabular formats with XML extensions)
-	- exemplary **Updater modules** (SPARQL Update scripts)
-	- several **Writers** (RDF formats, canonical CoNLL-RDF, tabular formats, Dot/GraphViz)
+- [**Backend**](https://github.com/acoli-repo/fintan-backend) 
+	- includes [**Core API**](https://github.com/acoli-repo/fintan-core) for stream-based graph processing.
+	- wraps fully integrated converter components
+- **Doc**
 - external [**Loader** components](loaders) for various formats, partly compatible, but yet to be fully integrated, incl.
 	- [CoNLL-RDF](https://github.com/acoli-repo/conll-rdf) contains
 		- several **Loaders** (> 20 tabular formats, incl. tabular formats with XML extensions)
