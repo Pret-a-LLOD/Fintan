@@ -13,7 +13,7 @@ Flexible INtegrated Transformation and Annotation eNgineering platform
 	- includes [**Core API**](https://github.com/acoli-repo/fintan-core) for stream-based graph processing.
 	- wraps fully integrated converter components
 - [**Documentation**](https://github.com/acoli-repo/fintan-doc)
-- external [**Loader** components](loaders) for various formats, partly compatible, but yet to be fully integrated, incl.
+- external [**Loader** components](loaders) for various formats, partly compatible, but yet to be fully integrated:
 	- [CoNLL-RDF](https://github.com/acoli-repo/conll-rdf) contains
 		- several **Loaders** (> 20 tabular formats, incl. tabular formats with XML extensions)
 		- exemplary **Updater modules** (SPARQL Update scripts)
