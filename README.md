@@ -15,8 +15,6 @@ This directory contains the documentation for the Fintan-backend and how to buil
 
 [3.b Fintan Backend Modules (External API)](3b-backend-modules.md)
 
-[3.c Build your own custom modules](3c-build-custom-modules.md)
-
 
 ## Authors and Maintainers
 * **Christian Fäth** - faeth@em.uni-frankfurt.de
