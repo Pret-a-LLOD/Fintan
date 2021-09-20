@@ -8,10 +8,11 @@ Flexible INtegrated Transformation and Annotation eNgineering platform
 ## Notes
 
 - **Frontend** currently developed under https://github.com/unlp_nuig/teanga (not public)
+- **Service** 
 - [**Backend**](https://github.com/acoli-repo/fintan-backend) 
 	- includes [**Core API**](https://github.com/acoli-repo/fintan-core) for stream-based graph processing.
 	- wraps fully integrated converter components
-- **Doc**
+- [**Documentation**](https://github.com/acoli-repo/fintan-doc)
 - external [**Loader** components](loaders) for various formats, partly compatible, but yet to be fully integrated, incl.
 	- [CoNLL-RDF](https://github.com/acoli-repo/conll-rdf) contains
 		- several **Loaders** (> 20 tabular formats, incl. tabular formats with XML extensions)
