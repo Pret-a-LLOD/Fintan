@@ -7,6 +7,9 @@
 git clone https://github.com/acoli-repo/fintan-backend.git
 cd fintan-backend/
 . build.sh 
+```
+### Demo
+```shell
 cd samples/xslt/apertium/
 . _apertium_demo.sh 
 
