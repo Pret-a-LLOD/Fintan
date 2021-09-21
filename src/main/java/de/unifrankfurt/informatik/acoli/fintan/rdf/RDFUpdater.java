@@ -68,12 +68,12 @@ import de.unifrankfurt.informatik.acoli.fintan.core.util.IOUtils;
  *  @author Christian Chiarcos {@literal chiarcos@informatik.uni-frankfurt.de}
  */
 public class RDFUpdater extends StreamRdfUpdater {
-	static final Logger LOG = LogManager.getLogger(RDFUpdater.class);
-	static final String DEFAULTUPDATENAME = "DIRECTUPDATE";
-	static final int MAXITERATE = 999;
-	static final List<Integer> CHECKINTERVAL = Arrays.asList(3, 10, 25, 50, 100, 200, 500);
-	static final String LOOKBACK_GRAPH = "https://github.com/acoli-repo/conll-rdf/lookback";
-	static final String LOOKAHEAD_GRAPH = "https://github.com/acoli-repo/conll-rdf/lookahead";
+	public static final Logger LOG = LogManager.getLogger(RDFUpdater.class);
+	public static final String DEFAULTUPDATENAME = "DIRECTUPDATE";
+	public static final int MAXITERATE = 999;
+	public static final List<Integer> CHECKINTERVAL = Arrays.asList(3, 10, 25, 50, 100, 200, 500);
+	public static final String LOOKBACK_GRAPH = "https://github.com/acoli-repo/conll-rdf/lookback";
+	public static final String LOOKAHEAD_GRAPH = "https://github.com/acoli-repo/conll-rdf/lookahead";
 
 	private final Dataset dataset;
 
