@@ -27,8 +27,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # install system dependencies
-#RUN apt-get update && \
-#    apt-get install -y --no-install-recommends gcc
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git
+RUN git clone https://github.com/acoli-repo/fintan-service.git .
 RUN pip install --upgrade pip
 COPY ./requirements.txt ./api.py ./openapi.yaml ./
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir ./wheels -r requirements.txt
