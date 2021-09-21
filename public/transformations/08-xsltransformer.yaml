@@ -1,0 +1,14 @@
+info:
+  title: XSL Transform
+  description: Apply an XSL transformation
+  class: XSLTStreamTransformer
+params:
+  - name: args
+    label: Additional arguments
+inputs:
+  - name: input
+    label: XML
+outputs:
+  - name: output
+    label: Data
+resources:

@@ -1,0 +1,44 @@
+info:
+  title: TARQL Transform
+  description: Transform TSV/CSV with TARQL
+  class: TarqlStreamTransformer
+params:
+  - name: delimiterCSV
+    label: Delimiter char for CSV
+  - name: tabs
+    label: Using tabs as separators
+    values:
+      - yes
+      - no
+    value: yes
+  - name: quoteChar
+    label: Character wrapping content
+  - name: escapeChar
+    label: Escape character
+  - name: encoding
+    label: Encoding
+    value: UTF-8
+  - name: headerRow
+    label: First row is a header
+    values:
+      - yes
+      - no
+    value: yes
+  - name: baseIRI
+    label: Base IRI
+  - name: write-base
+    label: Output @base
+    values:
+      - yes
+      - no
+    value: no
+  - name: dedup
+    label: Window size for deduplication
+    value: "0"
+inputs:
+  - name: input
+    label: CSV/TSV
+outputs:
+  - name: output
+    label: Turtle RDF
+resources:

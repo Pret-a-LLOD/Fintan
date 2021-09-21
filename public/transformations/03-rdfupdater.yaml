@@ -1,0 +1,21 @@
+info:
+  title: RDF Updater
+  description: Apply a SPARQL Update to a graph
+  class: RDFUpdater
+params:
+  - name: threads
+    label: CPU threads
+    value: 0
+  - name: lookahead
+    label: Number of segments for lookahead
+    value: 0
+  - name: lookback
+    label: Number of segments for lookback
+    value: 0
+inputs:
+  - name: input
+    label: Graph
+outputs:
+  - name: output
+    label: Graph
+resources:

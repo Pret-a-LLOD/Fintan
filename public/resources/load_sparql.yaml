@@ -1,0 +1,14 @@
+info:
+  title: SPARQL
+  description: Loads a SPARQL query
+inputs:
+outputs:
+resources:
+  - label: LOAD SPARQL
+    required: true
+params:
+  - name: sparql
+    label: Query
+    format: sparql
+    type: editor
+    value: ""

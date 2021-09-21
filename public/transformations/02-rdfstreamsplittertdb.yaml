@@ -1,0 +1,26 @@
+info:
+  title: RDF Splitter
+  description: Load and split segmented RDF based on SPARQL queries
+  class: RDFStreamSplitterTDB
+params:
+  - name: lang
+    label: RDF serialization
+    values:
+      - ttl
+      - Turtle
+      - RDF/XML
+      - N3
+    value: ttl
+  - name: tdbPath
+    label: TDB path
+  - name: segmentStreams
+    label: Segment streams
+  - name: deltaStreams
+    label: Delta streams
+inputs:
+  - name: input
+    label: RDF
+outputs:
+  - name: output
+    label: Graph
+resources:

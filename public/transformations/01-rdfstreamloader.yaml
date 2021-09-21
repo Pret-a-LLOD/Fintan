@@ -1,0 +1,30 @@
+info:
+  title: RDF Loader
+  description: Load and split segmented RDF with the default splitting strategy
+  class: RDFStreamLoader
+params:
+  - name: lang
+    label: RDF serialization
+    values:
+      - ttl
+      - Turtle
+      - RDF/XML
+      - N3
+    value: ttl
+  - name: delimiter
+    label: Delimiter
+    value:
+  - name: globalPrefixes
+    label: Prefixes are set globally
+    type: bool
+    value: true
+    values:
+      - yes
+      - no
+inputs:
+  - name: input
+    label: RDF
+outputs:
+  - name: output
+    label: Graph
+resources:

@@ -1,0 +1,13 @@
+info:
+  title: Upload XML
+  description: Upload input data in XML
+params:
+  - name: filename
+    label: Source file
+    type: file
+    format: xml
+inputs:
+outputs:
+  - name: uploaded
+    label: Uploaded XML
+resources:

@@ -1,0 +1,31 @@
+info:
+  title: SPARQL Transform
+  description: Serialise RDF data with SPARQL SELECT
+  class: SparqlStreamTransformerTDB
+params:
+  - name: outFormat
+    label: Output format
+    values:
+      - ""
+      - CoNLL
+      - TSV
+    value:
+  - name: escapeChar
+    label: Escape character
+    value:
+  - name: delimiterCSV
+    label: Column delimiter for CSV
+    value: \t
+  - name: quoteChar
+    label: Cell wrapping character
+    value:
+  - name: emptyChar
+    label: Character denoting an empty cell
+    value: _
+inputs:
+  - name: input
+    label: RDF
+outputs:
+  - name: output
+    label: Data
+resources:

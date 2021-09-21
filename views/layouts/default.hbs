@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Fintan is a data transformation platform">
+	<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+
+	<title>{{ title }}</title>
+
+	<!-- Latest boostrap and font awesome compiled and minified CSS -->
+	<link rel="stylesheet" href="/plugins/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/plugins/font-awesome/css/font-awesome.min.css" type="text/css" >
+    <link rel="stylesheet" href="/plugins/yasqe/yasqe.css" type="text/css" >
+	
+	<!-- Custom CSS -->
+    <link href="/css/style.css?arg=1" rel="stylesheet">
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+
+    <script src="/plugins/yasqe/yasqe.bundled.js"></script>
+    <script src="/plugins/jszip/jszip.js" type="module"></script>
+    <script src="/plugins/FileSaver/FileSaver.js" type="module"></script>
+</head>
+
+<body id="page-top" class="fixed-nav sticky-footer platform">
+
+	<!-- Navigation-->
+	<nav class="navbar navbar-expand-lg topbar fixed-top navbar-dark" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="../">
+                <img class="pull-left" src="/images/fintan-logo.png" height="30"> &nbsp;
+                Fintan
+            </a>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+
+            <ul class="navbar-nav ml-auto" style="position: relative">
+                <li><a href="/pipelines/create" class="nav-link"><i class="fa fa-edit fa-fw"></i> Create a pipeline</a></li>
+                <li><a href="/pipelines/list" class="nav-link"><i class="fa fa-edit fa-fw"></i> Available Transformations</a></li>
+                <li><a href="/pipelines/status" class="nav-link"><i class="fa fa-edit fa-fw"></i> Tasks status</a></li>
+            </ul>
+        </div>
+
+	</nav>
+
+    <div class="container">
+
+        {{{ body }}}
+
+        <br clear="all"><br>
+    </div> <!-- /.container -->
+
+	<footer class="sticky-footer border-top">
+		<div class="container">
+			<div class="text-right">
+				<small><a href="https://github.com/acoli-repo/fintan-backend">GitHub</a></small>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Scroll to Top Button-->
+	<a class="scroll-to-top btn btn-primary" href="#page-top">
+		<i class="fa fa-angle-up"></i>
+	</a>
+
+	<!-- jQuery plugin JavaScript-->
+	<script src="/plugins/jquery/jquery.min.js"></script>
+	<script src="/plugins/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+	<script src="/plugins/jquery-easing/jquery.easing.min.js"></script>
+
+	<!-- Bootstrap core JavaScript-->
+	<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Custom JavaScript -->
+	<script src="/scripts/main.js"></script>
+
+
+	<!-- Flowchart plugin to show graphical pipeline -->
+    <script src="/plugins/jquery-panzoom/panzoom.js"></script>
+    <script src="/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+	<script src="/plugins/jquery-flowchart/jquery.flowchart.js"></script>
+
+	<script type="text/javascript">
+		function showHide(thisValue, field, value) {
+			if (thisValue === value){
+				$('#'+field).toggleClass("hide");
+				$('#'+field+'label').toggleClass("hide");
+			}
+			return this;
+		}
+
+		(function( $ ){
+
+		$.fn.solveForm = function(jsonObj, divID) {
+			var html = '<p class="alert alert-info">'+jsonObj.service_description+'</p>';
+			html += '<form';
+			$.each(jsonObj, function(key, value){
+				if(key === "params" || key === "service_description" || key === "output") { return; }
+				html += ' ' + key + ' = ';
+				html += '"' + value + '"';
+				
+			 });
+			html += '>';
+
+			$.each(jsonObj["params"], function(key, value){
+				
+				html += '<div class="'+jsonObj.class+'">';
+
+				switch( value.type ) {
+					case "hidden":
+						html += '<input name ="' + key +'" ';
+						$.each(value, function(newKey, newValue){
+							html += ' ' + newKey + ' = ';
+							html += '"' + newValue + '"';
+						});
+						html += '>';
+						break;
+
+					case "select":
+						html += '<label class="'+value.labelClass+'" for="'+key+'" id="' + key +'label">'+value.label+'</label>';
+						html += '<select class="'+value.class+'" id="' + key +'" name="' + key +'"';
+
+						if (value.onchange !== undefined) {
+							html += ' onchange=\''+value.onchange+'\' ';
+						}
+						html +='>';
+						html += '<option value="">Please Select</option>';
+
+						$.each(value.options, function(newKey, newValue){
+							html += '<option value="' + newKey + '">' + newValue + '</option>';
+						});
+						html += '</select>';
+						break;
+
+					case "textarea":
+						html += '<label class="'+value.labelClass+'" for="'+key+'" id="' + key +'label">'+value.label+'</label>';
+						html += '<textarea class="'+value.class+'"  name ="' + key +'" ';
+						$.each(value, function(newKey, newValue){
+							html += ' ' + newKey + ' = ';
+							html += '"' + newValue + '"';
+						});
+						html += '>';
+						html += '</textarea>';
+						break;
+
+					case "text":
+						html += '<label class="'+value.labelClass+'" for="'+key+'" id="' + key +'label">'+value.label+'</label>';
+						html += '<input name ="' + key +'" ';
+						$.each(value, function(newKey, newValue){
+							html += ' ' + newKey + ' = ';
+							html += '"' + newValue + '"';
+						});
+						html += '>';
+						break;
+				}
+
+				html += '</div>';
+				
+			 });
+
+			html += '<button type="submit" class="btn btn-primary">Submit</button>';
+
+			html += '</form>';
+			
+			$(divID).html(html);
+
+		  return this;
+	   };
+
+	})( jQuery );
+	</script>
+</body>
+</html>

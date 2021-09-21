@@ -1,0 +1,16 @@
+info:
+  title: CoNLL Loader
+  description: transform CoNLL to CoNLL-RDF
+  class: CoNLLStreamExtractor
+  params:
+    baseURI:
+      type: string
+    columns:
+      type: array
+inputs:
+  - name: input
+    label: CoNLL-TSV
+outputs:
+  - name: output
+    label: CoNLL-RDF
+resources:

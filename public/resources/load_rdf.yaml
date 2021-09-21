@@ -1,0 +1,19 @@
+info:
+  title: RDF
+  description: Loads an RDF resource
+inputs:
+outputs:
+resources:
+  - label: LOAD Resource
+    required: true
+params:
+  - name: source
+    label: Source file
+    format: rdf
+    type: file
+  - name: lang
+    label: RDF serialization
+    values:
+      - Turtle
+      - RDF/XML
+      - N-Triples
