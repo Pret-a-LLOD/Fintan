@@ -1,0 +1,77 @@
+openapi: '3.0.0'
+info:
+  title: Fintan pipeline
+  description: Teanga-compatible block executing a Fintan pipeline
+  version: 0.5.0
+paths:
+  /api/run:
+    post:
+      operationId: api.execute_pipeline
+      summary: Executes the default pipeline and returns the JSON serialisation of the output
+      parameters:
+        - in: path
+          name: params
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              #required:
+              #  - text
+          application/gzip:
+            schema:
+              type: string
+              format: binary
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+  /api/run/{pipeline}:
+    post:
+      operationId: api.execute_pipeline
+      summary: Executes the pipeline and returns the JSON serialisation of the output
+      parameters:
+        - in: path
+          name: pipeline
+          required: true  # this is necessary because OpenAPI does not support optional path parameters
+          schema:
+            type: string
+        - in: path
+          name: params
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+          application/gzip:
+            schema:
+              type: string
+              format: binary
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string

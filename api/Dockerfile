@@ -1,0 +1,71 @@
+FROM openjdk:11-jdk-slim-buster AS fintan-builder
+WORKDIR /fintan
+
+# required for some of the packages since man pages are cut from the slim debian image
+RUN mkdir -p /usr/share/man/man1
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    openjfx \
+    maven \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Downloading Fintan release and removing all things Git
+RUN git clone --depth 1 https://github.com/acoli-repo/fintan-backend.git \
+  && rm -rf fintan-backend/.git
+# Fixes for the tests that do not work when OLiA ontology is not available.
+# TODO: Remove when tests not require UniFrankfurt server availiability
+RUN  sed -i -e 's/^mvn /mvn --batch-mode --quiet -DskipTests /g' fintan-backend/build.sh \
+  && cd fintan-backend && chmod +x build.sh run.sh \
+  && ./build.sh \
+  && rm -rf ../fintan-core/.git && rm -rf ../tarql/.git && rm -rf ../conll-rdf/.git
+
+FROM python:3.7.10-slim-buster AS api-builder
+WORKDIR /api-build
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install system dependencies
+#RUN apt-get update && \
+#    apt-get install -y --no-install-recommends gcc
+RUN pip install --upgrade pip
+COPY ./requirements.txt ./api.py ./openapi.yaml ./
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir ./wheels -r requirements.txt
+
+FROM openjdk:11-jdk-slim-buster AS fintan-api
+WORKDIR /fintan
+
+# create the app user
+RUN addgroup --system fintan && adduser --system --group fintan
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends maven python3.7 python3-pip \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV FINTAN_PIPELINES=/fintan/pipelines/
+ENV FINTAN_DATA=/fintan/data/
+ENV FINTAN_PATH=/fintan/fintan-backend/
+# a hack to optionally copy the data directory
+COPY ./*.json /fintan/pipelines/
+COPY ./data /fintan/data
+
+COPY --from=fintan-builder /fintan /
+COPY --from=api-builder /api-build/wheels /wheels
+COPY --from=api-builder /api-build/requirements.txt /api-build/api.py /api-build/openapi.yaml /fintan/
+
+RUN pip3 install --no-cache /wheels/* \
+  && cd ../fintan-backend && ./build.sh && cd ../fintan
+
+# chown all the files to the app user
+RUN chown -R fintan:fintan /fintan*
+
+# change to the app user
+USER fintan
+
+EXPOSE 8080
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "api:app", "--log-level=info", "--workers=4", "--log-file=/fintan/error.log", "--timeout=1200"]
+
+# QUESTIONS:
+# 1. do we need openjfx?
+# 2. how do I copy built packages to the next stage?
