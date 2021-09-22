@@ -40,7 +40,7 @@
 				// GRAMMAR and SEMANTICS can be combined
 				//, {"mode":"GRAMMAR"}
 				//, {"mode":"SEMANTICS"}
-				//, {"mode":"GRAMMAR+SEMANTICS"}
+				{"mode":"GRAMMAR+SEMANTICS"}
 		]
 	} 
 	
