@@ -1,6 +1,7 @@
 package de.unifrankfurt.informatik.acoli.fintan.rdf;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.jena.rdf.model.Model;
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanInputStream;
+import de.unifrankfurt.informatik.acoli.fintan.core.FintanOutputStream;
 import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
 import de.unifrankfurt.informatik.acoli.fintan.core.StreamRdfUpdater;
 
@@ -46,6 +48,24 @@ public class RDFStreamDuplicator extends StreamRdfUpdater implements FintanStrea
 		} else {
 			throw new IOException("Only default InputStream is supported for "+RDFStreamDuplicator.class.getName());
 		}
+	}
+	
+	/**
+	 * Override in order to allow underspecified stream names.
+	 * Graph names are unnecessary in duplicators.
+	 */
+	@Override
+	public void setOutputStream(FintanOutputStream<Model> outputStream) throws IOException {
+		super.setOutputStream(outputStream, Integer.toString(outputStream.hashCode()));
+	}
+	
+	/**
+	 * Override in order to allow underspecified stream names.
+	 * Graph names are unnecessary in duplicators.
+	 */
+	@Override
+	public void setOutputStream(FintanOutputStream<Model> outputStream, String name) throws IOException {
+			setOutputStream(outputStream);
 	}
 	
 	private void processStream() {

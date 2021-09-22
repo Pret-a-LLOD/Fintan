@@ -3,6 +3,7 @@ package de.unifrankfurt.informatik.acoli.fintan.genericIO;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.apache.commons.cli.ParseException;
@@ -46,6 +47,24 @@ public class IOStreamDuplicator extends StreamTransformerGenericIO implements Fi
 		} else {
 			throw new IOException("Only default InputStream is supported for "+IOStreamDuplicator.class.getName());
 		}
+	}
+	
+	/**
+	 * Override in order to allow underspecified stream names.
+	 * Graph names are unnecessary in duplicators.
+	 */
+	@Override
+	public void setOutputStream(OutputStream outputStream) throws IOException {
+		super.setOutputStream(outputStream, Integer.toString(outputStream.hashCode()));
+	}
+	
+	/**
+	 * Override in order to allow underspecified stream names.
+	 * Graph names are unnecessary in duplicators.
+	 */
+	@Override
+	public void setOutputStream(OutputStream outputStream, String name) throws IOException {
+			setOutputStream(outputStream);
 	}
 	
 	private void processStream() throws IOException {
