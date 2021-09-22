@@ -1,236 +1,40 @@
-{ 
-"input" : null
-, "output" : null
-, "pipeline" : null
-, "components" : [
-	{
-	  "componentInstance" : "dix_Dupl",
-	  "class" : "IOStreamDuplicator"
-	} ,
-	{ 
-	  "componentInstance" : "dix2src",
-	  "class" : "XSLTStreamTransformer",
-	  "xsl" : "samples/xslt/apertium/dix2src-ttl.xsl LANG=<$param1> dc_source=<$param0>"
+{
+  "input" : "samples/conll-rdf/ud/UD_English-master/en-ud-dev.conllu.gz"
+, "output" : "System.out"
+, "pipeline" : [ 
+	{ "class" : "CoNLLStreamExtractor",
+		"baseURI" : "https://github.com/UniversalDependencies/UD_English#",
+		"columns" : ["ID", "WORD", "LEMMA", "IGNORE", "POS", "IGNORE", "IGNORE", "IGNORE", "IGNORE", "IGNORE"]
 	},
-	{ 
-	  "componentInstance" : "dix2tgt",
-	  "class" : "XSLTStreamTransformer",
-	  "xsl" : "samples/xslt/apertium/dix2tgt-ttl.xsl LANG=<$param2> dc_source=<$param0>"
-	},
-	{ 
-	  "componentInstance" : "dix2trans",
-	  "class" : "XSLTStreamTransformer",
-	  "xsl" : "samples/xslt/apertium/dix2trans-ttl.xsl SRC_LANG=<$param1> TGT_LANG=<$param2> dc_source=<$param0>"
-	},
-	{
-	  "componentInstance" : "src_noLexinfoDupl",
-	  "class" : "IOStreamDuplicator"
-	} ,
-	{
-	  "componentInstance" : "tgt_noLexinfoDupl",
-	  "class" : "IOStreamDuplicator"
-	} ,
-	{
-	  "componentInstance" : "trans_Dupl",
-	  "class" : "IOStreamDuplicator"
-	} ,
-	{ 
-	  "componentInstance" : "ttlLoader",
-	  "class" : "RDFStreamLoader",
-	  "lang" : "ttl",
-	  "delimiter" : "",
-	  "globalPrefixes" : true
-	} ,
-	{ 
-	  "componentInstance" : "src_update",
-	  "class" : "RDFUpdater"
-	    , "models" : [
-			{"source":"samples/xslt/apertium/apertium-lexinfo-enrichment-update.ttl", "graph":"http://apertium-lexinfo-enrichment-update.ttl"}
+	{ "class" : "CoNLLRDFUpdater"
+		, "models" : [
+			{"source":"http://purl.org/olia/penn.owl", "graph":"http://purl.org/olia/penn.owl"}
+			,{"source":"http://purl.org/olia/penn-link.rdf", "graph":"http://purl.org/olia/penn.owl"}
+			,{"source":"http://purl.org/olia/olia.owl", "graph":"http://purl.org/olia/olia.owl"}
 	    ]
 		, "updates" : [
-			{"path":"samples/xslt/apertium/apertium-pos.sparql", "iter":"1"}
+			{"path":"samples/conll-rdf/sparql/remove-ID.sparql", "iter":"1"}
+			,{"path":"samples/conll-rdf/sparql/remove-IGNORE.sparql", "iter":"1"}
+			
+			,{"path":"samples/conll-rdf/sparql/link/link-penn-POS.sparql", "iter":"1"}
+			,{"path":"samples/conll-rdf/sparql/link/remove-annotation-model.sparql", "iter":"1"}
+			,{"path":"samples/conll-rdf/sparql/link/infer-olia-concepts.sparql", "iter":"1"}
+			
+			,{"path":"samples/conll-rdf/sparql/parse/initialize-SHIFT.sparql", "iter":"1"}
+			,{"path":"samples/conll-rdf/sparql/parse/REDUCE-english-1.sparql", "iter":"5"}
+			,{"path":"samples/conll-rdf/sparql/parse/REDUCE-english-2.sparql", "iter":"5"}
+			,{"path":"samples/conll-rdf/sparql/parse/REDUCE-english-3.sparql", "iter":"5"}
+			,{"path":"samples/conll-rdf/sparql/parse/REDUCE-english-4.sparql", "iter":"5"}
+			,{"path":"samples/conll-rdf/sparql/parse/REDUCE-to-HEAD.sparql", "iter":"1"}
 		]
 	} ,
-	{ 
-	  "componentInstance" : "tgt_update",
-	  "class" : "RDFUpdater"
-		, "updates" : [
-			{"path":"samples/xslt/apertium/apertium-pos.sparql", "iter":"1"}
+	
+	
+	{ "class" : "CoNLLRDFFormatter"
+		, "modules" : [
+				{"mode":"GRAMMAR+SEMANTICS"}
 		]
-	} ,
-	{ 
-	  "componentInstance" : "ttlWriter",
-	  "class" : "RDFStreamWriter",
-	  "lang" : "ttl",
-	  "delimiter" : "",
-	  "prefixDeduplication" : true
-	} ,
-	{
-	  "componentInstance" : "src_LexinfoDupl",
-	  "class" : "IOStreamDuplicator"
-	} ,
-	{
-	  "componentInstance" : "tgt_LexinfoDupl",
-	  "class" : "IOStreamDuplicator"
-	} ,
-	{
-	  "componentInstance" : "all_2tiad",
-	  "class" : "SparqlStreamTransformerTDB",
-	  "lang" : "ttl",
-	  "outFormat" : "tsv",
-	  "query" : "samples/xslt/apertium/ontolex2tsv.sparql"
 	} 
-  ]
-  
-  
-  
-  
-, "streams" : [
-    {
-    	"readsFromSource" : "samples/xslt/apertium/data/apertium-en-es.en-es.dix",
-    	"writesToInstance" : "dix_Dupl"
-    },
-    
-    
-    {
-    	"readsFromInstance" : "dix_Dupl",
-    	"readsFromInstanceGraph" : "http://src",
-    	"writesToInstance" : "dix2src"
-    },
-    {
-    	"readsFromInstance" : "dix2src",
-    	"writesToInstance" : "src_noLexinfoDupl"
-    },
-    
-    
-    {
-    	"readsFromInstance" : "dix_Dupl",
-    	"readsFromInstanceGraph" : "http://tgt",
-    	"writesToInstance" : "dix2tgt"
-    },
-    {
-    	"readsFromInstance" : "dix2tgt",
-    	"writesToInstance" : "tgt_noLexinfoDupl"
-    },
-    
-    
-    {
-    	"readsFromInstance" : "dix_Dupl",
-    	"readsFromInstanceGraph" : "http://trans",
-    	"writesToInstance" : "dix2trans"
-    },
-    {
-    	"readsFromInstance" : "dix2trans",
-    	"writesToInstance" : "trans_Dupl"
-    },
-    
-    
-    {
-    	"readsFromSource" : "samples/xslt/apertium/apertium-lexinfo-enrichment-update.ttl",
-    	"writesToInstance" : "ttlLoader",
-    	"writesToInstanceGraph" : "http://apertium-lexinfo-enrichment-update.ttl"
-    },
-    {
-    	"readsFromInstance" : "ttlLoader",
-    	"readsFromInstanceGraph" : "http://apertium-lexinfo-enrichment-update.ttl",
-    	"writesToInstance" : "tgt_update",
-    	"writesToInstanceGraph" : "http://apertium-lexinfo-enrichment-update.ttl"
-    },
-    
-    
-    {
-    	"readsFromInstance" : "src_noLexinfoDupl",
-    	"writesToInstance" : "ttlLoader",
-    	"writesToInstanceGraph" : "http://src_noLexinfo"
-    },
-    {
-    	"readsFromInstance" : "ttlLoader",
-    	"readsFromInstanceGraph" : "http://src_noLexinfo",
-    	"writesToInstance" : "src_update"
-    },
-    {
-    	"readsFromInstance" : "src_update",
-    	"writesToInstance" : "ttlWriter",
-    	"writesToInstanceGraph" : "http://src_Lexinfo"
-    },
-    {
-    	"readsFromInstance" : "ttlWriter",
-    	"readsFromInstanceGraph" : "http://src_Lexinfo",
-    	"writesToInstance" : "src_LexinfoDupl"
-    },
-    
-    
-    
-    {
-    	"readsFromInstance" : "tgt_noLexinfoDupl",
-    	"writesToInstance" : "ttlLoader",
-    	"writesToInstanceGraph" : "http://tgt_noLexinfo"
-    },
-    {
-    	"readsFromInstance" : "ttlLoader",
-    	"readsFromInstanceGraph" : "http://tgt_noLexinfo",
-    	"writesToInstance" : "tgt_update"
-    },
-    {
-    	"readsFromInstance" : "tgt_update",
-    	"writesToInstance" : "ttlWriter",
-    	"writesToInstanceGraph" : "http://tgt_Lexinfo"
-    },
-    {
-    	"readsFromInstance" : "ttlWriter",
-    	"readsFromInstanceGraph" : "http://tgt_Lexinfo",
-    	"writesToInstance" : "tgt_LexinfoDupl"
-    },
-    
-    
-    
-    {
-    	"readsFromInstance" : "src_LexinfoDupl",
-    	"writesToInstance" : "all_2tiad",
-    	"writesToInstanceGraph" : "http://src"
-    },
-    {
-    	"readsFromInstance" : "tgt_LexinfoDupl",
-    	"writesToInstance" : "all_2tiad",
-    	"writesToInstanceGraph" : "http://tgt"
-    },
-    {
-    	"readsFromInstance" : "trans_Dupl",
-    	"writesToInstance" : "all_2tiad",
-    	"writesToInstanceGraph" : "http://trans"
-    },
-    {
-    	"readsFromInstance" : "all_2tiad",
-    	"writesToDestination" : "samples/xslt/apertium/data/tiad.tsv"
-    },
-    
-    
-    
-    
-    {
-    	"readsFromInstance" : "src_noLexinfoDupl",
-    	"readsFromInstanceGraph" : "http://src_noLexinfo.ttl",
-    	"writesToDestination" : "samples/xslt/apertium/data/src_noLexinfo.ttl"
-    },
-    {
-    	"readsFromInstance" : "tgt_noLexinfoDupl",
-    	"readsFromInstanceGraph" : "http://tgt_noLexinfo.ttl",
-    	"writesToDestination" : "samples/xslt/apertium/data/tgt_noLexinfo.ttl"
-    },
-    {
-    	"readsFromInstance" : "src_LexinfoDupl",
-    	"readsFromInstanceGraph" : "http://src_Lexinfo.ttl",
-    	"writesToDestination" : "samples/xslt/apertium/data/src_Lexinfo.ttl"
-    },
-    {
-    	"readsFromInstance" : "tgt_LexinfoDupl",
-    	"readsFromInstanceGraph" : "http://tgt_Lexinfo.ttl",
-    	"writesToDestination" : "samples/xslt/apertium/data/tgt_Lexinfo.ttl"
-    },
-    {
-    	"readsFromInstance" : "trans_Dupl",
-    	"readsFromInstanceGraph" : "http://trans.ttl",
-    	"writesToDestination" : "samples/xslt/apertium/data/trans.ttl"
-    }
-  ]
+	
+]
 }

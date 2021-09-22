@@ -1,0 +1,17 @@
+{
+"input" : "samples/conll-rdf/ud/UD_English-master/en-ud-dev.conllu.gz"
+, "output" : "System.out"
+, "pipeline" : [ 
+
+	{ "class" : "CoNLLStreamExtractor",
+		"baseURI" : "https://github.com/UniversalDependencies/UD_English#",
+		"columns" : ["ID", "WORD", "LEMMA", "UPOS", "POS", "FEAT", "HEAD", "EDGE", "DEPS", "MISC"]
+	},
+	
+	{ "class" : "CoNLLRDFFormatter",
+		"modules" : [
+				{"mode":"RDF", "columns": ["ID", "WORD", "LEMMA", "UPOS", "POS", "FEAT", "HEAD", "EDGE", "DEPS", "MISC"]}
+		]
+	}
+]
+}

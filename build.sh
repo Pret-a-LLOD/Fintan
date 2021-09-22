@@ -13,7 +13,7 @@ cd fintan-core
 mvn --batch-mode --quiet -DskipTests clean install
 
 cd $HOME
-git clone https://github.com/acoli-repo/conll-rdf.git
+git clone -b fintan-support https://github.com/acoli-repo/conll-rdf.git
 cd conll-rdf
 mvn --batch-mode --quiet -DskipTests clean install
 
