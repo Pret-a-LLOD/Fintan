@@ -3,6 +3,21 @@
 # Backend modules
 These components are not part of the Core API since they rely on additional dependencies apart from Apache Jena. They are managed as additional imports of the Fintan backend and included in the build script.
 
+## CoNLL-RDF
+As mentioned in previous sections, CoNLL-RDF is the spiritual predecessor of Fintan and shares many common functionalities, like stream-based graph processing. The software suite encompasses support for corpora in many formats:
+* any CoNLL dialect
+* Penn treebank-like bracket structures for syntax trees
+* mixed XML-TSV formats
+* TenTen
+* ...
+
+CoNLL-RDF is now also part of the Fintan backend. The core classes implementing CoNLLRDFComponent available in the CoNLL-RDF library have been refactored to directly implement the Fintan core architecture. The JSON-configuration scheme is backward compatible with CoNLL-RDF, so no changes to existing configuration files need to be made. They can be directly loaded and processed by the FintanManager class. For instructions on how to use CoNLL-RDF, please refer to the tutorials in the [CoNLL-RDF github repository](https://github.com/acoli-repo/conll-rdf) and publications referenced there. There are also a few samples of preexisting CoNLL-RDF pipelines included in the [fintan-backend](https://github.com/acoli-repo/fintan-backend/tree/master/samples/conll-rdf) repository.
+
+The following classes are available as Fintan components:
+* `CoNLLStreamExtractor` for converting CoNLL to CoNLL-RDF
+* `CoNLLRDFUpdater` for applying updates specifically to CoNLL-RDF corpora. In contrast to the Fintan `RDFUpdater` it allows visual debugging using the `graphsout` parameter.
+* `CoNLLRDFFormatter` for creating custom output (e.g. *CoNLL-RDF canonical format*, a human- and machine-readable Turtle dialect)
+
 ## Read generic TSV/CSV data
 While CoNLL-RDF in principle does support any kind of TSV data, it is limited to converting it to the CoNLL-RDF data model. Using the Updater this can in principle be transformed into any other data model (e.g. OntoLex-Lemon, as we described for the Universal Morphologies in the previous report D3.2). However, this might not be the most efficient way of converting tabular data beyond the scope of text corpora and tab separated values..
 
