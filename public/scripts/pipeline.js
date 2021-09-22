@@ -595,7 +595,7 @@ window.onload = function() {
 			}
 
 			// saving the pipeline
-			window.pipeline = new File([JSON.stringify(json)], "pipeline.json");
+			window.pipeline = new File([JSON.stringify(json, null, 2)], "pipeline.json");
 			// console.log(JSON.stringify(json, null, 2));
 			let ulFiles = $('#uploadFiles');
 			ulFiles.find('li').remove();
@@ -605,21 +605,17 @@ window.onload = function() {
 					e.stopPropagation();
 					return;
 				}
-				ulFiles.append($('<li class="list-group-item">' + (val.name === 'pipeline.json' ? '' : 'data/') + val.name + '</li>'));
+				ulFiles.append($('<li class="list-group-item">data/' + val.name + '</li>'));
 			}
 			ulFiles.append($('<li class="list-group-item">pipeline.json</li>'));
 		});
 
 		$('#getZip').on('click', function () {
 			let zip = new JSZip();
-			//let dataFolder = zip.folder("data");
+			zip.file('pipeline.json', window.pipeline);
 
-			for (const [key, val] of Object.entries(window.filenames)) {
-				if (val.name === 'pipeline.json')
-					zip.file('data/' + val.name, val);
-				else
-					zip.file(val.name, val);
-			}
+			for (const [key, val] of Object.entries(window.filenames))
+				zip.file('data/' + val.name, val);
 
 			fetch('/service-dockerfile')
 				.then(response => response.text())
