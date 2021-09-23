@@ -130,7 +130,7 @@ cd fintan-backend/
 * run the pipeline above:
 
 ```
-run.sh -c apertium.json -p https://someURI en es
+. run.sh -c samples/xslt/apertium/_demo-apertium-full-with-tiad.json -p https://github.com/apertium/apertium-trunk.git en es
 ```
 
 The -c option defines the JSON configuration, while the -p option defines the parameters.
