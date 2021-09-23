@@ -1,4 +1,4 @@
-package de.unifrankfurt.informatik.acoli.fintan.genericIO;
+package org.acoli.fintan.genericIO;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
 
+import org.acoli.fintan.core.FintanStreamComponentFactory;
+import org.acoli.fintan.core.StreamTransformerGenericIO;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.sf.saxon.s9api.Processor;
@@ -18,8 +21,6 @@ import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 import net.sf.saxon.trans.CommandLineOptions;
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
-import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
 
 /**
  * Stream component which reads XML data and applies XSLT transformation to 

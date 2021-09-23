@@ -1,4 +1,4 @@
-package de.unifrankfurt.informatik.acoli.fintan.genericIO;
+package org.acoli.fintan.genericIO;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,8 +23,6 @@ import org.deri.tarql.URLOptionsParser;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import de.unifrankfurt.informatik.acoli.fintan.core.FintanStreamComponentFactory;
-import de.unifrankfurt.informatik.acoli.fintan.core.StreamTransformerGenericIO;
 import jena.cmd.ArgDecl;
 import jena.cmd.CmdGeneral;
 
@@ -34,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import org.acoli.fintan.core.FintanStreamComponentFactory;
+import org.acoli.fintan.core.StreamTransformerGenericIO;
 import org.apache.jena.atlas.io.IndentedWriter;
 import org.apache.jena.atlas.lib.Lib;
 import org.apache.jena.graph.Triple;
