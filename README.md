@@ -21,7 +21,7 @@ cd samples/xslt/apertium/
 * **Maxim Ionov** 
 * **Leo Gottfried** 
 
-See also the list of [contributors](https://github.com/acoli-repo/fintan-core/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/acoli-repo/fintan-backend/graphs/contributors) who participated in this project.
 
 ## Reference
 * Fäth C., Chiarcos C., Ebbrecht B., Ionov M. (2020), Fintan - Flexible, Integrated Transformation and Annotation eNgineering. In: Proceedings of the 12th Language Resources and Evaluation Conference. LREC 2020. pp 7212-7221.
