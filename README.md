@@ -36,14 +36,14 @@ This repository has been created in context of
 ## Licenses
 The repositories for Fintan are being published under multiple licenses. All native code and documentation falls under an Apache 2.0 license. [LICENSE.main](LICENSE.main.txt). The examples in the backend repository contain data and some SPARQL scripts from external sources: CC-BY 4.0 for all data from universal dependencies and SPARQL scripts from the CoNLL-RDF repository, see [LICENSE.data](LICENSE.data.txt). The included Apertium data maintains its original copyright, i.e., GNU GPL 3.0, see [LICENSE.data.apertium](LICENSE.data.apertium.txt). Code from external dependencies and submodules is not redistributed with this package but fetched directly from the respective source repositories during build process and thus adheres to the respective Licenses. 
 
-### LICENCE.main (Apache 2.0)
+### LICENSE.main (Apache 2.0)
 ```
 ├── https://github.com/acoli-repo/fintan-doc/ 
 ├── https://github.com/acoli-repo/fintan-core/  
 └── https://github.com/acoli-repo/fintan-backend/
 	└──[ see exceptions below ]
 ```
-### LICENCE.data (CC-BY 4.0)
+### LICENSE.data (CC-BY 4.0)
 ```
 └── https://github.com/acoli-repo/fintan-backend/  
 	├── samples/conll-rdf/  
@@ -53,7 +53,7 @@ The repositories for Fintan are being published under multiple licenses. All nat
 		├── en-ud-tiny.conllu.gz.linked.ttl
 		└── en-ud-train.conllu.gz.linked.ttl
 ```
-### LICENCE.data.apertium (GNU GPL 3.0)
+### LICENSE.data.apertium (GNU GPL 3.0)
 ```
 └── https://github.com/acoli-repo/fintan-backend/  
 	└── samples/xslt/apertium/data
