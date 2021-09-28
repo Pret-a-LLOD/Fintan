@@ -2,6 +2,7 @@
 ![Fintan](img/Fintan.PNG)
 # Software Documentation
 The Fintan platform is an effort of combining existing converter frameworks with stream-based graph transformation and a workflow management engine in order to create integrated transformation pipelines for various input and output formats.
+![Fintan UI](img/Fintan-UI.PNG)
 
 ## Table of Contents:
 
@@ -11,10 +12,11 @@ The Fintan platform is an effort of combining existing converter frameworks with
 
 [2. Developing and running pipelines](2-run-pipelines.md)
 
-[3.a Fintan Core Modules](3a-core-modules.md)
+[3.a Fintan Core Components](3a-core-components.md)
 
-[3.b Fintan Backend Modules (External API)](3b-backend-modules.md)
+[3.b Fintan Backend Components](3b-backend-components.md)
 
+[3.c Build your own Components](3c-build-custom-components.md)
 
 ## Authors and Maintainers
 * **Christian Fäth** - faeth@em.uni-frankfurt.de

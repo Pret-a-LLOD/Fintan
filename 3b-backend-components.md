@@ -1,6 +1,6 @@
 [back to top](README.md)
 
-# Backend modules
+# Backend components
 These components are not part of the Core API since they rely on additional dependencies apart from Apache Jena. They are managed as additional imports of the Fintan backend and included in the build script.
 
 ## CoNLL-RDF

@@ -1,6 +1,6 @@
 [back to top](README.md)
 
-# Core modules
+# Core components
 
 As described in [Software concept](1-software-concept.md), Fintan primarily utilizes 4 abstract classes to define its components:
 `StreamTransformerGenericIO` for processing serialized RDF or generic data
@@ -12,11 +12,11 @@ As described in [Software concept](1-software-concept.md), Fintan primarily util
 
 The class diagram depicts how they interact with the Core API. The FintanManager instantiates a FintanStreamComponent by using its respective Factory interface. The `FintanStreamComponent` is generically typed for input and output but provides methods for handling named and default input and output streams. A `FintanStreamComponent` can be started by calling its `start()` method. The four main interface classes described above then specify the typing of their accepted I/O streams. 
 
-In this section we will now describe the functional modules implementing these abstract classes and interfaces.
+In this section we will now describe the functional components implementing these abstract classes and interfaces.
 
 
 ## StreamDuplicators
-`StreamDuplicators` provide the most basic functionality. They just copy the content of their respective default input stream to all of their attached output streams. Therefore they do not accept named input streams. They are necessary for processing the same data with independent modules or for just piping out intermediate results to files.
+`StreamDuplicators` provide the most basic functionality. They just copy the content of their respective default input stream to all of their attached output streams. Therefore they do not accept named input streams. They are necessary for processing the same data with independent components or for just piping out intermediate results to files.
 
 As Fintan currently supports two types of streams, there are two separate Duplicators:
 `IOStreamDuplicator` for regular text streams
@@ -102,7 +102,7 @@ The `RDFUpdater` class shares much of its baseline implementation and arguments 
 
 This allows for complex (and even recursive) updates which produce a lot of overhead on large databases to be executed on multiple small fragments of data at the same time, and, depending on the use case, can provide a large performance increase due to reduced processing and memory overhead and a better usage of available processing power.
 
-The following parameters can be used to configure RDFUpdater modules:
+The following parameters can be used to configure RDFUpdater instances:
 * `threads` is an optional parameter to specify the maximum amount of parallel worker threads. If it is unspecified or less than 1, it defaults to the amount of CPU cores available to the runtime.
 * `lookahead = N` allows to specify a number of subsequent segments to be precached before processing the next segment. Within the respective SPARQL updates, the content of the next N segments is available in the graph: `https://github.com/acoli-repo/conll-rdf/lookahead`
 * `lookback = N` in turn allows to specify a number of preceding segments to be precached before processing the next segment. Within the respective SPARQL updates, the content of the previous N segments is available in the graph: `https://github.com/acoli-repo/conll-rdf/lookback`
