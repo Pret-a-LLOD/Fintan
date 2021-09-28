@@ -1,21 +1,13 @@
 package org.acoli.fintan.core;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.acoli.fintan.core.util.IOUtils;
 import org.apache.commons.cli.CommandLine;
@@ -23,9 +15,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryException;
-import org.apache.jena.query.QueryFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,8 +25,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class FintanManager {
-	
-	//TODO: adapt to multiple streams + JSON
 	
 	protected static final Logger LOG = LogManager.getLogger(FintanManager.class.getName());
 	
@@ -51,6 +38,7 @@ public class FintanManager {
 	};
 	
 	public static final String DEFAULT_TDB_PATH = "tdb/";
+	public static final String DEFAULT_CACHE_PATH = "fileCache/";
 
 	
 	private ObjectNode config;

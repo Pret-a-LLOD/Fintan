@@ -14,16 +14,18 @@ public class FintanStreamHandler<T> implements FintanInputStream<T>, FintanOutpu
 	
 	@Override
 	public void terminate() {
-		active = false;
-		if (queue.isEmpty())
-			//in case a reader Thread is already waiting, add poison pill.
-			//this is recommended for BlockingQueues:  "Java Concurrency in Practice", pp. 155-156
-			//only one poison pill is required for multiple threads, since read() is synchronized.
-			//ONLY T1 waits for take(), 
-			//  T2...Tn wait for T1(synchronized read()), 
-			//if pp is swallowed by T1(sync), T1 returns null.
-			//  T2..Tn then checks for canRead(); terminates the regular way
-			queue.add(POISON_PILL);
+		if (active) {
+			active = false;
+			if (queue.isEmpty())
+				//in case a reader Thread is already waiting, add poison pill.
+				//this is recommended for BlockingQueues:  "Java Concurrency in Practice", pp. 155-156
+				//only one poison pill is required for multiple threads, since read() is synchronized.
+				//ONLY T1 waits for take(), 
+				//  T2...Tn wait for T1(synchronized read()), 
+				//if pp is swallowed by T1(sync), T1 returns null.
+				//  T2..Tn then checks for canRead(); terminates the regular way
+				queue.add(POISON_PILL);
+		}
 	}
 	
 	@Override

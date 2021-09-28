@@ -73,7 +73,9 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	}
 
 
-	public abstract void start();
+	public void start() {
+		run();
+	}
 	
 	
 	//@fintan-core: Factory Pattern
