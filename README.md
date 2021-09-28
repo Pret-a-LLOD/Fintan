@@ -1,7 +1,7 @@
 
 ![Fintan](img/Fintan.PNG)
 # Software Documentation
-This directory contains the documentation for the Fintan-backend and how to build and run it as a stand-alone software. It furthermore describes how to use Fintan in your own applications or create your own custom modules.
+The Fintan platform is an effort of combining existing converter frameworks with stream-based graph transformation and a workflow management engine in order to create integrated transformation pipelines for various input and output formats.
 
 ## Table of Contents:
 

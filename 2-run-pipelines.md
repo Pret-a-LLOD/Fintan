@@ -136,3 +136,31 @@ cd fintan-backend/
 The -c option defines the JSON configuration, while the -p option defines the parameters.
 
 ## Workflow manager
+In order to make the process of creating transformation pipelines and corresponding docker containers accessible to a wider audience, we have implemented a way to create these pipelines and containers visually. Fintan UI is a web application designed to be run locally. It allows creating complex pipelines in a simple drag-and-drop fashion. Despite this apparent simplicity, it requires knowledge of Fintan architecture since it is up to a user to set up all the properties for each component and write corresponding SPARQL queries for transformations and conversions.
+
+![Fintan UI](img/Fintan-UI.PNG)
+
+The UI consists of 3 main parts:
+
+* Drag-and-drop pipeline creator;
+* A list of existing pipelines exported and running on a Fintan Service;
+* Task progress for pipelines started asynchronously.
+
+A page for creating pipelines contains three groups of elements a user can put as a part of their pipeline:
+
+* **Data import and export:** this is a set of file upload and save operations that are happening outside of Fintan and the pipeline for Fintan just contains paths to where they were uploaded and paths where to save them.
+* **Data transformations:** these elements roughly correspond to Fintan classes and perform data conversion and transformation steps.
+* **Resources:** these are additional resources that are used by components of the second group. Examples of this group are: SPARQL queries for RDFUpdater or RDFStreamSplitterTDB, external ontologies and mappings.
+
+For each element, there is a set of options that can be set in a pop-up window that can be revealed by clicking on an element. These options correspond to the ones described in Fintan documentation as parameters for each class, with a notable exception: SPARQL queries are not set as options but instead are represented as resource elements connected to corresponding transformation elements.
+SPARQL queries can be written directly in the UI in the option window of a corresponding resource with YASQE, a text editor with syntax highlighting and autocomplete for SPARQL.
+
+After the pipeline is created, a transformation workflow can be created by clicking “Generate”. Here a user can choose whether they want to …
+
+* download everything they need to build a Docker container with  this pipeline running,
+* run the pipeline on Fintan service running locally,
+* or just download the JSON for the pipeline.					
+
+The list of all transformation workflows available on the Fintan service can be accessed on the page “Available transformations”. Tasks that were started asynchronously can be viewed on the third page, “Tasks status”.
+
+In addition to building workflows in Fintan UI, the development of graph transformation steps can be aided by [SparqViz](https://github.com/acoli-repo/sparqviz), a tool for creating visualizations of SPARQL queries and updates using GraphViz and the underlying dot format. A REST API accepts a SPARQL query and outputs a dot file and an SVG image. An exemplary lightweight editor website is included with the latest stand-alone version.
