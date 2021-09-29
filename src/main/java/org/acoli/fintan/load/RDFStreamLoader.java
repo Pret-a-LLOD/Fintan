@@ -1,3 +1,18 @@
+/*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acoli.fintan.load;
 
 import java.io.BufferedReader;
@@ -22,13 +37,32 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 	- for each matching pair of named streams, a separate Thread is spawned 
  * 		which converts the stream independently
  *  - input streams without matching outputstreams are dropped.
- * @author CF
+ * 
+ * @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
  *
  */
 public class RDFStreamLoader extends StreamLoader implements FintanStreamComponentFactory{
 
 	//Factory methods
-	
+	/**
+	 * Three parameters can be set in the JSON config:
+	 * 
+	 * `lang` to specify the RDF syntax. Supported languages follow the naming 
+	 * 		convention of Apache Jena (ttl, TURTLE, RDF/XML, N3, …)
+	 * 
+	 * `delimiter` to specify the textual delimiter indicating the end of a segment. 
+	 * 		The specified delimiter is always expected to be the full content of 
+	 * 		a delimiting line of text. "" corresponds to an empty line.
+	 * 
+	 * `globalPrefixes` (`true`/`false`) is specifically designed for Turtle syntax. 
+	 * 		In a Turtle file, usually the prefixes are defined globally in the 
+	 * 		beginning of the File. However, they can be overridden in between. 
+	 * 		Without the `globalPrefixes` setting Fintan expects the prefixes to 
+	 * 		be repeated for every segment of data. If it fails to load, it will 
+	 * 		still retry with the last successful set of prefixes, but this will 
+	 * 		increase processing overhead. In this case the `globalPrefixes` flag
+	 * 		should be set to `true`.
+	 */
 	@Override
 	public RDFStreamLoader buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		RDFStreamLoader loader = new RDFStreamLoader();

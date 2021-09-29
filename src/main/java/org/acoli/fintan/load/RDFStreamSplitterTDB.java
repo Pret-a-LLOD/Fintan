@@ -1,3 +1,18 @@
+/*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acoli.fintan.load;
 
 import java.io.File;
@@ -35,26 +50,64 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Load unsegmented RDF streams in the given serialization format. Default: TTL
- * Utilize SPARQL queries to split data into segments:
- * - Iterator query selects the seeds for the segments. 
- * - Construct query constructs the segments.
  * 
- * Handling of multiple streams:
- * Multiple input streams are loaded into a graph of the same name as the stream.
- * Default Stream -> Default graph.
+ * For splitting data into segments, the Splitter employs two distinct modes:
+ * * `ITERATE_CONSTRUCT` mode uses a select query as an iterator (e.g. for all 
+ * 		LexicalEntries in a graph) and a construct query to create isolated models 
+ * 		for each of the seed elements (i.e. instances of LexicalEntry). Each 
+ * 		resulting graph is then streamed to its respective output stream. The 
+ * 		result variables of the iterator query must be referenced in the construct 
+ * 		query by wildcards:
  * 
- * If multiple Graphs are constructed, each is streamed separately to its 
- * 	correspondingly named stream.
- * If no corresponding stream is defined, the resp. graph is dropped.
+ *     * `?var1` in the iterator query corresponds to `<?var1>` in the construct 
+ *     		query
+ *     * the `<?var1>` wildcard is then dynamically replaced by the actual values 
+ *     		of the query results for each iteration.
+ *     
+ * * `RECURSIVE_UPDATE` mode instead uses SPARQL updates to construct the result 
+ * 		models within distinct result graphs. The Update must be designed in a 
+ * 		way that it “consumes” the source graphs, i.e it should delete the data 
+ * 		it writes to the result graphs from the source graphs. After each 
+ * 		processing step, all target graphs are emptied after supplying their 
+ * 		content to the output streams. The update is repeated until it produces 
+ * 		only empty target graphs. 
+ * 
+ * Given the write penalties associated with SPARQL updates, `RECURSIVE_UPDATE` 
+ * can be slower, but is more powerful in constructing multiple graphs at the 
+ * same time, traversing complex property paths and being able to easily export 
+ * unused deltas, which have never been addressed in any segment. Both modes are 
+ * mutually exclusive and cannot be combined.
  * 
  * Output: Stream(s) of Models.
- * @author CF
+ * 
+ * @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
  *
  */
 public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamComponentFactory {
 	
 		protected static final Logger LOG = LogManager.getLogger(RDFStreamSplitterTDB.class.getName());
 		
+		/**
+		 * The Splitter has the following parameters which can be set in the JSON config:
+		 * 
+		 * `lang` to specify the RDF syntax. Supported languages follow the 
+		 * 		naming convention of Apache Jena (ttl, TURTLE, RDF/XML, N3, …)
+		 * `tdbPath` to specify a custom directory to create the temporary TDB 
+		 * 		database
+		 * `iteratorQuery` for `ITERATE_CONSTRUCT` mode. Must be a select query. 
+		 * `constructQuery` for `ITERATE_CONSTRUCT` mode. Must be a construct or 
+		 * 		describe query. 
+		 * `initUpdate` for `RECURSIVE_UPDATE` mode. Optional update which is 
+		 * 		executed a single time at startup to initialize the recursion 
+		 * 		(e.g. to insert a “next” marker.)
+		 * `recursiveUpdate` for `RECURSIVE_UPDATE` mode. Repeated until it 
+		 * 		produces empty target graphs.
+		 * `segmentStreams` for `RECURSIVE_UPDATE` mode specify which of the 
+		 * 		target graphs host the target segments. Only these graphs are 
+		 * 		streamed after each recursion.
+		 * `deltaStreams` for `RECURSIVE_UPDATE` mode specifies a list of graphs 
+		 * 		whose content should be streamed after the last recursion.
+		 */
 		@Override
 		public RDFStreamSplitterTDB buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 			RDFStreamSplitterTDB splitter = new RDFStreamSplitterTDB();

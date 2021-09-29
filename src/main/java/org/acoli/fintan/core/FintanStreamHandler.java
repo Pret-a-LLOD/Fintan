@@ -1,10 +1,33 @@
+/*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acoli.fintan.core;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 
-
+/**
+ * Implements a BlockingQueue for streaming non-serialized objects between threads.
+ * 
+ * 
+ * 
+ * @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
+ *
+ * @param <T> The type of object to be streamed.
+ */
 public class FintanStreamHandler<T> implements FintanInputStream<T>, FintanOutputStream<T> {
 
 	private boolean active = true;
@@ -43,6 +66,10 @@ public class FintanStreamHandler<T> implements FintanInputStream<T>, FintanOutpu
 		return active;
 	}
 
+	/**
+	 * Write will block if buffer is full. Calling thread will resume operation
+	 * as soon as buffer is free.
+	 */
 	@Override
 	public void write(T m) throws InterruptedException {
 		if (!canWrite()) 
@@ -51,13 +78,18 @@ public class FintanStreamHandler<T> implements FintanInputStream<T>, FintanOutpu
 	}
 
 
-	@Override
 	/**
 	 * Test for canRead() before taking the next Element.
+	 * If queue is empty on take operation, block the calling thread. It will 
+	 * resume operation, as soon as data is available or stream is terminated.
+	 * 
+	 * Method is synchronized. If more than one thread attempts to read(), the
+	 * other ones will be blocked until the read operation is finished.
 	 * 
 	 * @return parameterized Entry
 	 * 		may return null in case the queue has been emptied and terminated.
 	 */
+	@Override
 	public synchronized T read() throws InterruptedException {
 		if (!canRead()) return null;
 		Object obj = queue.take();

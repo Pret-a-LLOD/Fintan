@@ -1,3 +1,18 @@
+/*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acoli.fintan.write;
 
 import java.io.IOException;
@@ -18,11 +33,26 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 	- for each matching pair of named streams, a separate Thread is spawned 
  * 		which converts the stream independently
  *  - input streams without matching output streams are dropped.
- * @author CF
+ * 
+ * @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
  *
  */
 public class RDFStreamWriter extends StreamWriter implements FintanStreamComponentFactory {
 	
+	/**
+	 * The following parameters can be set in the JSON config:
+	 * 
+	 * `lang` to specify the target RDF syntax. Supported languages follow the 
+	 * 		naming convention of Apache Jena (ttl, TURTLE, RDF/XML, N3, …)
+	 * `delimiter` to specify the textual delimiter indicating the end of a 
+	 * 		segment. The specified delimiter is always expected to be the full 
+	 * 		content of a delimiting line of text. "" corresponds to an empty line.
+	 * `prefixDeduplication` (`true`/`false`) can be set to remove duplicate 
+	 * 		prefix declarations in Turtle syntax. Since in Fintan, each segment 
+	 * 		is contained in its own model, by default, the Jena API repeatedly 
+	 * 		outputs all prefixes for each segment. With this flag, the duplicates 
+	 * 		are removed from the resulting text stream.
+	 */
 	@Override
 	public RDFStreamWriter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		RDFStreamWriter writer = new RDFStreamWriter();

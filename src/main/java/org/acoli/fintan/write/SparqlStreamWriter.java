@@ -1,3 +1,18 @@
+/*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acoli.fintan.write;
 
 import java.io.IOException;
@@ -19,9 +34,28 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * Consumes serialized RDF streams and loads them into graphs.  It can consume 
+ * multiple streams of serialized RDF data (in a given lang), store them into a 
+ * temporary TDB (at a given tdbPath) and query across all graphs at once. 
+ * Named input streams are stored into the graph of the same name. 
+ * For outputting the query results only the default stream is supported.
+ * 
+ * @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
+ *
+ */
 public class SparqlStreamWriter extends StreamWriter implements FintanStreamComponentFactory{
 
 
+	/**
+	 * All possible serializations of query results in the Apache Jena library are supported. On top of that, it is possible to define custom CSV exports. The following JSON parameters are common for both of them:
+	 * * `query` to define the path to the SPARQL query
+	 * * `outFormat` can be used to denote a preconfigured output format. It can be either a Jena format (such as `TSV`) or `CoNLL` (which is a preconfigured custom Format). If no `outFormat` is specified, a custom format can be applied with the following parameters.
+	 * * `escapeChar` for escaping functional characters 
+	 * * `delimiterCSV` for the column delimiter. `\t` for CoNLL
+	 * * `quoteChar` optional for wrapping cell content
+	 * * `emptyChar` optional to denote an empty cell. `_` for CoNLL
+	 */
 	@Override
 	public SparqlStreamWriter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		SparqlStreamWriter writer = new SparqlStreamWriter();
