@@ -1,3 +1,18 @@
+/*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acoli.fintan.genericIO;
 
 import java.io.File;
@@ -26,14 +41,22 @@ import net.sf.saxon.trans.CommandLineOptions;
  * Stream component which reads XML data and applies XSLT transformation to 
  * generate output.
  * 
- * Reads and writes Text
+ * Reads XML and writes Text as specified by an XSLT script.
  * 
- * @author CF
+ * @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
  *
  */
 public class XSLTStreamTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 
 
+	/**
+	 * The XSLTStreamTransformer uses the Saxon HE library to transform XML data using XSL transformation. It is implementing the StreamTransformerGenericIO interface and thus does not directly produce segmented RDF streams. It can be used stand-alone or for preprocessing steps in combination with the Loader or Splitter classes. 
+	 * 
+	 * In the current implementation, it supports only a single input and output stream. Therefore, only the default streams can be connected. The XSL scripts for conversion along their respective parameters can be supplied in a JSON configuration as follows:
+	 * * `"xsl" : "path/to/script.xsl param1=value1 paramN=valueN"`
+	 * * The parameters, values etc. can be passed on from the command line using the <$param0> wildcards as described in [Pipelines](2-run-pipelines.md).
+	 * * The general syntax is the same as with the original Saxon CLI tools.
+	 */
 	public XSLTStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		XSLTStreamTransformer transformer = new XSLTStreamTransformer();
 		transformer.setConfig(conf);
@@ -57,6 +80,11 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 		return null;
 	}
 	
+	/**
+	 * Overrides default method. Only accepts default stream.
+	 * 
+	 * @throws IOException if named stream is set.
+	 */
 	@Override
 	public void setInputStream(InputStream inputStream, String name) throws IOException {
 		if (name == null || FINTAN_DEFAULT_STREAM_NAME.equals(name)) {
@@ -66,6 +94,11 @@ public class XSLTStreamTransformer extends StreamTransformerGenericIO implements
 		}
 	}
 	
+	/**
+	 * Overrides default method. Only accepts default stream.
+	 * 
+	 * @throws IOException if named stream is set.
+	 */
 	@Override
 	public void setOutputStream(OutputStream outputStream, String name) throws IOException {
 		if (name == null || FINTAN_DEFAULT_STREAM_NAME.equals(name)) {

@@ -1,3 +1,18 @@
+/*
+ * Copyright [2021] [ACoLi Lab, Prof. Dr. Chiarcos, Christian Faeth, Goethe University Frankfurt]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.acoli.fintan.genericIO;
 
 import java.io.BufferedReader;
@@ -58,13 +73,30 @@ import org.apache.jena.util.iterator.NullIterator;
  * 
  * Output: Serialized Turtle. (Segmented, or unsegmented)
  * 
- * @author CF
+ * @author Christian Faeth {@literal faeth@em.uni-frankfurt.de}
  *
  */
 public class TarqlStreamTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 	
 	protected static final Logger LOG = LogManager.getLogger(TarqlStreamTransformer.class.getName());
 
+	/**
+	 * The following parameters activate segmentated processing:
+	 * * `delimiterIn` activates the segmented processing, like the delimiter parameters in the core classes, it corresponds to the full text content of a single delimiting line. If it is unspecified or null, the data is processed as bulk.
+	 * * `delimiterOut` optionally defines the delimiter line written to the output stream after each segment. It only applies if delimiterIn is set as well.
+	 * 
+	 * The other parameters for the TarqlStreamTransformer correspond to the parameters of the Tarql CLI:
+	 * query: path to the tarql query. The query must be of `CONSTRUCT` or `DESCRIBE` syntax. The resulting data will always be in Turtle format.
+	 * * `delimiterCSV`: delimiting character for the CSV dialect.
+	 * * `tabs`: (`true`/`false`) enables TSV support.
+	 * * `quoteChar`: for CSV.
+	 * * `escapeChar`: for CSV, optional.
+	 * * `encoding`: defaults to UTF-8.
+	 * * `headerRow`: (`true`/`false`) is used to define column names in Tarql. If no header row is present, the default column names are `?col1` - `?colN`. In segmented processing, Fintan duplicates the header row for each segment.
+	 * * `baseIRI`: base IRI for resolving relative IRIs.
+	 * * `write-base`: writes @base for Turtle output.
+	 * * `dedup`: window size in which to remove duplicate triples.
+	 */
 	public TarqlStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		TarqlStreamTransformer tsv2ttl = new TarqlStreamTransformer();
 		tsv2ttl.setConfig(conf);
