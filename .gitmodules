@@ -16,6 +16,3 @@
 [submodule "doc"]
 	path = doc
 	url = https://github.com/acoli-repo/fintan-doc.git
-[submodule "loaders/conll-rdf"]
-	path = loaders/conll-rdf
-	url = https://github.com/acoli-repo/conll-rdf.git
