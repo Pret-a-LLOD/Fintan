@@ -9,9 +9,9 @@ For more information please refer to the full [**Software Documentation**](https
 ![Fintan UI](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan-UI.PNG)
 
 ## Repositories
-- [**Frontend**](https://github.com/acoli-repo/fintan-ui) prototype
+- [**Frontend**](https://github.com/acoli-repo/fintan-ui) for designing Fintan pipelines
 - [**Service**](https://github.com/acoli-repo/fintan-service) for running Fintan pipelines inside integrated Docker containers
-- [**Backend**](https://github.com/acoli-repo/fintan-backend) 
+- [**Backend**](https://github.com/acoli-repo/fintan-backend) for executing Fintan pipelines on the command line
 	- includes [**Core API**](https://github.com/acoli-repo/fintan-core) for stream-based graph processing.
 	- wraps fully integrated converter components
 - [**Documentation**](https://github.com/acoli-repo/fintan-doc)
