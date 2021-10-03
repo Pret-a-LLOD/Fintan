@@ -500,7 +500,7 @@ window.onload = function() {
 			switch (component.class) {
 				case "XSLTStreamTransformer": {
 					if (resource.action === 'load_xsl.yaml') {
-						const filename = 'data/' + resource.options[0].name + "_" + operatorId + "_" + component.id + ".xsl";
+						const filename = 'data/' + resource.title + "_" + operatorId + "_" + component.id + ".xsl";
 						const xslt = resource.options[0].value;
 						window.filenames[operatorId] = new File([xslt], filename, { type: "text/plain"} );
 						if (!xslt)
@@ -517,7 +517,7 @@ window.onload = function() {
 							throw new PipelineError('Graph name not specified for an RDF resource');
 						if (!/^https?:\/\/.*/.test(graph))
 							graph = "http://" + graph;
-						const filename = resource.options[1].name + "_" + operatorId + "_" + component.id + ".rdf";
+						const filename = resource.title + "_" + operatorId + "_" + component.id + ".rdf";
 						const fullPath = 'data/' +  filename;
 						const rdf = resource.options[1].value;
 						window.filenames[operatorId] = new File([rdf], fullPath, { type: "text/plain"} );
@@ -526,7 +526,7 @@ window.onload = function() {
 						component.models.push({source: fullPath, graph: graph});
 					}
 					else if (resource.action === 'load_sparql.yaml') {
-						const filename = 'data/' + resource.options[0].name + "_" + operatorId + "_" + component.id + ".sparql";
+						const filename = 'data/' + resource.title + "_" + operatorId + "_" + component.id + ".sparql";
 						const sparql = resource.options[0].value;
 						if (!sparql)
 							throw new PipelineError('SPARQL query not specified for a SPARQL resource');
@@ -542,7 +542,7 @@ window.onload = function() {
 				}
 				case "SparqlStreamTransformerTDB": {
 					if (resource.action === 'load_sparql.yaml') {
-						let filename = 'data/' + resource.options[0].name + "_" + operatorId + "_" + component.id + ".sparql";
+						let filename = 'data/' + resource.title + "_" + operatorId + "_" + component.id + ".sparql";
 						let sparql = resource.options[0].value;
 						if (!sparql)
 							throw new PipelineError('SPARQL query not specified for a SPARQL resource');
