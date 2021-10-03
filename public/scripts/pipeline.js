@@ -132,6 +132,8 @@ window.onload = function() {
                     left: 2200,
                     properties: {
 						title: 'Input',
+						action: 'input',
+						type: 'data',
 						options: [{
 							name: "filename",
 							label: "Source file",
@@ -150,6 +152,8 @@ window.onload = function() {
                     left: 3000,
                     properties: {
                         title: 'Output',
+						action: 'output',
+						type: 'data',
                         options: [{
 							name: "filename",
 							label: "Destination file",
@@ -417,8 +421,8 @@ window.onload = function() {
 		});
 
 		$('#pipelineSave').on('click', function () {
-			const filename = $('#modal-pipeline-name').val();
-			const content = $('#modal-pipeline-json').val();
+			const filename = $('#modal-save-pipeline-name').val();
+			const content = $('#modal-save-pipeline-json').val();
 
 			if (filename == '' || content == '') {
 				alert('Fields cannot be empty');
@@ -459,7 +463,7 @@ window.onload = function() {
 					// TODO: insert validation for the presence of XSLT
 					if (resource.action === 'load_xsl.yaml') {
 						filename = 'data/' + resource.options[0].name + "_" + component.id + ".xsl";
-						component.xsl = filename + " "  + (component.args ? component.args : "");
+						component.xsl = (filename + " "  + (component.args ? component.args : "")).trim();
 					}
 					break;
 				}
@@ -503,6 +507,34 @@ window.onload = function() {
 			return component;
 		}
 
+		function getInstanceName(instanceType, id) {
+			return instanceType + "_" + id;
+		}
+
+		function getSourceName(component) {
+			// TODO: this condition is questionable, we actually need to make sure that these filenames are non-empty
+			return component.options[0].value ? component.options[0].value : "";
+		}
+
+		function getStreamObject(sourceId, source, targetId, target) {
+			let stream = {};
+
+			const isSrcData = source !== null && source.type === "data";
+			const isTgtData = target !== null && target.type === "data";
+
+			if (isTgtData)
+				stream.writesToSource = target !== null ? getSourceName(target) : sourceId;
+			else
+				stream.writesToInstance = target !== null ? getInstanceName(target.action, targetId) : targetId;
+
+			if (isSrcData)
+				stream.readsFromSource = source !== null ? getSourceName(source) : sourceId;
+			else
+				stream.readsFromInstance = source !== null ? getInstanceName(source.action, sourceId) : sourceId;
+
+			return stream;
+		}
+
 		function generatePipelineJSON(data)
 		{
 			let json = {
@@ -522,8 +554,9 @@ window.onload = function() {
 				if (key !== "input" &&  key !== "output" && val.properties.type === 'transformations') {
 					let elemData = val.properties;
 					let component = {
-						componentInstance: elemData.title,
+						componentInstance: getInstanceName(elemData.action, key),
 						class: window.nodeClasses[elemData.action].settings.info.class,
+						// TODO: slowly remove using this since we use componentInstance as a primary key
 						id: key
 					};
 
@@ -557,24 +590,14 @@ window.onload = function() {
 						class: "IOStreamDuplicator"
 					});
 
-					// TODO: check if properties.type === 'data' and then change writesToInstance to writesToSource
 					// adding one stream from source to the duplicator
-					json.streams.push({
-						readsFromInstance: data.operators[key].properties.title,
-						writesToInstance: dupl_stream
-					});
+					json.streams.push(getStreamObject(key, data.operators[key].properties, dupl_stream, null));
 
 					// and one stream for each value from the duplicator to the value
-					val.forEach(id => json.streams.push({
-						readsFromInstance: dupl_stream,
-						writesToInstance: data.operators[id].properties.title
-					}));
+					val.forEach(id => json.streams.push(getStreamObject(dupl_stream, null, id, data.operators[id].properties)));
 				}
 				else
-					json.streams.push({
-						readsFromInstance: data.operators[key].properties.title,
-						writesToInstance: data.operators[val].properties.title
-					});
+					json.streams.push(getStreamObject(key, data.operators[key].properties, val, data.operators[val].properties));
 			}
 
 			return json;
@@ -596,7 +619,7 @@ window.onload = function() {
 
 			// saving the pipeline
 			window.pipeline = new File([JSON.stringify(json, null, 2)], "pipeline.json");
-			// console.log(JSON.stringify(json, null, 2));
+			console.log(JSON.stringify(json, null, 2));
 			let ulFiles = $('#uploadFiles');
 			ulFiles.find('li').remove();
 			for (const [key, val] of Object.entries(window.filenames)) {
@@ -633,15 +656,19 @@ window.onload = function() {
 
 		});
 
-		$('#modalSave').on('show.bs.modal', function (event) {
-			$('#modal-pipeline-name').val('');
-			let data = $('#chart_area').flowchart('getData');
-			let pipelineJson = JSON.stringify({data: data, filenames: window.filenames}, null, 2);
-			$('#modal-pipeline-json').val(pipelineJson);
+		$('#modalSave')
+			.on('show.bs.modal', function (event) {
+				$('#modal-save-pipeline-name').val('');
+				let data = $('#chart_area').flowchart('getData');
+				let pipelineJson = JSON.stringify({data: data, filenames: window.filenames}, null, 2);
+				$('#modal-save-pipeline-json').val(pipelineJson);
+			})
+			.on('shown.bs.modal', function (event) {
+				$('#modal-save-pipeline-name').trigger('focus');
 		});
 
 		$('#modalLoad').on('show.bs.modal', function (event) {
-			$('#modal-pipeline-name').val('');
+			$('#modal-save-pipeline-name').val('');
 			let pipelines = window.localStorage.getItem('fintan_pipelines');
 			if (pipelines === null) {
 				alert('There are no saved pipelines');
@@ -664,6 +691,14 @@ window.onload = function() {
 						let value = $( "#dropdownLoad option:selected" ).text();
 						$('#modal-pipeline-load-json').val(JSON.stringify(pipelines[value], null, 2));
 					});
+		})
+			.on('shown.bs.modal', function (event) {
+				$('#dropdownLoad').trigger('focus');
+			});
+
+		$('#modal-save-pipeline-name').on('keyup', function(event) {
+			if (event.which === 13)
+				$('#pipelineSave').trigger('click');
 		});
     }); // jquery ready
 }; // window.onLoad
