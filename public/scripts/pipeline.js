@@ -203,25 +203,29 @@ window.onload = function() {
 			if (option_type === 'editor' && option.format === 'sparql')
 				return option_html +
 					'<div id="' + option_id + '" data-index="' + option_index + '" name="' + option_id + '"></div>' +
+					(option.import ?
 					'<label for=' + option_id + '_upload"' + 'class="btn">Import data</label>' +
 					'<input type="file" class="form-control-file operator_option read-contents"' +
 					' name="' + option_id + '_upload"' +
 					' data-for="' + option_id + '"' +
 					' data-index="' + option_index + '"' +
-					' id="' + option_id + '_upload"' +
+					' id="' + option_id + '_upload"' : '') +
 					option_html_end;
 
 			if (option_type === 'editor')
 				return option_html +
-					'<textarea id="' + option_id + '" data-index="' + option_index + '" name="' + option_id + '">' +
+					'<textarea id="' + option_id + '" data-index="' + option_index + '" name="' + option_id + '"' +
+					(option.import ? '' : ' class="small" ') +
+					'>' +
 					option_value +
 					'</textarea>' +
+					(option.import ?
 					'<label for=' + option_id + '_upload"' + 'class="btn">Import data</label>' +
 					'<input type="file" class="form-control-file operator_option read-contents"' +
 					' name="' + option_id + '_upload"' +
 					' data-for="' + option_id + '"' +
 					' data-index="' + option_index + '"' +
-					' id="' + option_id + '_upload"' +
+					' id="' + option_id + '_upload"' : '') +
 					option_html_end;
 
 			return option_html +
@@ -493,18 +497,44 @@ window.onload = function() {
 			$('#modalLoad').modal('hide');
 		});
 
+		function uploadResourceFile(resource, component, operatorId, type) {
+			const typeSettings = {
+				"load_xsl.yaml": {
+					extension: ".xsl",
+					optionIndex: 0,
+					errorMsg: "XSLT not specified"
+				},
+				"load_sparql.yaml": {
+					extension: ".sparql",
+					optionIndex: 0,
+					errorMsg: "SPARQL query not specified for a SPARQL resource"
+				},
+				"load_rdf.yaml": {
+					extension: ".rdf",
+					optionIndex: 1,
+					errorMsg: "RDF data is empty"
+				}
+			};
+
+			if (!(type in typeSettings))
+				throw new PipelineError('Unknown resource type: ' + type);
+
+			let filename = 'data/' + resource.title.replace(" ", "-") + "_" + operatorId + "_" + component.id + typeSettings[type].extension;
+			let value = resource.options[typeSettings[type].optionIndex].value;
+			if (!value)
+				throw new PipelineError('SPARQL query not specified for a SPARQL resource');
+			window.filenames[operatorId] = new File([value], filename, { type: "text/plain"} );
+
+			return filename;
+		}
+
 		function processResource(resource, component, operatorId) {
-			// TODO: to think whether this can be better and less ad-hoc
 			// I am NOT SURE that hardcoding everything about our resource components is the best approach.
 			// On the other hand, they are of pretty basic formats
 			switch (component.class) {
 				case "XSLTStreamTransformer": {
 					if (resource.action === 'load_xsl.yaml') {
-						const filename = 'data/' + resource.title + "_" + operatorId + "_" + component.id + ".xsl";
-						const xslt = resource.options[0].value;
-						window.filenames[operatorId] = new File([xslt], filename, { type: "text/plain"} );
-						if (!xslt)
-							throw new PipelineError('XSLT not specified');
+						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
 						component.xsl = (filename + " "  + (component.args ? component.args : "")).trim();
 					}
 					break;
@@ -517,38 +547,54 @@ window.onload = function() {
 							throw new PipelineError('Graph name not specified for an RDF resource');
 						if (!/^https?:\/\/.*/.test(graph))
 							graph = "http://" + graph;
-						const filename = resource.title + "_" + operatorId + "_" + component.id + ".rdf";
-						const fullPath = 'data/' +  filename;
-						const rdf = resource.options[1].value;
-						window.filenames[operatorId] = new File([rdf], fullPath, { type: "text/plain"} );
+
+						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+
 						if (!component.models)
 							component.models = [];
-						component.models.push({source: fullPath, graph: graph});
+						component.models.push({source: filename, graph: graph});
 					}
-					else if (resource.action === 'load_sparql.yaml') {
-						const filename = 'data/' + resource.title + "_" + operatorId + "_" + component.id + ".sparql";
-						const sparql = resource.options[0].value;
-						if (!sparql)
-							throw new PipelineError('SPARQL query not specified for a SPARQL resource');
-						window.filenames[operatorId] = new File([sparql], filename, { type: "text/plain"} );
+
+					if (resource.action === 'load_sparql.yaml') {
+						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+
 						if (!component.updates)
 							component.updates = [];
-						// we are using title to sort sparql queries in JSON
+						// we are using titles to sort sparql queries in JSON
 						component.updates.push({path: filename, iter: 1, name: resource.title});
 					}
 					else
-						throw PipelineError('Unexpected resource type for RDFUpdater: ' + resource.action);
+						throw new PipelineError('Unexpected resource type for RDFUpdater: ' + resource.action);
 					break;
 				}
+				case "SparqlStreamWriter":
+				case "TarqlStreamTransformer":
 				case "SparqlStreamTransformerTDB": {
 					if (resource.action === 'load_sparql.yaml') {
-						let filename = 'data/' + resource.title + "_" + operatorId + "_" + component.id + ".sparql";
-						let sparql = resource.options[0].value;
-						if (!sparql)
-							throw new PipelineError('SPARQL query not specified for a SPARQL resource');
-						window.filenames[operatorId] = new File([sparql], filename, { type: "text/plain"} );
+						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
 						component.query = filename;
 					}
+					break;
+				}
+				case "RDFStreamSplitterTDB": {
+					const propertyNames = {
+						iterat: "iteratorQuery",
+						construct: "constructQuery",
+						init: "initUpdate",
+						recurs: "recursiveUpdate"
+					};
+
+					const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+					const resName = resource.title
+						.toLowerCase()
+						.replace(" |update$|(e|or)?query$|(e|ive)?update$", "");
+
+					if (!(resName in propertyNames))
+						throw new PipelineError('Cannot assign resource to a property: ' + resource.title);
+
+					component[propertyNames[resName]] = filename;
+					component.deltaStreams = component.deltaStreams.split('\n');
+					component.segmentStreams = component.segmentStreams.split('\n');
 				}
 			}
 
@@ -570,15 +616,15 @@ window.onload = function() {
 			const isSrcData = source !== null && source.type === "data";
 			const isTgtData = target !== null && target.type === "data";
 
-			if (isTgtData)
-				stream.writesToSource = target !== null ? getSourceName(target) : sourceId;
-			else
-				stream.writesToInstance = target !== null ? getInstanceName(target.action, targetId) : targetId;
-
 			if (isSrcData)
 				stream.readsFromSource = source !== null ? getSourceName(source) : sourceId;
 			else
 				stream.readsFromInstance = source !== null ? getInstanceName(source.action, sourceId) : sourceId;
+
+			if (isTgtData)
+				stream.writesToDestination = target !== null ? getSourceName(target) : sourceId;
+			else
+				stream.writesToInstance = target !== null ? getInstanceName(target.action, targetId) : targetId;
 
 			return stream;
 		}
@@ -665,25 +711,26 @@ window.onload = function() {
 			const data = $flowchart.flowchart('getData');
 			try {
 				json = generatePipelineJSON(data);
-			} catch (e) {
-				if (e instanceof PipelineError) {
-					alert('Validation error: ' + e.message);
+			} catch (ex) {
+				if (ex instanceof PipelineError) {
+					alert('Validation error: ' + ex.message);
 					//$('#validationAlert span').val('Validation error: ' + e.message);
 					//$('#validationAlert').show();
+					e.stopPropagation();
 					return;
 				}
 			}
 
 			// saving the pipeline
 			window.pipeline = new File([JSON.stringify(json, null, 2)], "pipeline.json");
-			console.log(JSON.stringify(json, null, 2));
+			// console.log(JSON.stringify(json, null, 2));
 			let ulFiles = $('#uploadFiles');
 			ulFiles.find('li').remove();
 			for (const [key, val] of Object.entries(window.filenames)) {
 				if (!val.name) {
 					alert('Some files are not uploaded. If you have loaded the configuration please upload the files once again');
 					e.stopPropagation();
-					return;
+					return false;
 				}
 				ulFiles.append($('<li class="list-group-item">' + val.name + '</li>'));
 			}

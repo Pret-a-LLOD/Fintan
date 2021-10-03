@@ -11,4 +11,5 @@ params:
     label: Query
     format: sparql
     type: editor
+    import: true
     value: ""

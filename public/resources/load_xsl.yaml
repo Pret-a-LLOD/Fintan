@@ -12,3 +12,4 @@ params:
     type: editor
     value: ""
     format: xsl
+    import: true

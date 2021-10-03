@@ -930,7 +930,11 @@ footer.sticky-footer {
   top: 4em; }
 
 #options textarea {
-	height: 300px;
+  height: 300px;
+}
+
+#options textarea.small {
+  height: 50px;
 }
 
 .dashed-line {

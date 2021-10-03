@@ -15,8 +15,12 @@ params:
     label: TDB path
   - name: segmentStreams
     label: Segment streams
+    type: editor
+    format: text
   - name: deltaStreams
     label: Delta streams
+    type: editor
+    format: text
 inputs:
   - name: input
     label: RDF
