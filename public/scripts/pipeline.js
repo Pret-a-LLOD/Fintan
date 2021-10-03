@@ -203,15 +203,30 @@ window.onload = function() {
 			if (option_type === 'editor' && option.format === 'sparql')
 				return option_html +
 					'<div id="' + option_id + '" data-index="' + option_index + '" name="' + option_id + '"></div>' +
+					'<label for=' + option_id + '_upload"' + 'class="btn">Import data</label>' +
+					'<input type="file" class="form-control-file operator_option read-contents"' +
+					' name="' + option_id + '_upload"' +
+					' data-for="' + option_id + '"' +
+					' data-index="' + option_index + '"' +
+					' id="' + option_id + '_upload"' +
 					option_html_end;
 
 			if (option_type === 'editor')
 				return option_html +
-					'<textarea id="' + option_id + '" data-index="' + option_index + '" name="' + option_id + '"></textarea>' +
+					'<textarea id="' + option_id + '" data-index="' + option_index + '" name="' + option_id + '">' +
+					option_value +
+					'</textarea>' +
+					'<label for=' + option_id + '_upload"' + 'class="btn">Import data</label>' +
+					'<input type="file" class="form-control-file operator_option read-contents"' +
+					' name="' + option_id + '_upload"' +
+					' data-for="' + option_id + '"' +
+					' data-index="' + option_index + '"' +
+					' id="' + option_id + '_upload"' +
 					option_html_end;
 
 			return option_html +
-				'<input type="text" class="form-control operator_option"' +
+				'<input type="text"' +
+				' class="form-control operator_option' + (option.name === "graph" ? ' copy-filename' : '') + '"' +
 				' name="' + option_id + '"' +
 				' data-index="' + option_index + '"' +
 				' id="' + option_id + '"' +
@@ -259,16 +274,43 @@ window.onload = function() {
 							function() {
 								// special handling of file uploads
 								if ($(this).attr('type') === 'file') {
-									window.filenames[operatorId] = $(this).prop('files')[0];
+									if ($(this).hasClass('read-contents')) {
+										const fileReader = new FileReader();
+										fileReader.onload = (e) => {
+											operator_options[parseInt($(this).data('index'))].value = e.target.result;
+											// copying filename
+											const filenameOption = $('.copy-filename');
+											if (filenameOption.length) {
+												const fileName = $(this).prop('files')[0].name;
+												filenameOption.val(fileName);
+												operator_options[parseInt(filenameOption.data('index'))].value = fileName;
+											}
+
+											$flowchart.flowchart('setOperatorOptions', operatorId, operator_options);
+											$('textarea#' + $(this).data('for')).val(e.target.result);
+
+
+										};
+										fileReader.readAsText($(this).prop('files')[0]);
+									}
+									else {
+										const upload = $(this).prop('files')[0];
+										const fileName = "data/" + upload.name;
+										window.filenames[operatorId] = new File([upload], fileName);
+										operator_options[parseInt($(this).data('index'))].value = fileName;
+										$flowchart.flowchart('setOperatorOptions', operatorId, operator_options);
+									}
 
 								}
-
-								// special handling of the title
-								if ($(this).data('index') === "title")
-									$flowchart.flowchart('setOperatorTitle', operatorId, $(this).val());
 								else {
-									operator_options[parseInt($(this).data('index'))].value = $(this).val();
-									$flowchart.flowchart('setOperatorOptions', operatorId, operator_options);
+									// setting options in non-file upload cases
+									// special handling of the title
+									if ($(this).data('index') === "title")
+										$flowchart.flowchart('setOperatorTitle', operatorId, $(this).val());
+									else {
+										operator_options[parseInt($(this).data('index'))].value = $(this).val();
+										$flowchart.flowchart('setOperatorOptions', operatorId, operator_options);
+									}
 								}
 						});
 
@@ -451,43 +493,48 @@ window.onload = function() {
 			$('#modalLoad').modal('hide');
 		});
 
-		function processResource(resource, component) {
-			console.log(resource);
-			console.log(component);
-
+		function processResource(resource, component, operatorId) {
 			// TODO: to think whether this can be better and less ad-hoc
 			// I am NOT SURE that hardcoding everything about our resource components is the best approach.
 			// On the other hand, they are of pretty basic formats
 			switch (component.class) {
 				case "XSLTStreamTransformer": {
-					// TODO: insert validation for the presence of XSLT
 					if (resource.action === 'load_xsl.yaml') {
-						filename = 'data/' + resource.options[0].name + "_" + component.id + ".xsl";
+						const filename = 'data/' + resource.options[0].name + "_" + operatorId + "_" + component.id + ".xsl";
+						const xslt = resource.options[0].value;
+						window.filenames[operatorId] = new File([xslt], filename, { type: "text/plain"} );
+						if (!xslt)
+							throw new PipelineError('XSLT not specified');
 						component.xsl = (filename + " "  + (component.args ? component.args : "")).trim();
 					}
 					break;
 				}
 				case "RDFUpdater": {
 					if (resource.action === 'load_rdf.yaml') {
-						let filename = resource.options[0].value;
-						if (!filename) {
-							throw new PipelineError('Filename not specified for an RDF resource');
-						}
-						filename = filename.split(['/', '\\']).pop();
-						let fullPath = 'data/' +  filename;
+						let graph = resource.options[0].value;
+						if (!graph)
+							// We don't set the graph name to the filename because if it wasn't imported, users might not know this name
+							throw new PipelineError('Graph name not specified for an RDF resource');
+						if (!/^https?:\/\/.*/.test(graph))
+							graph = "http://" + graph;
+						const filename = resource.options[1].name + "_" + operatorId + "_" + component.id + ".rdf";
+						const fullPath = 'data/' +  filename;
+						const rdf = resource.options[1].value;
+						window.filenames[operatorId] = new File([rdf], fullPath, { type: "text/plain"} );
 						if (!component.models)
 							component.models = [];
-						component.models.push({source: fullPath, graph: "http://" + filename});
+						component.models.push({source: fullPath, graph: graph});
 					}
 					else if (resource.action === 'load_sparql.yaml') {
-						let filename = resource.options[0].name + "_" + component.id;
-						let sparql = resource.options[0].value;
-						window.filenames[component.id] = new File([sparql], filename, { type: "text/plain"} );
+						const filename = 'data/' + resource.options[0].name + "_" + operatorId + "_" + component.id + ".sparql";
+						const sparql = resource.options[0].value;
 						if (!sparql)
 							throw new PipelineError('SPARQL query not specified for a SPARQL resource');
+						window.filenames[operatorId] = new File([sparql], filename, { type: "text/plain"} );
 						if (!component.updates)
 							component.updates = [];
-						component.updates.push({path: filename, iter: 1});
+						// we are using title to sort sparql queries in JSON
+						component.updates.push({path: filename, iter: 1, name: resource.title});
 					}
 					else
 						throw PipelineError('Unexpected resource type for RDFUpdater: ' + resource.action);
@@ -495,10 +542,11 @@ window.onload = function() {
 				}
 				case "SparqlStreamTransformerTDB": {
 					if (resource.action === 'load_sparql.yaml') {
-						let filename = 'data/' + resource.options[0].name + "_" + component.id + ".sparql";
+						let filename = 'data/' + resource.options[0].name + "_" + operatorId + "_" + component.id + ".sparql";
 						let sparql = resource.options[0].value;
 						if (!sparql)
 							throw new PipelineError('SPARQL query not specified for a SPARQL resource');
+						window.filenames[operatorId] = new File([sparql], filename, { type: "text/plain"} );
 						component.query = filename;
 					}
 				}
@@ -573,12 +621,21 @@ window.onload = function() {
 			for (const [key, val] of Object.entries(data.links)) {
 				if (val.fromConnector.startsWith('resource'))
 					json.components[componentIdMapping[val.toOperator]] = processResource(data.operators[val.fromOperator].properties,
-						json.components[componentIdMapping[val.toOperator]]);
+						json.components[componentIdMapping[val.toOperator]], val.fromOperator);
 				else {
 					if (!connections[val.fromOperator])
 						connections[val.fromOperator] = [];
 					connections[val.fromOperator].push(val.toOperator);
 				}
+			}
+
+			for (let i = 0; i < json.components.length; i++) {
+				if (json.components[i].updates && json.components[i].updates.length)
+					json.components[i].updates.sort(function (a, b) {
+						if (a.name === b.name)
+							return 0;
+						return (a.name > b.name ? 1 : -1)
+					});
 			}
 
 			// Now we can create duplicators and streams
@@ -628,9 +685,14 @@ window.onload = function() {
 					e.stopPropagation();
 					return;
 				}
-				ulFiles.append($('<li class="list-group-item">data/' + val.name + '</li>'));
+				ulFiles.append($('<li class="list-group-item">' + val.name + '</li>'));
 			}
 			ulFiles.append($('<li class="list-group-item">pipeline.json</li>'));
+		});
+
+		$('#getJson').on('click', function () {
+			saveAs(window.pipeline, "pipeline.json");
+			$('#modalGenerate').modal('hide');
 		});
 
 		$('#getZip').on('click', function () {
@@ -638,7 +700,7 @@ window.onload = function() {
 			zip.file('pipeline.json', window.pipeline);
 
 			for (const [key, val] of Object.entries(window.filenames))
-				zip.file('data/' + val.name, val);
+				zip.file(val.name, val);
 
 			fetch('/service-dockerfile')
 				.then(response => response.text())

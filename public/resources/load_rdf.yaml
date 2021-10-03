@@ -7,10 +7,13 @@ resources:
   - label: LOAD Resource
     required: true
 params:
+  - name: graph
+    label: Graph
+    value: ""
   - name: source
     label: Source file
     format: rdf
-    type: file
+    type: editor
   - name: lang
     label: RDF serialization
     values:

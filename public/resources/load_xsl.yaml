@@ -9,5 +9,6 @@ resources:
 params:
   - name: xslt
     label: Transformation
-    type: file
+    type: editor
+    value: ""
     format: xsl
