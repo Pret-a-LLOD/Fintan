@@ -16,3 +16,9 @@
 [submodule "doc"]
 	path = doc
 	url = https://github.com/acoli-repo/fintan-doc.git
+[submodule "service"]
+	path = service
+	url = https://github.com/acoli-repo/fintan-service.git
+[submodule "ui"]
+	path = ui
+	url = https://github.com/acoli-repo/fintan-ui.git
