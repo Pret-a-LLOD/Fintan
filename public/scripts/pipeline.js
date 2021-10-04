@@ -352,7 +352,10 @@ window.onload = function() {
         // delete service or link button
         $('.delete_selected_button').click(function (event) {
         	event.preventDefault();
+        	const operatorId = $flowchart.flowchart('getSelectedOperatorId');
+        	delete window.filenames[operatorId];
             $flowchart.flowchart('deleteSelected');
+
         });
 
         $flowchart.on('operatorSelect', function(el, operatorId, retHash) { $flowchart.focus(); });
@@ -361,6 +364,8 @@ window.onload = function() {
         	var code = event.keyCode || event.which;
 				if (code == $.ui.keyCode.BACKSPACE || code == $.ui.keyCode.DELETE) {
 					event.preventDefault();
+					const operatorId = $flowchart.flowchart('getSelectedOperatorId');
+					delete window.filenames[operatorId];
 					$flowchart.flowchart('deleteSelected');
 				}
 			}
@@ -587,14 +592,16 @@ window.onload = function() {
 					const filename = uploadResourceFile(resource, component, operatorId, resource.action);
 					const resName = resource.title
 						.toLowerCase()
-						.replace(" |update$|(e|or)?query$|(e|ive)?update$", "");
+						.replace(" |(e|or)$|update$|(e|or)?query$|(e|ive)?update$", "");
 
 					if (!(resName in propertyNames))
 						throw new PipelineError('Cannot assign resource to a property: ' + resource.title);
 
 					component[propertyNames[resName]] = filename;
-					component.deltaStreams = component.deltaStreams.split('\n');
-					component.segmentStreams = component.segmentStreams.split('\n');
+					if (component.deltaStreams)
+						component.deltaStreams = component.deltaStreams.split('\n');
+					if (component.segmentStreams)
+						component.segmentStreams = component.segmentStreams.split('\n');
 				}
 			}
 
@@ -618,13 +625,17 @@ window.onload = function() {
 
 			if (isSrcData)
 				stream.readsFromSource = source !== null ? getSourceName(source) : sourceId;
-			else
+			else {
 				stream.readsFromInstance = source !== null ? getInstanceName(source.action, sourceId) : sourceId;
+				stream.readsFromInstanceGraph = "";
+			}
 
 			if (isTgtData)
 				stream.writesToDestination = target !== null ? getSourceName(target) : sourceId;
-			else
+			else {
 				stream.writesToInstance = target !== null ? getInstanceName(target.action, targetId) : targetId;
+				stream.writesToInstanceGraph = "";
+			}
 
 			return stream;
 		}
