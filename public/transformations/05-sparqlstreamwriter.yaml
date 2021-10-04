@@ -12,13 +12,13 @@ params:
     value:
   - name: escapeChar
     label: Escape character
-    value:
+    value: ""
   - name: delimiterCSV
     label: Column delimiter for CSV
-    value: \t
+    value: "\t"
   - name: quoteChar
     label: Cell wrapping character
-    value:
+    value: ""
   - name: emptyChar
     label: Character denoting an empty cell
     value: _

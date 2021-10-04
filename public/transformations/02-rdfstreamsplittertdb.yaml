@@ -13,17 +13,20 @@ params:
     value: ttl
   - name: tdbPath
     label: TDB path
+    value: ""
   - name: segmentStreams
     label: Segment streams
     type: editor
     format: text
+    value: ""
   - name: deltaStreams
     label: Delta streams
     type: editor
     format: text
+    value: ""
 inputs:
   - name: input
-    label: RDF
+    label: Data
 outputs:
   - name: output
     label: Graph

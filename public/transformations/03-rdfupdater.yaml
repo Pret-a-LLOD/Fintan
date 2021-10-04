@@ -5,13 +5,13 @@ info:
 params:
   - name: threads
     label: CPU threads
-    value: 0
+    value: "0"
   - name: lookahead
     label: Number of segments for lookahead
-    value: 0
+    value: "0"
   - name: lookback
     label: Number of segments for lookback
-    value: 0
+    value: "0"
 inputs:
   - name: input
     label: Graph

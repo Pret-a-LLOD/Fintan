@@ -5,6 +5,7 @@ info:
 params:
   - name: args
     label: Additional arguments
+    value: ""
 inputs:
   - name: input
     label: XML

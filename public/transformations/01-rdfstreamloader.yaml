@@ -13,7 +13,7 @@ params:
     value: ttl
   - name: delimiter
     label: Delimiter
-    value:
+    value: ""
   - name: globalPrefixes
     label: Prefixes are set globally
     type: bool

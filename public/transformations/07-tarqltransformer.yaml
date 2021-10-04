@@ -13,8 +13,10 @@ params:
     value: yes
   - name: quoteChar
     label: Character wrapping content
+    value: ""
   - name: escapeChar
     label: Escape character
+    value: ""
   - name: encoding
     label: Encoding
     value: UTF-8
@@ -26,6 +28,7 @@ params:
     value: yes
   - name: baseIRI
     label: Base IRI
+    value: ""
   - name: write-base
     label: Output @base
     values:
