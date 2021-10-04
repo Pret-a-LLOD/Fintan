@@ -35,7 +35,7 @@ pipeline_validators = {
 }
 
 pipeline_content_getters = {
-    'application/json': lambda request: request.json['text'],
+    'application/json': lambda request: request.json.get('text', ''),
     'application/gzip': lambda request: gzip.decompress(request.data).decode('utf-8'),
     'text/plain': lambda request: request.data.decode('utf-8')
 }

@@ -18,6 +18,9 @@ paths:
               type: string
       requestBody:
         content:
+          text/plain:
+            schema:
+              type: string
           application/json:
             schema:
               type: object
@@ -27,9 +30,6 @@ paths:
             schema:
               type: string
               format: binary
-          text/plain:
-            schema:
-              type: string
       responses:
         '200':
           description: Success
