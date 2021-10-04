@@ -190,6 +190,11 @@
 <!--                    </button>-->
                   </div>
                   <div class="modal-body">
+                      <div class="form-group">
+                        <label for="modal-generate-pipeline-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="modal-generate-pipeline-name">
+                      </div>
+
                       <p>Your pipeline contains files:</p>
                       <ul id="uploadFiles" class="list-group">
 
@@ -206,6 +211,31 @@
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                       <button type="button" class="btn btn-primary" id="getZip">Get ZIP</button>
                       <button type="button" class="btn btn-primary" id="getJson">Get JSON only</button>
+<!--                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalChooseServer">Save</button>-->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="modal fade" id="modalChooseServer" tabindex="-1" role="dialog" aria-labelledby="modalChooseServerLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalChooseServerLabel">Please specify Fintan API server</h5>
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                      <span aria-hidden="true">&times;</span>-->
+<!--                    </button>-->
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group">
+                        <label for="modal-server-address" class="col-form-label">IP:port</label>
+                        <input type="text" class="form-control" id="modal-server-address">
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="selectServer">Select</button>
                   </div>
                 </div>
               </div>

@@ -77,6 +77,7 @@ window.onload = function() {
 
 			window.nodeClasses = $.extend(nodeClasses, window.nodeClasses);
 			window.filenames = {};
+			window.pipelineName = 'pipeline';
 
 			return bubbles.join('\n');
 		}
@@ -457,13 +458,15 @@ window.onload = function() {
 
 		$('#pipelineClear').on('click', function() {
 			$flowchart.flowchart('setData', {});
+			window.filenames = {};
+			window.pipelineName = 'pipeline';
 		});
 
 		$('#pipelineDownload').on('click', function() {
 			const text = JSON.stringify($flowchart.flowchart('getData'), null, 2);
 			let el = document.createElement('a');
 			el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-			el.setAttribute('download', 'pipeline.json');
+			el.setAttribute('download', window.pipelineName + '.json');
 			el.style.display = 'none';
 			document.body.appendChild(el);
 
@@ -568,8 +571,7 @@ window.onload = function() {
 						// we are using titles to sort sparql queries in JSON
 						component.updates.push({path: filename, iter: 1, name: resource.title});
 					}
-					else
-						throw new PipelineError('Unexpected resource type for RDFUpdater: ' + resource.action);
+
 					break;
 				}
 				case "SparqlStreamWriter":
@@ -733,7 +735,7 @@ window.onload = function() {
 			}
 
 			// saving the pipeline
-			window.pipeline = new File([JSON.stringify(json, null, 2)], "pipeline.json");
+			window.pipeline = new File([JSON.stringify(json, null, 2)], window.pipelineName + ".json");
 			// console.log(JSON.stringify(json, null, 2));
 			let ulFiles = $('#uploadFiles');
 			ulFiles.find('li').remove();
@@ -745,17 +747,27 @@ window.onload = function() {
 				}
 				ulFiles.append($('<li class="list-group-item">' + val.name + '</li>'));
 			}
-			ulFiles.append($('<li class="list-group-item">pipeline.json</li>'));
+			// ulFiles.append($('<li class="list-group-item">pipeline.json</li>'));
+
+			$('#modal-generate-pipeline-name').val(window.pipelineName);
+		});
+
+		$('#modal-generate-pipeline-name').on('change', function () {
+			window.pipelineName = $(this).val();
 		});
 
 		$('#getJson').on('click', function () {
-			saveAs(window.pipeline, "pipeline.json");
+			saveAs(window.pipeline, pipelineName + ".json");
 			$('#modalGenerate').modal('hide');
+		});
+
+		$('#uploadPipeline').on('click', function () {
+			// $('#selectServer').show();
 		});
 
 		$('#getZip').on('click', function () {
 			let zip = new JSZip();
-			zip.file('pipeline.json', window.pipeline);
+			zip.file(window.pipelineName + '.json', window.pipeline);
 
 			for (const [key, val] of Object.entries(window.filenames))
 				zip.file(val.name, val);
@@ -766,14 +778,45 @@ window.onload = function() {
 					zip.file('Dockerfile', data, {binary: false});
 					zip.generateAsync({type:"blob"})
 						.then(function(content) {
-							saveAs(content, "pipeline.zip");
+							saveAs(content, pipelineName + ".zip");
 							$('#modalGenerate').modal('hide');
 						});
 				});
 		});
 
-		$('#pipelineRun').on('click', function () {
+		$('#modalChooseServer')
+			.on('show.bs.modal', function () {
+				$('#modal-server-address').val('http://localhost:8080');
+			})
+			.on('shown.bs.modal', function (event) {
+				$('#modal-server-address').trigger('focus');
+		});
 
+		function checkServer(url) {
+			const response = $.ajax({
+				url: url + '/api/docs',
+				async: false,
+				cache: false
+			});
+
+			console.log(response);
+			return response.status === 200;
+		}
+
+		$('#selectServer').on('click', function (event) {
+			const server = $('#modal-server-address').val();
+
+			if (checkServer(server)) {
+				$('#modalChooseServer').modal('hide');
+				$('#modalGenerate').modal('hide');
+			} else {
+				alert('Server is not available');
+			}
+		});
+
+		$('#modal-server-address').on('keyup', function(event) {
+			if (event.which === 13)
+				$('#selectServer').trigger('click');
 		});
 
 		$('#modalSave')
