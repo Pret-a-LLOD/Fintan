@@ -85,6 +85,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	 * @return stream
 	 */
 	public In getInputStream(String name) {
+		if (name == null) name = FINTAN_DEFAULT_STREAM_NAME;
 		return inputStreams.get(name);
 	}
 
@@ -106,6 +107,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	 * @throws IOException if slot is not available (for overriding methods)
 	 */
 	public void setInputStream(In inputStream, String name) throws IOException {
+		if (name == null) name = FINTAN_DEFAULT_STREAM_NAME;
 		this.inputStreams.put(name, inputStream);
 	}
 
@@ -125,6 +127,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	 * @return stream
 	 */
 	public Out getOutputStream(String name) {
+		if (name == null) name = FINTAN_DEFAULT_STREAM_NAME;
 		return outputStreams.get(name);
 	}
 
@@ -146,6 +149,7 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	 * @throws IOException if slot is not available (for overriding methods)
 	 */
 	public void setOutputStream(Out outputStream, String name) throws IOException {
+		if (name == null) name = FINTAN_DEFAULT_STREAM_NAME;
 		this.outputStreams.put(name, outputStream);
 	}
 	
