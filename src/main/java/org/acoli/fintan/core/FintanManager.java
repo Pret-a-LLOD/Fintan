@@ -237,17 +237,21 @@ public class FintanManager {
 				throw new IOException("Elements in 'pipeline' must be object nodes.");
 			} 
 
+			
 			// Create FintanStreamComponents (StreamExtractor, Updater, Formatter ...)
 			FintanStreamComponent component = buildComponent((ObjectNode) pipelineElement);
+			
+			String identifier = Integer.toString(component.hashCode()); //default, if no componentInstance specified
 			if (pipelineElement.hasNonNull("componentInstance")) {
-				String identifier = pipelineElement.get("componentInstance").asText();
+				identifier = pipelineElement.get("componentInstance").asText();
 				if (componentStack.containsKey(identifier))
 					throw new IOException("'componentInstance' : '"+identifier+"' is not unique!");
-				componentStack.put(identifier, component);
-			} else {
-				componentStack.put(Integer.toString(component.hashCode()), component);
 			}
+			component.setInstanceName(identifier);
+			
+			componentStack.put(identifier, component);
 
+			
 			// Define Pipeline I/O
 			// always use previously defined input... first main input, later piped input
 			// currently late binding. Will terminate if streams are incompatible.
@@ -285,6 +289,7 @@ public class FintanManager {
 
 			// Create FintanStreamComponents (StreamExtractor, Updater, Formatter ...)
 			FintanStreamComponent component = buildComponent((ObjectNode) node);
+			component.setInstanceName(identifier);
 			componentStack.put(identifier, component);
 		}
 	}
@@ -467,16 +472,17 @@ public class FintanManager {
 		if (sourceGraph == null) sourceGraph = FintanStreamComponent.FINTAN_DEFAULT_STREAM_NAME;
 		if (destGraph == null) destGraph = FintanStreamComponent.FINTAN_DEFAULT_STREAM_NAME;
 		if (sourceComp.getOutputStream(sourceGraph) != null) {
-			throw new IOException("OutputStream slot is already occupied for graph '"+sourceGraph+ "'");
+			throw new IOException("OutputStream slot is already occupied for component '"+sourceComp.getInstanceName()+"', graph '"+sourceGraph+ "'");
 		}
 		
 		if (destComp != null) {
 			if (destComp.getInputStream(destGraph) != null) {
-				throw new IOException("InputStream slot is already occupied for graph '"+destGraph+ "'");
+				throw new IOException("InputStream slot is already occupied for component '"+destComp.getInstanceName()+"', graph '"+destGraph+ "'");
 			}
 		}
 		
 		Object nextInput = null;
+		try {
 		if (sourceComp instanceof StreamLoader) {
 			// Loader uses FintanStream as Output
 			FintanStreamHandler compOutput = new FintanStreamHandler();
@@ -502,6 +508,9 @@ public class FintanManager {
 		if (destComp != null && nextInput != null) {
 			destComp.setInputStream(nextInput, destGraph);
 			return null;
+		}
+		} catch (ClassCastException e) {
+			throw new IOException("Error when trying to connect srcComp: "+sourceComp.getInstanceName()+" srcGraph: "+sourceGraph+" tgtComp: "+destComp.getInstanceName()+"tgtGraph: "+destGraph, e);
 		}
 		
 		return nextInput;

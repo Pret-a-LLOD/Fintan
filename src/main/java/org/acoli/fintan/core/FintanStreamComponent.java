@@ -43,15 +43,18 @@ public abstract class FintanStreamComponent<In, Out> implements Runnable {
 	public static final String FINTAN_DEFAULT_STREAM_NAME = "";
 
 	private ObjectNode config;
+	private String instanceName = "";
 	private HashMap<String,In> inputStreams = new HashMap<String,In>();
 	private HashMap<String,Out> outputStreams = new HashMap<String,Out>();
 
-	//TODO: add segmentation delimiter handling
-	//TODO: -TEXT-	StreamComponents: 	add data FORMAT handling
-	//									add segmentation DELIMITER handling
-	//		-RDF-	StreamComponents: 	add data MODEL / ONTOLOGY handling
-	//		-BOTH- 	possibly to be moved to manager classes, or abstraction layer in Fintan Service.
-	//				should be compatible with OpenAPI, elexis and teanga.
+	public String getInstanceName() {
+		return instanceName;
+	}
+
+	public void setInstanceName(String instanceName) {
+		this.instanceName = instanceName;
+	}
+	
 	/**
 	 * 
 	 * @return the JSON configuration of this component.
