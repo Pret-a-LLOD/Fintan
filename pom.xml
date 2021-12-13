@@ -16,29 +16,42 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- see also https://www.baeldung.com/maven-version-collision -->
-		<jena.version>3.11.0</jena.version> <!-- required by tarql, since org.apache.jena.riot.system.StreamOps has been removed from future releases -->
+		<jena.version>3.11.0</jena.version> <!-- required by tarql, since org.apache.jena.riot.system.StreamOps has been 
+			removed from future releases -->
 	</properties>
 
 
 	<dependencies>
 
 		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.15.0</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.12.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-cmds</artifactId>
 			<version>${jena.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -46,6 +59,12 @@
 			<artifactId>apache-jena-libs</artifactId>
 			<type>pom</type>
 			<version>${jena.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -55,6 +74,10 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions>
@@ -69,6 +92,10 @@
 					<groupId>org.apache.jena</groupId>
 					<artifactId>*</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -79,6 +106,10 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions>
@@ -92,6 +123,25 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>eu.liderproject</groupId>
+			<version>0.2-SNAPSHOT</version>
+			<artifactId>tbx2rdf</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions>
