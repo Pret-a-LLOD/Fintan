@@ -125,6 +125,8 @@ window.onload = function() {
 		// 	$flowchart.css('transform', 'scale(' + possibleZooms[currentZoom] + ')');
 		// });
 
+		let yasqe;
+
         // preparing input and output bubbles in the chart area
         const data = {
             operators: {
@@ -292,7 +294,14 @@ window.onload = function() {
 											}
 
 											$flowchart.flowchart('setOperatorOptions', operatorId, operator_options);
-											$('textarea#' + $(this).data('for')).val(e.target.result);
+											if (document.getElementById('sparql')) {
+												yasqe.setValue(e.target.result);
+												setTimeout(function () {
+													yasqe.refresh();
+												}, 1);
+											}
+											else
+												$('textarea#' + $(this).data('for')).val(e.target.result);
 
 
 										};
@@ -321,9 +330,9 @@ window.onload = function() {
 
                 	let queryElem = document.getElementById("sparql");
                 	if (queryElem) {
-                		const yasqe = new YASQE(queryElem, {
-                			resizeable: true,
-							autofocus: true
+                		yasqe = new YASQE(queryElem, {
+                			resizeable: true//,
+							//autofocus: true
 						});
 
                 		let queryOption = $(queryElem).data('index');
@@ -332,8 +341,7 @@ window.onload = function() {
 							operator_options[queryOption].value = yasqe.getValue();
 							$flowchart.flowchart('setOperatorOptions', operatorId, operator_options);
 						});
-
-						console.log(yasqe);
+						setTimeout(function(){yasqe.refresh();}, 1);
 					}
 
                 	$("#options").show("slide", { direction: "right" }, 400);
