@@ -513,7 +513,7 @@ window.onload = function() {
 			$('#modalLoad').modal('hide');
 		});
 
-		function uploadResourceFile(resource, component, operatorId, type) {
+		function uploadResourceFile(resource, component, resourceOperatorId, type) {
 			const typeSettings = {
 				"load_xsl.yaml": {
 					extension: ".xsl",
@@ -535,7 +535,8 @@ window.onload = function() {
 			if (!(type in typeSettings))
 				throw new PipelineError('Unknown resource type: ' + type);
 
-			let filename = 'data/' + resource.title.replace(" ", "-") + "_" + operatorId + "_" + component.id + typeSettings[type].extension;
+			// let filename = 'data/' + resource.title.replace(" ", "-") + "_" + operatorId + "_" + component.id + typeSettings[type].extension;
+			let filename = 'data/' + resource.title.replace(" ", "-") + "_" + resourceOperatorId + typeSettings[type].extension; // TODO: check the extention here to make sure and save it with the correct one
 			let value = resource.options[typeSettings[type].optionIndex].value;
 			if (!value)
 				throw new PipelineError(typeSettings[type].errorMsg);
@@ -544,13 +545,13 @@ window.onload = function() {
 			return filename;
 		}
 
-		function processResource(resource, component, operatorId) {
+		function processResource(resource, component, resourceOperatorId) {
 			// I am NOT SURE that hardcoding everything about our resource components is the best approach.
 			// On the other hand, they are of pretty basic formats
 			switch (component.class) {
 				case "XSLTStreamTransformer": {
 					if (resource.action === 'load_xsl.yaml') {
-						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+						const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 						component.xsl = (filename + " "  + (component.args ? component.args : "")).trim();
 					}
 					break;
@@ -564,7 +565,7 @@ window.onload = function() {
 						if (!/^https?:\/\/.*/.test(graph))
 							graph = "http://" + graph;
 
-						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+						const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 
 						if (!component.models)
 							component.models = [];
@@ -572,7 +573,7 @@ window.onload = function() {
 					}
 
 					if (resource.action === 'load_sparql.yaml') {
-						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+						const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 
 						if (!component.updates)
 							component.updates = [];
@@ -586,7 +587,7 @@ window.onload = function() {
 				case "TarqlStreamTransformer":
 				case "SparqlStreamTransformerTDB": {
 					if (resource.action === 'load_sparql.yaml') {
-						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+						const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 						component.query = filename;
 					}
 					break;
@@ -599,7 +600,7 @@ window.onload = function() {
 						recurs: "recursiveUpdate"
 					};
 
-					const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+					const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 					const resName = resource.title
 						.toLowerCase()
 						.replace(" |(e|or)$|update$|(e|or)?query$|(e|ive)?update$", "");
@@ -615,7 +616,7 @@ window.onload = function() {
 						throw new PipelineError('Only SPARQLTSV mode of CoNLLRDFFormatter supports a SPARQL SELECT');
 
 					if (resource.action === 'load_sparql.yaml') {
-						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+						const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 						component.modules[0].filename = filename;
 					}
 				}
