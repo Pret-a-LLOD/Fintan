@@ -540,7 +540,7 @@ window.onload = function() {
 			let value = resource.options[typeSettings[type].optionIndex].value;
 			if (!value)
 				throw new PipelineError(typeSettings[type].errorMsg);
-			window.filenames[operatorId] = new File([value], filename, { type: "text/plain"} );
+			window.filenames[resourceOperatorId] = new File([value], filename, { type: "text/plain"} );
 
 			return filename;
 		}
