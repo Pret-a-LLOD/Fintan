@@ -659,7 +659,7 @@ window.onload = function() {
 		// I operate under an assumption that we have only one output. Should work for now
 		function isStreamNode(properties)
 		{
-			return properties.outputs.output_1.label === 'Graph';
+			return properties.outputs && properties.output_1 && properties.outputs.output_1.label === 'Graph';
 		}
 
 		function preprocessComponent(component)
