@@ -6,7 +6,7 @@
 ```shell
 git clone https://github.com/acoli-repo/fintan-backend.git
 cd fintan-backend/
-. build.sh 
+(. build.sh) 
 ```
 ### Demo
 ```shell
