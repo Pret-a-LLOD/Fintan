@@ -1,0 +1,51 @@
+{
+"components" : [ 
+
+	{ "class" : "CoNLLStreamExtractor",
+	  "componentInstance": "streamEx",
+		"baseURI" : "https://github.com/UniversalDependencies/UD_English#",
+		"columns" : ["IGNORE", "WORD", "IGNORE", "UPOS", "IGNORE", "IGNORE", "HEAD", "EDGE", "IGNORE", "IGNORE"]
+	},
+	
+	{ "class" : "CoNLLRDFUpdater",
+	  "componentInstance": "updater"
+		, "updates" : [
+			{"path":"samples/conll-rdf/sparql/remove-IGNORE.sparql", "iter":"1"},
+			{"path":"samples/conll-rdf/sparql/analyze/UPOS-to-POSsynt.sparql", "iter":"1"},
+			{"path":"samples/conll-rdf/sparql/analyze/EDGE-to-POSsynt.sparql", "iter":"1"},
+			{"path":"samples/conll-rdf/sparql/analyze/consolidate-POSsynt.sparql", "iter":"1"}
+		]
+	} ,
+	
+	{ "class" : "CoNLLRDFFormatter",
+	  "componentInstance": "formatter"
+		, "modules" : [
+			{"mode":"SPARQLTSV", "select": "samples/conll-rdf/sparql/analyze/eval-POSsynt.sparql"}
+		]
+	}
+]
+, "streams": [
+    {
+      "readsFromSource": "samples/conll-rdf/ud/UD_English-master/en-ud-dev.conllu.gz",
+      "writesToInstance": "streamEx",
+      "writesToInstanceGraph": ""
+    },
+    {
+      "readsFromInstance": "streamEx",
+      "readsFromInstanceGraph": "",
+      "writesToInstance": "updater",
+      "writesToInstanceGraph": ""
+    },
+    {
+      "readsFromInstance": "updater",
+      "readsFromInstanceGraph": "",
+      "writesToInstance": "formatter",
+      "writesToInstanceGraph": ""
+    },
+    {
+      "readsFromInstance": "formatter",
+      "readsFromInstanceGraph": "",
+      "writesToDestination": "System.out"
+    }
+  ]
+}
