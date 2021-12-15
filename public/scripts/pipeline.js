@@ -530,7 +530,7 @@ window.onload = function() {
 			let filename = 'data/' + resource.title.replace(" ", "-") + "_" + operatorId + "_" + component.id + typeSettings[type].extension;
 			let value = resource.options[typeSettings[type].optionIndex].value;
 			if (!value)
-				throw new PipelineError('SPARQL query not specified for a SPARQL resource');
+				throw new PipelineError(typeSettings[type].errorMsg);
 			window.filenames[operatorId] = new File([value], filename, { type: "text/plain"} );
 
 			return filename;
@@ -600,10 +600,16 @@ window.onload = function() {
 						throw new PipelineError('Cannot assign resource to a property: ' + resource.title);
 
 					component[propertyNames[resName]] = filename;
-					if (component.deltaStreams)
-						component.deltaStreams = component.deltaStreams.split('\n');
-					if (component.segmentStreams)
-						component.segmentStreams = component.segmentStreams.split('\n');
+					break;
+				}
+				case "CoNLLRDFFormatter": {
+					if (component.modules[0].mode !== 'SPARQLTSV')
+						throw new PipelineError('Only SPARQLTSV mode of CoNLLRDFFormatter supports a SPARQL SELECT');
+
+					if (resource.action === 'load_sparql.yaml') {
+						const filename = uploadResourceFile(resource, component, operatorId, resource.action);
+						component.modules[0].filename = filename;
+					}
 				}
 			}
 
@@ -642,6 +648,47 @@ window.onload = function() {
 			return stream;
 		}
 
+		// I operate under an assumption that we have only one output. Should work for now
+		function isStreamNode(properties)
+		{
+			return properties.outputs.output_1.label === 'Graph';
+		}
+
+		function preprocessComponent(component)
+		{
+			switch (component.class) {
+				case "CoNLLStreamExtractor": {
+					component.columns = component.columns ? component.columns.split(' ') : [];
+					break;
+				}
+				case "CoNLLRDFFormatter": {
+					if (component.mode === 'RDF' || component.mode === 'CONLL')
+						component.modules = [{
+								mode: component.mode,
+								columns: component.columns ? component.columns.split(' ') : []
+					}];
+					else
+						component.modules = [{mode: component.mode}];
+
+					delete component.mode;
+					delete component.columns;
+
+					break;
+				}
+				case "RDFStreamSplitterTDB": {
+					component.deltaStreams = component.deltaStreams ? component.deltaStreams.split('\n') : [];
+					component.segmentStreams = component.segmentStreams ? component.segmentStreams.split('\n') : [];
+					break;
+				}
+				case "RDFStreamLoader": {
+					if (!component.delimiter)
+						component.delimiter = '';
+				}
+			}
+
+			return component;
+		}
+
 		function generatePipelineJSON(data)
 		{
 			let json = {
@@ -670,7 +717,7 @@ window.onload = function() {
 					for(const {name, value} of elemData.options.map(item => { return { name: item.name, value: item.value ? item.value : null }; }))
 						component[name] = value;
 					componentIdMapping[key] = json.components.length;
-					json.components.push(component);
+					json.components.push(preprocessComponent(component));
 				}
 			}
 
@@ -703,7 +750,7 @@ window.onload = function() {
 					let dupl_stream = "dupl_" +  key;
 					json.components.push({
 						componentInstance: dupl_stream,
-						class: "IOStreamDuplicator"
+						class: isStreamNode(data.operators[key].properties) ? "RDFStreamDuplicator" : "IOStreamDuplicator"
 					});
 
 					// adding one stream from source to the duplicator

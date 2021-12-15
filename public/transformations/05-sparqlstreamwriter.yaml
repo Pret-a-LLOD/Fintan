@@ -1,5 +1,5 @@
 info:
-  title: SPARQL RDF Writer
+  title: SPARQL Stream Writer
   description: Serialise RDF data using SPARQL SELECT
   class: SparqlStreamWriter
 params:

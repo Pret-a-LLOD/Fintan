@@ -19,8 +19,8 @@ params:
     type: bool
     value: true
     values:
-      - yes
-      - no
+      - true
+      - false
 inputs:
   - name: input
     label: RDF

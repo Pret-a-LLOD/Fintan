@@ -1,0 +1,25 @@
+info:
+  title: CoNLL-RDF Formatter
+  description: Format CoNLL-RDF data
+  class: CoNLLRDFFormatter
+params:
+  - name: mode
+    label: Mode
+    values:
+      - RDF
+      - CONLL
+      - SPARQLTSV
+      - GRAMMAR
+      - SEMANTICS
+      - GRAMMAR+SEMANTICS
+    value: "CONLL"
+  - name: columns
+    label: Columns (for RDF and CONLL modes)
+    type: array
+inputs:
+  - name: input
+    label: CoNLL-RDF
+outputs:
+  - name: output
+    label: Data
+resources:

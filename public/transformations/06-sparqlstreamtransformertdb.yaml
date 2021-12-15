@@ -1,5 +1,5 @@
 info:
-  title: SPARQL Transform
+  title: Merge and Transform
   description: Serialise RDF data with SPARQL SELECT
   class: SparqlStreamTransformerTDB
 params:
