@@ -8,7 +8,39 @@ For more information please refer to the full [**Software Documentation**](https
 
 ![Fintan UI](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan-UI.PNG)
 
-## Repositories
+## Usage
+
+Clone this repository including sub-modules:
+
+		$> git clone https://github.com/Pret-a-LLOD/Fintan.git --recurse-submodules --remote-submodules
+
+Build the Fintan backend:
+
+		$> cd Fintan/backend/
+		$> (. build.sh)
+		$> cd ../..
+
+Test the Fintan backend:
+
+		$> cd Fintan/backend/samples/xslt/apertium/
+		$> . _apertium_demo.sh
+
+Build the Fintan frontend:
+
+		$> cd Fintan/ui/
+		$> npm install
+		$> cd ../..
+
+Run the Fintan frontend
+
+		$> (cd Fintan/ui/; npm start &)
+
+When the container is running, use your browser to go to web address: http://localhost:3009
+
+The frontend allows you to configure and export Fintan workflows. These can then be executed by the backend.
+
+
+## Sub-Repositories
 - [**Frontend**](https://github.com/acoli-repo/fintan-ui) for designing Fintan pipelines
 - [**Service**](https://github.com/acoli-repo/fintan-service) for running Fintan pipelines inside integrated Docker containers
 - [**Backend**](https://github.com/acoli-repo/fintan-backend) for executing Fintan pipelines on the command line
