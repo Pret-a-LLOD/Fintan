@@ -1,0 +1,31 @@
+{
+"components" : [ 
+
+	{ "class" : "CoNLLStreamExtractor",
+	  "componentInstance": "streamEx",
+		"baseURI" : "https://github.com/UniversalDependencies/UD_English#",
+		"columns" : ["ID", "WORD", "LEMMA", "UPOS", "POS", "FEAT", "HEAD", "EDGE", "DEPS", "MISC"]
+	},
+	
+	{ "class" : "CoNLLRDFFormatter",
+	  "componentInstance": "formatter",
+		"modules" : [
+				{"mode":"RDF", "columns": ["ID", "WORD", "LEMMA", "UPOS", "POS", "FEAT", "HEAD", "EDGE", "DEPS", "MISC"]}
+		]
+	}
+]
+, "streams": [
+    {
+      "readsFromSource": "samples/conll-rdf/ud/UD_English-master/en-ud-dev.conllu.gz",
+      "writesToInstance": "streamEx"
+    },
+    {
+      "readsFromInstance": "streamEx",
+      "writesToInstance": "formatter"
+    },
+    {
+      "readsFromInstance": "formatter",
+      "writesToDestination": "System.out"
+    }
+  ]
+}
