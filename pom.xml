@@ -131,21 +131,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>eu.liderproject</groupId>
-			<version>0.2-SNAPSHOT</version>
-			<artifactId>tbx2rdf</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.jena</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 	</dependencies>
 
 	<!-- see also https://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar/6743609#6743609 -->
