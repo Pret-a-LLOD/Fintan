@@ -4,10 +4,6 @@
 
 The Fintan platform is an effort of combining existing converter frameworks with stream-based graph transformation and a workflow management engine in order to create integrated transformation pipelines for various input and output format. It has been developed to address the challenge of **Transforming language resources and language data** within Task 3.3 of the ([**Prêt-à-LLOD**](https://cordis.europa.eu/project/id/825182/results)) project: Research and Innovation Action of the H2020 programme (ERC, grant agreement 825182).
 
-For more information please refer to the full [**Software Documentation**](https://github.com/acoli-repo/fintan-doc).
-
-![Fintan UI](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan-UI.PNG)
-
 ## Usage
 
 Clone this repository including sub-modules:
@@ -39,6 +35,9 @@ When the container is running, use your browser to go to web address: http://loc
 
 The frontend allows you to configure and export Fintan workflows. These can then be executed by the backend.
 
+![Fintan UI](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan-UI.PNG)
+
+For more information please refer to the full [**Software Documentation**](https://github.com/acoli-repo/fintan-doc).
 
 ## Sub-Repositories
 - [**Frontend**](https://github.com/acoli-repo/fintan-ui) for designing Fintan pipelines
