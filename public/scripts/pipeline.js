@@ -298,6 +298,9 @@ window.onload = function() {
                 let options_count = Object.keys(operator_options).length;
                 let options_contents;
 
+                // TODO: populate with description
+                $('#optionsHelp').html('');
+
                 if (options_count > 0) {
 
                 	// Add an option for bubble title

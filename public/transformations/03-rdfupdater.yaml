@@ -1,6 +1,8 @@
 info:
   title: RDF Updater
-  description: Apply a SPARQL Update to a graph
+  description: |
+    Apply a SPARQL Update to a graph.
+    Can take any number of SPARQL and RDF resources (at least one SPARQL UPDATE is required)
   class: RDFUpdater
 params:
   - name: threads
