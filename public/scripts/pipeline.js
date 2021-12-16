@@ -571,6 +571,8 @@ window.onload = function() {
 
 			// let filename = 'data/' + resource.title.replace(" ", "-") + "_" + operatorId + "_" + component.id + typeSettings[type].extension;
 			let extension = typeSettings[type].extension;
+			// TODO: I don't like this hardcoded solution. Maybe changing typeSettings to have a function
+			//  returning an object instead of a dict
 			if (type === 'load_rdf.yaml')
 				extension = rdfExtensions[resource.options[2].value];
 
@@ -829,8 +831,8 @@ window.onload = function() {
 			}
 
 			// saving the pipeline
-			window.pipeline = new File([JSON.stringify(json, null, 2)], window.pipelineName + ".json");
-			// console.log(JSON.stringify(json, null, 2));
+			// window.pipeline = new File([JSON.stringify(json, null, 2)], window.pipelineName + ".json");
+			window.pipeline = JSON.stringify(json, null, 2); // TODO: maybe change this behaviour later, this is to allow us replace paths in the JSON after pipeline rename
 			let ulFiles = $('#uploadFiles');
 			ulFiles.find('li').remove();
 			for (const [key, val] of Object.entries(window.filenames)) {
@@ -851,7 +853,7 @@ window.onload = function() {
 		});
 
 		$('#getJson').on('click', function () {
-			saveAs(window.pipeline, pipelineName + ".json");
+			saveAs(new File([window.pipeline.replaceAll('"data/', '"' + window.pipelineName + '/data/')], window.pipelineName + ".json"), window.pipelineName + ".json");
 			$('#modalGenerate').modal('hide');
 		});
 
@@ -861,15 +863,15 @@ window.onload = function() {
 
 		$('#getZip').on('click', function () {
 			let zip = new JSZip();
-			zip.file(window.pipelineName + '.json', window.pipeline);
+			zip.file(window.pipelineName + '/' + window.pipelineName + '.json', window.pipeline.replaceAll('"data/', '"' + window.pipelineName + '/data/'));
 
 			for (const [key, val] of Object.entries(window.filenames))
-				zip.file(val.name, val);
+				zip.file(window.pipelineName + '/' + val.name, val);
 
 			fetch('/service-dockerfile')
 				.then(response => response.text())
 				.then(data => {
-					zip.file('Dockerfile', data, {binary: false});
+					zip.file(window.pipelineName + '/Dockerfile', data, {binary: false});
 					zip.generateAsync({type:"blob"})
 						.then(function(content) {
 							saveAs(content, pipelineName + ".zip");
