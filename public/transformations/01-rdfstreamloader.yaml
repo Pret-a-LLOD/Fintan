@@ -6,11 +6,10 @@ params:
   - name: lang
     label: RDF serialization
     values:
-      - ttl
       - Turtle
       - RDF/XML
       - N3
-    value: ttl
+    value: Turtle
   - name: delimiter
     label: Delimiter
     value: ""

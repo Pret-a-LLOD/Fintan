@@ -23,18 +23,18 @@ params:
   - name: headerRow
     label: First row is a header
     values:
-      - yes
-      - no
-    value: yes
+      - true
+      - false
+    value: true
   - name: baseIRI
     label: Base IRI
     value: ""
   - name: write-base
     label: Output @base
     values:
-      - yes
-      - no
-    value: no
+      - true
+      - false
+    value: false
   - name: dedup
     label: Window size for deduplication
     value: "0"

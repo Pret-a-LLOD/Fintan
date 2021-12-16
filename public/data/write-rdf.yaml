@@ -10,6 +10,7 @@ params:
       - Turtle
       - RDF/XML
       - N-Triples
+    value: Turtle
 inputs:
   - name: result
     label: RDF
