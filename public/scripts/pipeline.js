@@ -241,6 +241,16 @@ window.onload = function() {
 				option_html_end;
 		}
 
+		function getOperatorType(operatorData, connector, subConnector) {
+			if (operatorData.properties.type === 'resources')
+				return 'resource';
+			const val = operatorData.properties[connector][subConnector].label;
+			if(/Graph/.test(val))
+				return 'stream';
+
+			return 'text';
+		}
+
         // Preparing the flowchart plugin
         $flowchart.flowchart({
             data: data,
@@ -257,6 +267,24 @@ window.onload = function() {
                 $flowchart.focus();
                 return true;
             },
+
+			onLinkCreate(linkId, linkData) {
+            	const linkColors = {
+            		resource: "#0394BB",
+					stream: "#F37043",
+					text: "#5CB85C"
+            	};
+
+            	const operatorFromType = getOperatorType($flowchart.flowchart('getOperatorData', linkData.fromOperator), 'outputs', linkData.fromConnector);
+            	const operatorToType = getOperatorType($flowchart.flowchart('getOperatorData', linkData.toOperator), 'inputs', linkData.toConnector);
+
+            	if(operatorFromType !== operatorToType && operatorFromType !== 'resource')
+            		return false;
+
+            	// TODO: Remove if it's too bright
+            	linkData.color = linkColors[operatorFromType];
+            	return true;
+			},
 
             onLinkUnselect: function () {
                 $(".dashed-line").removeClass("dashed-line");
