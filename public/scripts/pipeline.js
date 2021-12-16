@@ -560,11 +560,21 @@ window.onload = function() {
 				}
 			};
 
+			const rdfExtensions = {
+				'Turtle': '.ttl',
+				'RDF/XML': '.rdf',
+				'N-Triples': '.n3'
+			};
+
 			if (!(type in typeSettings))
 				throw new PipelineError('Unknown resource type: ' + type);
 
 			// let filename = 'data/' + resource.title.replace(" ", "-") + "_" + operatorId + "_" + component.id + typeSettings[type].extension;
-			let filename = 'data/' + resource.title.replace(" ", "-") + "_" + resourceOperatorId + typeSettings[type].extension; // TODO: check the extention here to make sure and save it with the correct one
+			let extension = typeSettings[type].extension;
+			if (type === 'load_rdf.yaml')
+				extension = rdfExtensions[resource.options[2].value];
+
+			let filename = 'data/' + resource.title.replace(" ", "-") + "_" + resourceOperatorId + extension;
 			let value = resource.options[typeSettings[type].optionIndex].value;
 			if (!value)
 				throw new PipelineError(typeSettings[type].errorMsg);
@@ -640,10 +650,10 @@ window.onload = function() {
 					break;
 				}
 				case "CoNLLRDFFormatter": {
-					if (component.modules[0].mode !== 'SPARQLTSV')
-						throw new PipelineError('Only SPARQLTSV mode of CoNLLRDFFormatter supports a SPARQL SELECT');
-
 					if (resource.action === 'load_sparql.yaml') {
+						if (component.modules[0].mode !== 'SPARQLTSV')
+							throw new PipelineError('Only SPARQLTSV mode of CoNLLRDFFormatter supports a SPARQL SELECT');
+
 						const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 						component.modules[0].filename = filename;
 					}

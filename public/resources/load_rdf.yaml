@@ -17,6 +17,7 @@ params:
     type: editor
   - name: lang
     label: RDF serialization
+    value: Turtle
     values:
       - Turtle
       - RDF/XML
