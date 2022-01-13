@@ -40,10 +40,31 @@ query: path to the tarql query. The query must be of `CONSTRUCT` or `DESCRIBE` s
 * `dedup`: window size in which to remove duplicate triples.
 
 ## XSLT transformation
-The XSLTStreamTransformer uses the Saxon HE library to transform XML data using XSL transformation. It is implementing the StreamTransformerGenericIO interface and thus does not directly produce segmented RDF streams. It can be used stand-alone or for preprocessing steps in combination with the Loader or Splitter classes. 
+The `XSLTStreamTransformer` uses the Saxon HE library to transform XML data using XSL transformation. It is implementing the StreamTransformerGenericIO interface and thus does not directly produce segmented RDF streams. It can be used stand-alone or for preprocessing steps in combination with the Loader or Splitter classes. 
 
 In the current implementation, it supports only a single input and output stream. Therefore, only the default streams can be connected. The XSL scripts for conversion along their respective parameters can be supplied in a JSON configuration as follows:
 * `"xsl" : "path/to/script.xsl param1=value1 paramN=valueN"`
 * The parameters, values etc. can be passed on from the command line using the <$param0> wildcards as described in [Pipelines](2-run-pipelines.md).
 * The general syntax is the same as with the original Saxon CLI tools.
+
+## TBX2RDF
+The `TBX2RDFStreamLoader` makes use of the [tbx2rdf](https://github.com/cimiano/tbx2rdf) library originally designed using Jena 2 which employed different class names and packages than newer releases. In order to ensure compatiblity with Fintan's segmented RDF streams, Fintan imports a [fork of tbx2rdf](https://github.com/cfaeth/tbx2rdf) whose dependencies are kept concurrent with the Fintan backend releases.
+
+The original design of tbx2rdf allows for two different modes of operation:
+
+* The `default` mode attempts to parse convert and output a file as is in a streamed operation. To be used in Fintan pipelines, it expects the TBX data on the default input stream slot and writes the converted RDF data to the default output stream. Named output streams are unnecessary and not supported.
+* The `bigFile` mode instead caches the default input stream in a file and does preprocessing steps independently from the bulk data. Therefore it requires multiple output streams to be defined:
+    * `http://martifHeader`
+    * `http://subjectFields`
+    * `http://lexicons`
+    * the default output stream carries the bulk data
+    
+For both modes of operation, there are [example configurations](https://github.com/acoli-repo/fintan-backend/tree/master/samples/tbx2rdf).
+
+In addition, the `TBX2RDFStreamLoader` accepts the following parameters:
+* `namespace`: (required) namespace of the resulting dataset
+* `mappings`: (required) define the tbx2rdf mappings. [Default mappings](https://github.com/cfaeth/tbx2rdf/blob/master/mappings.default) are available in the tbx2rdf repo. If the mappings need to be preprocessed or are produced within a Fintan pipeline, it is also possible to supply them on the named stream `http://mappings`. In this case, this parameter must be null or omitted.
+* `lenient`: (`true`/`false`) determines if the parsing is going to be lenient or strict. Default: false => strict.
+* `bigFile`: (`true`/`false`) switches between bigFile and default mode.
+* `cachePath`: allows to define a custom path for caching in `bigFile` mode. If unspecified, Fintan's temp folder will be used.
 
