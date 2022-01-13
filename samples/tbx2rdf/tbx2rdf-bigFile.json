@@ -1,0 +1,60 @@
+{
+"input" : "../../tbx2rdf/samples/test1.tbx"
+, "output" : "samples/tbx2rdf/data/entries.ttl"
+, "pipeline" : [
+	{
+	  "componentInstance" : "tbx2rdf",
+	  "class" : "TBX2RDFStreamLoader",
+	  "namespace" : "http://tbx2rdf.lider-project.eu/data/iate/testlocalnamespace/",
+	  "mappings" : "../../tbx2rdf/mappings.default",
+	  "lenient" : "false",
+	  "bigFile" : "true",
+	  "cachePath" : null
+	},
+	{ 
+      "componentInstance" : "ttlWriter",
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
+	}
+  ]
+, "streams" : [
+    {
+    	"readsFromInstance" : "tbx2rdf",
+    	"readsFromInstanceGraph" : "http://martifHeader",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : "http://martifHeader"
+    },
+    {
+    	"readsFromInstance" : "ttlWriter",
+    	"readsFromInstanceGraph" : "http://martifHeader",
+    	"writesToDestination" : "samples/tbx2rdf/data/martifHeader.ttl"
+    },
+    
+    
+    {
+    	"readsFromInstance" : "tbx2rdf",
+    	"readsFromInstanceGraph" : "http://subjectFields",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : "http://subjectFields"
+    },
+    {
+    	"readsFromInstance" : "ttlWriter",
+    	"readsFromInstanceGraph" : "http://subjectFields",
+    	"writesToDestination" : "samples/tbx2rdf/data/subjectFields.ttl"
+    },
+    
+    
+    {
+    	"readsFromInstance" : "tbx2rdf",
+    	"readsFromInstanceGraph" : "http://lexicons",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : "http://lexicons"
+    },
+    {
+    	"readsFromInstance" : "ttlWriter",
+    	"readsFromInstanceGraph" : "http://lexicons",
+    	"writesToDestination" : "samples/tbx2rdf/data/lexicons.ttl"
+    }
+  ]
+}

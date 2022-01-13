@@ -23,4 +23,9 @@ cd tarql
 mvn --batch-mode --quiet -DskipTests -Dmaven.javadoc.skip=true clean install 
 
 cd $HOME
+git clone -b integrationTest https://github.com/cfaeth/tbx2rdf.git
+cd tbx2rdf
+mvn --batch-mode --quiet -DskipTests clean install 
+
+cd $HOME
 mvn --batch-mode clean install
