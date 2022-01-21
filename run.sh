@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# store the path of the root directory in HOME
-HOME=$( dirname -- "$(realpath -- "$0")");
+# store the path of the fintan-core directory
+base_dir=$(dirname -- "$(realpath -- "$0")")
 
-cd $HOME
-
-mvn exec:java --quiet -e -Dfile.encoding=UTF8 -Dexec.mainClass=org.acoli.fintan.FintanCLIManager -Dexec.args="$*"
-
+mvn exec:java --quiet -e -Dfile.encoding=UTF8 -Dexec.mainClass=org.acoli.fintan.FintanCLIManager -Dexec.args="$*" --file="${base_dir}"
