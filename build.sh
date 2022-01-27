@@ -4,28 +4,12 @@
 #uncomment the line below and adjust the path to your system
 #JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
 
-# store the path of the conll-rdf directory in HOME
-HOME=$( dirname -- "$(realpath -- "$0")");
+# store the path of the fintan-core directory
+base_dir=$(dirname -- "$(realpath -- "$0")")
 
-cd $HOME
-git clone https://github.com/acoli-repo/fintan-core.git
-cd fintan-core
-mvn --batch-mode --quiet -DskipTests clean install
+cd "${base_dir}" && git submodule update --init --recursive
 
-cd $HOME
-git clone -b fintan-support https://github.com/acoli-repo/conll-rdf.git
-cd conll-rdf
-mvn --batch-mode --quiet -DskipTests clean install
-
-cd $HOME
-git clone https://github.com/tarql/tarql.git
-cd tarql
-mvn --batch-mode --quiet -DskipTests -Dmaven.javadoc.skip=true clean install 
-
-cd $HOME
-git clone -b integrationTest https://github.com/cfaeth/tbx2rdf.git
-cd tbx2rdf
-mvn --batch-mode --quiet -DskipTests clean install 
-
-cd $HOME
-mvn --batch-mode clean install
+mvn --batch-mode --quiet --file="${base_dir}/parent" \
+    --also-make --projects :fintan-backend \
+    -DskipTests -Dmaven.javadoc.skip \
+    clean package
