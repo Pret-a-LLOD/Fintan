@@ -9,4 +9,7 @@ base_dir=$(dirname -- "$(realpath -- "$0")")
 
 cd "${base_dir}" && git submodule update --init --recursive
 
-mvn --batch-mode --quiet --file="${base_dir}/parent" clean install -DskipTests=true -Dmaven.javadoc.skip=true
+mvn --batch-mode --quiet --file="${base_dir}/parent" \
+    --also-make --projects :fintan-backend \
+    -DskipTests -Dmaven.javadoc.skip \
+    clean package
