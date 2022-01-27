@@ -1,21 +1,16 @@
 #!/bin/bash
+#
+# Fintan wrapper script using a uber-jar instead of the default maven-exec.
 
-# store the path of the fintan-core directory
-base_dir=$(dirname -- "$(realpath -- "$0")")
+# store the path of the fintan-backend/target directory
+backend_dir="$(dirname -- "$(realpath -- "$0")")"
+target_dir="${backend_dir}/target"
+package_jar="${target_dir}/fintan-backend-0.0.1-SNAPSHOT.jar"
 
-# join(char seperator, arg1 ... argn) concatenates an array with the seperating character
-function join {
-  local IFS="$1"
-  shift
-  printf '%s\n' "$*"
-}
+# Check for presence of packaged jar
+if [ ! -e "${package_jar}" ]; then
+    echo "Please make sure to run build.sh first, and verify the fintan jar is present in the target folder"
+    exit 1
+fi
 
-# $@ is a special variable containing the arguments passed to the shell script.
-# ${variable@Q} is "Parameter Transformation" to quote the content of the array for re-use
-# as the variable is $@ is this case, ${}
-# $@ is the variable of the arguments. For a wrapper to java you'd use ("$@")
-args_array=("${@@Q}")
-# join the quoted args into a single string
-args=$(join ' ' "${args_array[@]}")
-
-mvn exec:java --quiet -e -Dfile.encoding=UTF8 -Dexec.mainClass=org.acoli.fintan.FintanCLIManager -Dexec.args="$args" --file="${base_dir}"
+java -Dfile.encoding=UTF8 -jar "${package_jar}" "$@"
