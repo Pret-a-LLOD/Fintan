@@ -1,9 +1,9 @@
 #!/bin/bash
 
-HOME=`echo $0 | sed -e s/'^[^\/]*$'/'.'/g -e s/'\/[^\/]*$'//`;
-ROOT=$HOME/../../..;
+HERE=`echo $0 | sed -e s/'^[^\/]*$'/'.'/g -e s/'\/[^\/]*$'//`;
+ROOT=$HERE/../../..;
 
 
-$ROOT/run.sh -c samples/xslt/apertium/_demo-apertium-full-with-tiad.json -p https://github.com/apertium/apertium-trunk.git en es
+$ROOT/run.sh -c _demo-apertium-portable.json -p https://github.com/apertium/apertium-trunk.git en es
 
 
