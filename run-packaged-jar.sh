@@ -9,8 +9,8 @@ package_jar="${target_dir}/fintan-backend-0.0.1-SNAPSHOT.jar"
 
 # Check for presence of packaged jar
 if [ ! -e "${package_jar}" ]; then
-    echo "Please make sure to run package.sh first, and verify the jar-with-dependencies is present in the target folder"
+    echo "Please make sure to run build.sh first, and verify the fintan jar is present in the target folder"
     exit 1
 fi
 
-/usr/lib/jvm/java-8-openjdk-amd64/bin/java -Dfile.encoding=UTF8 -jar "${package_jar}" "$@"
+java -Dfile.encoding=UTF8 -jar "${package_jar}" "$@"
