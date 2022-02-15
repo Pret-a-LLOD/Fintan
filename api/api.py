@@ -5,6 +5,7 @@ import gzip
 
 from flask import Flask, request, jsonify, send_file, redirect
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
 
@@ -15,15 +16,17 @@ def load_pipelines(path):
 path_pipelines = os.environ.get('FINTAN_PIPELINES', './pipelines/')
 path_data = os.environ.get('FINTAN_DATA', './data/')
 path_fintan = os.environ.get('FINTAN_PATH', './fintan-backend/')
-path_run_sh = os.path.join(path_fintan, 'run.sh')
+path_jar = os.environ.get('FINTAN_JAR', 'fintan-backend.jar')
+java_run = ['java', '-Dfile.encoding=UTF8', '-jar', path_jar]
 
 upload_extensions = {'.json', '.ttl', '.n3', '.rdf', '.gz', '.zip', '.txt', '.yaml'}
 
-tmpl_pipelines = path_pipelines + '{}.json'
+tmpl_pipelines = os.path.join(path_pipelines, '{}.json')
 
 pipelines = load_pipelines(tmpl_pipelines.format('*'))
 
 app = Flask(__name__)
+CORS(app)
 swagger_ui = get_swaggerui_blueprint('/api/docs', '/static/openapi.yaml')
 app.register_blueprint(swagger_ui)
 
@@ -41,6 +44,22 @@ pipeline_content_getters = {
 }
 
 
+@app.route('/api/pipelines')
+@app.route('/api/pipelines/')
+def pipeline_list():
+    return jsonify({'pipelines': pipelines})
+
+
+@app.route('/api/files')
+@app.route('/api/files/<filename>')
+@app.route('/api/files/<filename>/')
+def files(filename=None):
+    data_files = os.listdir(path_data)
+    if not filename:
+        return jsonify({'files': sorted(files)})
+    return open(os.path.join(path_data, filename)).read() if filename in data_files else jsonify({'error': 'File not found'}), 404
+
+
 @app.route('/api/upload', methods=['POST', 'PUT'])
 @app.route('/api/upload/', methods=['POST', 'PUT'])
 def upload():
@@ -55,6 +74,10 @@ def upload():
     upload_type = request.values.get('type', 'data')
     upload_file.save(os.path.join(path_data if upload_type == 'data' else path_pipelines, filename))
 
+    if upload_type != 'data':
+        global pipelines
+        pipelines = load_pipelines(tmpl_pipelines.format('*'))
+
     return jsonify({'success': 'File successfully uploaded'}), 200
 
 
@@ -64,6 +87,8 @@ def upload():
 @app.route('/api/run/<pipeline>/', methods=['POST'])
 def execute_pipeline(pipeline=None):
     if not pipeline:
+        if not pipelines:
+            return jsonify({'error': 'No pipelines found, upload or ship one with the container'}), 400
         if len(pipelines) > 1:
             return jsonify({'error': 'Multiple pipelines found, pipeline argument must be specified explicitly'}), 400
         pipeline = next(iter(pipelines))
@@ -80,8 +105,8 @@ def execute_pipeline(pipeline=None):
     params = request.values.get('params')
 
     content = pipeline_content_getters[content_type](request)
-    ret_val = subprocess.run([path_run_sh,
-                              "-c", os.path.realpath(tmpl_pipelines.format(pipeline))] +
+    ret_val = subprocess.run(java_run +
+                             ["-c", os.path.realpath(tmpl_pipelines.format(pipeline))] +
                              (["-p", params] if params else []),
                              capture_output=True,
                              input=content + '\n',

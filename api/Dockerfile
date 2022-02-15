@@ -13,12 +13,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Downloading Fintan release and removing all things Git
 RUN git clone --depth 1 https://github.com/acoli-repo/fintan-backend.git \
-  && rm -rf fintan-backend/.git
-# Fixes for the tests that do not work when OLiA ontology is not available.
-RUN  cd fintan-backend && chmod +x build.sh run.sh \
-  && ./build.sh \
-  #&& mvn -f pom.xml clean package
-  && rm -rf fintan-core/.git && rm -rf tarql/.git && rm -rf conll-rdf/.git && cd ..
+  && cd fintan-backend \
+  && chmod +x build.sh run.sh \
+  && ./build.sh && rm -rf */.git \
+  && cd ..
 
 # since we have git on this step, let's download the service as well
 RUN git clone --depth 1 https://github.com/acoli-repo/fintan-service.git \
@@ -43,7 +41,8 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir ./wheels -r requirements.txt
 
 # ------------------------ Step 3: Fintan API ------------------------
 
-FROM maven:3.8.2-jdk-11-slim AS fintan-api
+# We don't need maven or JDK anymore since we have a prebuild JAR
+FROM openjdk:11-jre-slim-buster AS fintan-api
 WORKDIR /fintan
 
 # create the app user
@@ -60,13 +59,12 @@ ENV FINTAN_PATH=.
 COPY ./*.json /fintan/pipelines/
 COPY ./data /fintan/data
 
-COPY --from=fintan-builder /fintan/fintan-backend /fintan/
+COPY --from=fintan-builder /fintan/fintan-backend/target/fintan-backend-*.jar /fintan/fintan-backend.jar
 COPY --from=fintan-builder /root/.m2 /home/fintan/.m2/
 COPY --from=fintan-builder /fintan/fintan-service/api/requirements.txt /fintan/fintan-service/api/api.py /fintan/fintan-service/api/openapi.yaml /fintan/
 COPY --from=api-builder /api-build/wheels /wheels
 
 RUN pip3 install --no-cache /wheels/*
-  # && ./build.sh && cd ../
 
 # chown all the files to the app user
 RUN chown -R fintan:fintan /fintan* /home/fintan/.m2
@@ -79,4 +77,4 @@ ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "api:app", "--log-level=info",
 
 # QUESTIONS:
 # 1. do we need openjfx?
-# 2. how do I copy built packages to the next stage?
+# 2. [SOLVED] how do I copy built packages to the next stage?
