@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Downloading Fintan release and removing all things Git
+# prevents gh repo from caching if changed
+ADD https://api.github.com/repos/acoli-repo/fintan-backend/git/refs/heads/master version.json
 RUN git clone --depth 1 https://github.com/acoli-repo/fintan-backend.git \
   && cd fintan-backend \
   && chmod +x build.sh run.sh \
@@ -19,6 +21,8 @@ RUN git clone --depth 1 https://github.com/acoli-repo/fintan-backend.git \
   && cd ..
 
 # since we have git on this step, let's download the service as well
+# prevents gh repo from caching if changed
+ADD https://api.github.com/repos/acoli-repo/fintan-service/git/refs/heads/master version.json
 RUN git clone --depth 1 https://github.com/acoli-repo/fintan-service.git \
   && rm -rf fintan-service/.git
 
