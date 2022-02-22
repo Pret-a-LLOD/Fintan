@@ -1,6 +1,6 @@
 {
 "input" : "data/pcc2_PAULA.zip"
-, "output" : "data/output-service.ttl"
+, "output" : "System.out"
 , "pipeline" : [
 	{
 	  "componentInstance" : "pepper",

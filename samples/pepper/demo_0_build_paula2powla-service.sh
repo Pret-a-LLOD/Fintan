@@ -5,7 +5,7 @@
 MYHOME=pwd
 
 # cloning the server
-git pull https://github.com/acoli-repo/powla.git
+git clone https://github.com/acoli-repo/powla.git
 cd powla/experimental/salt/swagger/python-server
 
 # building the image
@@ -15,4 +15,4 @@ cd $MYHOME
 
 # download sample data
 mkdir data
-wget -o data/pcc2_PAULA.zip http://amir-zeldes.github.io/download/pcc2_PAULA.zip
+wget -O data/pcc2_PAULA.zip http://amir-zeldes.github.io/download/pcc2_PAULA.zip
