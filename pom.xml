@@ -168,6 +168,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
+		<!-- <dependency>
+			<artifactId>pepper-lib</artifactId>
+			<groupId>org.corpus-tools</groupId>
+			<version>3.6.0</version>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>org.acoli.fintan</groupId>
+			<artifactId>fintan-swagger-client</artifactId>
+			<version>1.0.0</version>
+			<scope>compile</scope>
+		</dependency>
+		
 	</dependencies>
 
 	<!-- see also https://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar/6743609#6743609 -->

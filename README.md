@@ -40,6 +40,7 @@ The repositories for Fintan are being published under multiple licenses. All nat
 ```
 ├── https://github.com/acoli-repo/fintan-doc/ 
 ├── https://github.com/acoli-repo/fintan-core/  
+├── https://github.com/acoli-repo/fintan-swagger-client/
 └── https://github.com/acoli-repo/fintan-backend/
 	└──[ see exceptions below ]
 ```

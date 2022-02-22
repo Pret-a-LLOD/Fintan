@@ -12,3 +12,6 @@
 	path = tbx2rdf
 	url = https://github.com/cfaeth/tbx2rdf.git
 	branch = integrationTest
+[submodule "fintan-swagger-client"]
+	path = fintan-swagger-client
+	url = https://github.com/acoli-repo/fintan-swagger-client

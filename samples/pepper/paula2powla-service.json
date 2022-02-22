@@ -1,0 +1,50 @@
+{
+"input" : "data/pcc2_PAULA.zip"
+, "output" : "data/output-service.ttl"
+, "pipeline" : [
+	{
+	  "componentInstance" : "pepper",
+	  "class" : "OpenAPIServiceStreamTransformer",
+	  
+	  "segmentDelimiterIn" : null,
+	  "segmentDelimiterOut" : "",
+	  
+	  "supplyMethod" : "cachedFile",
+	  "cachePath" : null,
+	  
+	  "apiURI" : "http://localhost:8080/data",
+	  "apiMethodPath" : "/file/{id}",
+	  "apiMethodOperation" : "POST",
+	  "apiMethodList" : "get, post, put, patch, delete, head, and options",
+	  
+	  "acceptTypes" : [
+	  	"application/xml", "application/json"
+	  ],
+	  
+	  "contentTypes" : [
+	  	"multipart/form-data"
+	  ],
+	  
+	  "useStreamNameAsParam" : "path:::id",
+	  "useDataAsParam" : "form:::file",
+	  
+	  "pathParams" : {
+	  },
+	  
+	  "queryParams" : {
+	  },
+	  
+	  "collectionQueryParams" : {
+	  },
+	  
+	  "headerParams" : {
+	  },
+	  
+	  "formParams" : {
+	    "importer" : "PAULAImporter",
+	    "format" : "POWLA"
+	  }
+	  
+	}
+  ]
+}

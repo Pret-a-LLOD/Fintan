@@ -12,6 +12,7 @@
   <modules>
     <module>..</module>
     <module>../fintan-core</module>
+    <module>../fintan-swagger-client</module>
     <module>../conll-rdf</module>
     <module>../tarql</module>
     <module>../tbx2rdf</module>
