@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public abstract class FintanStreamComponent<In, Out> implements Runnable {
 
+	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER = "";
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL = "###FINTAN#end#segment###";
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_CoNLL = "###FINTAN#end#segment###";
 	public static final String FINTAN_DEFAULT_SEGMENT_DELIMITER_TSV = "###FINTAN#end#segment###";

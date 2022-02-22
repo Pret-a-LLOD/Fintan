@@ -27,6 +27,8 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Utilities for accessing streams, files and web resources in Fintan. 
@@ -146,4 +148,48 @@ public class IOUtils {
 			out.append(line + "\n");
 		return out.toString();
 	}
+	
+	public static void unzipInputStream(InputStream source, String targetPath) throws IOException {
+		File destDir = new File(targetPath);
+		ZipInputStream zis = new ZipInputStream(source);
+        byte[] buffer = new byte[1024];
+        ZipEntry zipEntry = zis.getNextEntry();
+        while (zipEntry != null) {
+            File newFile = newFile(destDir, zipEntry);
+            if (zipEntry.isDirectory()) {
+                if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                    throw new IOException("Failed to create directory " + newFile);
+                }
+            } else {
+                // fix for Windows-created archives
+                File parent = newFile.getParentFile();
+                if (!parent.isDirectory() && !parent.mkdirs()) {
+                    throw new IOException("Failed to create directory " + parent);
+                }
+                
+                // write file content
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+            }
+        zipEntry = zis.getNextEntry();
+       }
+	}
+	
+	public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+	    File destFile = new File(destinationDir, zipEntry.getName());
+
+	    String destDirPath = destinationDir.getCanonicalPath();
+	    String destFilePath = destFile.getCanonicalPath();
+
+	    if (!destFilePath.startsWith(destDirPath + File.separator)) {
+	        throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+	    }
+
+	    return destFile;
+	}
+	
 }
