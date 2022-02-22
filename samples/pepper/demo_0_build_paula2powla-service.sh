@@ -2,7 +2,9 @@
 # Requires git, docker packages to be installed and properly configured.
 # If docker does not run out of the box, try running it with sudo (only for testing!)
 
-MYHOME=pwd
+MYHOME=$(dirname -- "$(realpath -- "$0")")
+
+cd $MYHOME
 
 # cloning the server
 git clone https://github.com/acoli-repo/powla.git
