@@ -24,6 +24,7 @@ The Fintan platform is an effort of combining existing converter frameworks with
 - [**Service**](https://github.com/acoli-repo/fintan-service) for running Fintan pipelines inside integrated Docker containers
 - [**Backend**](https://github.com/acoli-repo/fintan-backend) for executing Fintan pipelines on the command line
 	- includes [**Core API**](https://github.com/acoli-repo/fintan-core) for stream-based graph processing.
+	- includes [**Swagger/OpenAPI Client**](https://github.com/acoli-repo/fintan-swagger-client) for integrating external services into Fintan pipelines.
 	- wraps fully integrated converter components
 
 ## Authors and Maintainers
@@ -51,6 +52,7 @@ The repositories for Fintan are being published under multiple licenses. All nat
 ```
 ├── https://github.com/acoli-repo/fintan-doc/ 
 ├── https://github.com/acoli-repo/fintan-core/  
+├── https://github.com/acoli-repo/fintan-swagger-client/
 ├── https://github.com/acoli-repo/fintan-backend/
 │	└──[ see exceptions below ]
 ├── https://github.com/acoli-repo/fintan-service/ 

@@ -3,6 +3,10 @@
 # Backend components
 These components are not part of the Core API since they rely on additional dependencies apart from Apache Jena. They are managed as additional imports of the Fintan backend and included in the build script.
 
+## External OpenAPI services
+sample: https://github.com/acoli-repo/fintan-backend/tree/master/samples/pepper
+detailed description to follow.
+
 ## CoNLL-RDF
 As mentioned in previous sections, CoNLL-RDF is the spiritual predecessor of Fintan and shares many common functionalities, like stream-based graph processing. The software suite encompasses support for corpora in many formats:
 * any CoNLL dialect
