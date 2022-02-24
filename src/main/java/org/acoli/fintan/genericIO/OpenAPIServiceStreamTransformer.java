@@ -56,28 +56,47 @@ import com.google.gson.reflect.TypeToken;
  */
 public class OpenAPIServiceStreamTransformer extends StreamTransformerGenericIO implements FintanStreamComponentFactory {
 	
+	/**
+	 * The following parameters activate segmented processing:
+	 * * `delimiterIn` activates the segmented processing, like the delimiter parameters in the core classes, it corresponds to the full text content of a single delimiting line. If it is unspecified or null, the data is processed as bulk.
+	 * * `delimiterOut` optionally defines the delimiter line written to the output stream after each segment. It only applies if delimiterIn is set as well.
+	 * * `supplyMethod` currently two options:
+	 * 		* "blob" for directly supplying data (or data segments, determined by delimiterIn) as a blob
+	 * 		* "cachedFile" for instead completely fetching the stream in a temp file and instead supplying the filename
+	 * * `cachePath`: (OPTIONAL) defines where to place the temp folder. Default is fileCache/<instanceIdentifier> relative to the execution folder.
+	 *
+	 * The other parameters correspond to OpenAPI / Swagger v2 specifications:
+	 * * `apiURI`: the base URI for accessing the service
+	 * * `apiMethodPath`: the path of the API method to be called, relative to the apiURI. Parameters can be written in curly brackets: /path/{id}
+	 * * `apiMethodOperation`: supported operations for Swagger v2: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
+	 * 
+	 * * `acceptTypes`: formats to be supplied with the Accept header, e.g. "application/json"
+	 * * `contentTypes`: content types to be supplied with the Content-Type header, e.g. "multipart/form-data"
+	 * 
+	 * * `useDataAsParam`: Determines how the data is being supplied to the API: 
+	 * 		* Syntax: "<paramType>:::<paramName>" 
+	 * 		* "form:::data" places each blob or cacheFile URL into the formParams under the key "data"
+	 * * `useStreamNameAsParam`: (OPTIONAL) determines, whether a unique streamID should be supplied as a parameter
+	 * 		* Syntax: "<paramType>:::<paramName>" 
+	 * 		* streamID consists of the stream name concatenated with a hashCode for the data blob
+	 * 		* "path:::id" places each unique streamID into the pathParams under the key "id"
+	 * 
+	 * * `pathParams`: Parameters to be set in the path, e.g.: 
+	 * 		For an "apiMethodPath": "/path/{id}" 
+	 * 		and a "pathParams" : {"id" : "test123"}, 
+	 * 		the resulting request would go to: <apiURI>/path/test123
+	 * * `queryParams`: List of query parameters. 
+	 * 		Syntax: "queryParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+	 * * `collectionQueryParams`: List of collection query parameters. 
+	 * 		Syntax: "collectionQueryParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+	 * * `headerParams`: List of header parameters. 
+	 * 		Syntax: "headerParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+	 * * `formParams`: List of form parameters. 
+	 * 		Syntax: "formParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+	 */
 	public OpenAPIServiceStreamTransformer buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
 		OpenAPIServiceStreamTransformer transformer = new OpenAPIServiceStreamTransformer();
 		transformer.setConfig(conf);
-		
-		if (conf.hasNonNull("apiURI")) {
-			transformer.setApiURI(conf.get("apiURI").asText());
-		}
-		if (conf.hasNonNull("apiMethodPath")) {
-			transformer.setApiMethodPath(conf.get("apiMethodPath").asText());
-		}
-		if (conf.hasNonNull("apiMethodOperation")) {
-			transformer.setApiMethodOperation(conf.get("apiMethodOperation").asText());
-		}
-		
-		
-		if (conf.hasNonNull("useDataAsParam")) {
-			transformer.setUseDataAsParam(conf.get("useDataAsParam").asText());
-		}
-		if (conf.hasNonNull("useStreamNameAsParam")) {
-			transformer.setUseStreamNameAsParam(conf.get("useStreamNameAsParam").asText());
-		}
-		
 		
 		if (conf.hasNonNull("delimiterIn")) {
 			transformer.setSegmentDelimiterIn(conf.get("delimiterIn").asText());
@@ -99,6 +118,17 @@ public class OpenAPIServiceStreamTransformer extends StreamTransformerGenericIO 
 			}
 		}
 		transformer.setSupplyMethod(supplyMethod);
+		
+		
+		if (conf.hasNonNull("apiURI")) {
+			transformer.setApiURI(conf.get("apiURI").asText());
+		}
+		if (conf.hasNonNull("apiMethodPath")) {
+			transformer.setApiMethodPath(conf.get("apiMethodPath").asText());
+		}
+		if (conf.hasNonNull("apiMethodOperation")) {
+			transformer.setApiMethodOperation(conf.get("apiMethodOperation").asText());
+		}
 
 
 		if (conf.hasNonNull("acceptTypes")) {
@@ -116,6 +146,15 @@ public class OpenAPIServiceStreamTransformer extends StreamTransformerGenericIO 
 				transformer.getContentTypes().add(entry.asText());
 			}
 		}
+		
+
+		if (conf.hasNonNull("useDataAsParam")) {
+			transformer.setUseDataAsParam(conf.get("useDataAsParam").asText());
+		}
+		if (conf.hasNonNull("useStreamNameAsParam")) {
+			transformer.setUseStreamNameAsParam(conf.get("useStreamNameAsParam").asText());
+		}
+		
 		
 		if (conf.hasNonNull("pathParams")) {
 			Iterator<String> iter = conf.get("pathParams").fieldNames();
