@@ -519,11 +519,13 @@ public class FintanManager {
 	/**
 	 * Start pipeline execution. Each component is run in a separate thread.
 	 * ComponentStack must be built beforehand.
+	 * @throws InterruptedException 
 	 */
-	public void start() {
+	public void start() throws InterruptedException {
 		for (FintanStreamComponent component:componentStack.values()) {
 			Thread t = new Thread(component);
 	        t.start();
+	        t.join();
 		}
 	}
 
