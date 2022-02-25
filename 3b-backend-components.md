@@ -4,50 +4,51 @@
 These components are not part of the Core API since they rely on additional dependencies apart from Apache Jena. They are managed as additional imports of the Fintan backend and included in the build script.
 
 ## External OpenAPI services
-The `OpenAPIServiceStreamTransformer` serves as a template for a `FintanStreamComponent` wrapping a generic OpenAPI Service. It is using a generalized [Swagger Codegen]([Swagger Codegen](https://github.com/swagger-api/swagger-codegen) client which was originally created for accessing a [Pepper / POWLA converter](https://github.com/acoli-repo/powla/tree/main/experimental/salt/swagger). It should be able wrap other services which are similarly structured out-of-the-box. For more complex services requiring multiple synchronized method calls, please use this class as a template for [creating your own custom component](3c-build-custom-components.md).
+The `OpenAPIServiceStreamTransformer` serves as a template for a `FintanStreamComponent` wrapping a generic OpenAPI Service. It is using a generalized [Swagger Codegen](https://github.com/swagger-api/swagger-codegen) client which was originally created for accessing a [Pepper / POWLA converter](https://github.com/acoli-repo/powla/tree/main/experimental/salt/swagger). It should be able wrap other services which are similarly structured out-of-the-box. For more complex services requiring multiple synchronized method calls, please use this class as a template for [creating your own custom component](3c-build-custom-components.md).
 
-Example pipeline using the Pepper / POWLA converter converter service: [https://github.com/acoli-repo/fintan-backend/tree/master/samples/pepper](https://github.com/acoli-repo/fintan-backend/tree/master/samples/pepper)
+Example pipeline using the Pepper / POWLA converter service: [https://github.com/acoli-repo/fintan-backend/tree/master/samples/pepper](https://github.com/acoli-repo/fintan-backend/tree/master/samples/pepper)
 
 Description of parameters for the `OpenAPIServiceStreamTransformer`:
 
 The following parameters activate segmented processing:
-* `delimiterIn` activates the segmented processing, like the delimiter parameters in the core classes, it corresponds to the full text content of a single delimiting line. If it is unspecified or null, the data is processed as bulk.
-* `delimiterOut` optionally defines the delimiter line written to the output stream after each segment. It only applies if delimiterIn is set as well.
+* `delimiterIn` activates the segmented processing. Like the delimiter parameters in the core classes, it corresponds to the full text content of a single delimiting line. If it is unspecified or null, the data is processed as bulk.
+* `delimiterOut` optionally defines the delimiter line written to the output stream after each segment. It only applies if `delimiterIn` is set as well.
 
 The following parameters determine how to supply data to the Service API
 * `supplyMethod` currently supports two options:
-     * "blob" for directly supplying data (or data segments, determined by delimiterIn) as a blob
-     * "cachedFile" for instead completely fetching the stream in a temp file and instead supplying the filename
-* `cachePath`: (OPTIONAL) defines where to place the temp folder. Default is fileCache/<instanceIdentifier> relative to the execution folder.
+     * `"blob"` for directly supplying data (or data segments, determined by delimiterIn) as a blob
+     * `"cachedFile"` for instead completely fetching the stream in a temp file and instead supplying the filename. This can be used for Zipped Streams as well if the called service supports archives as an input, e.g. for complex formats consisting of multiple structured files.
+* `cachePath`: (OPTIONAL) defines where to place the temp folder. Default is `fileCache/<instanceIdentifier>` relative to the execution folder.
 
 The other parameters correspond to OpenAPI / Swagger v2 specifications:
 * `apiURI`: the base URI for accessing the service
-* `apiMethodPath`: the path of the API method to be called, relative to the apiURI. Parameters can be written in curly brackets: /path/{id}
+* `apiMethodPath`: the path of the API method to be called, relative to the apiURI. Parameters can be written in curly brackets: `/path/{id}`
 * `apiMethodOperation`: supported operations for Swagger v2: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
 
-* `acceptTypes`: formats to be supplied with the Accept header, e.g. "application/json"
-* `contentTypes`: content types to be supplied with the Content-Type header, e.g. "multipart/form-data"
+* `acceptTypes`: formats to be supplied with the Accept header, e.g. `"application/json"`
+* `contentTypes`: content types to be supplied with the Content-Type header, e.g. `"multipart/form-data"`
 
 * `useDataAsParam`: Determines how the data is being supplied to the API: 
-     * Syntax: "<paramType>:::<paramName>" 
-     * "form:::data" places each blob or cacheFile URL into the formParams under the key "data"
+     * Syntax: `"<paramType>:::<paramName>"` 
+     * e.g. `"form:::data"` places each blob or cacheFile URL into the `formParams` under the key `"data"`
 * `useStreamNameAsParam`: (OPTIONAL) determines, whether a unique streamID should be supplied as a parameter
-     * Syntax: "<paramType>:::<paramName>" 
+     * Syntax: `"<paramType>:::<paramName>"` 
      * streamID consists of the stream name concatenated with a hashCode for the data blob
-     * "path:::id" places each unique streamID into the pathParams under the key "id"
+     * `"path:::id"` places each unique streamID into the `pathParams` under the key `"id"`
 
 * `pathParams`: Parameters to be set in the path, e.g.: 
-     * For an "apiMethodPath": "/path/{id}" 
-     * and a "pathParams" : {"id" : "test123"}, 
-     * the resulting request would go to: <apiURI>/path/test123
+     * For `"apiMethodPath": "/path/{id}"` 
+     * and `"pathParams" : {"id" : "test123"}`, 
+     * the resulting request would go to: `<apiURI>/path/test123`
 * `queryParams`: List of query parameters. 
-     * Syntax: "queryParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+     * Syntax: `"queryParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }`
 * `collectionQueryParams`: List of collection query parameters. 
-     * Syntax: "collectionQueryParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+     * Syntax: `"collectionQueryParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }`
 * `headerParams`: List of header parameters. 
-     * Syntax: "headerParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+     * Syntax: `"headerParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }`
 * `formParams`: List of form parameters. 
-     * Syntax: "formParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }
+     * Syntax: `"formParams" : { "<param1>" : "<value1>", "<param2>" : "<value2>", ... }`
+* At this point, all parameter values must be strings. We do not support complex JSON objects as values in any of the parameter lists.
 
 
 ## CoNLL-RDF
