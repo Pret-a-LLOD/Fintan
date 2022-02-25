@@ -60,7 +60,9 @@ public class OpenAPIServiceStreamTransformer extends StreamTransformerGenericIO 
 	 * The following parameters activate segmented processing:
 	 * * `delimiterIn` activates the segmented processing, like the delimiter parameters in the core classes, it corresponds to the full text content of a single delimiting line. If it is unspecified or null, the data is processed as bulk.
 	 * * `delimiterOut` optionally defines the delimiter line written to the output stream after each segment. It only applies if delimiterIn is set as well.
-	 * * `supplyMethod` currently two options:
+	 * 
+	 * The following parameters determine how to supply data to the Service API
+	 * * `supplyMethod` currently supports two options:
 	 * 		* "blob" for directly supplying data (or data segments, determined by delimiterIn) as a blob
 	 * 		* "cachedFile" for instead completely fetching the stream in a temp file and instead supplying the filename
 	 * * `cachePath`: (OPTIONAL) defines where to place the temp folder. Default is fileCache/<instanceIdentifier> relative to the execution folder.
@@ -426,6 +428,7 @@ public class OpenAPIServiceStreamTransformer extends StreamTransformerGenericIO 
 					} else {
 						// end of segment
 						writeResults(callApiWithExceptionLogging(name+segment.hashCode(), segment, null, null), out);
+						if (segmentDelimiterOut != null) out.println(segmentDelimiterOut);
 
 						// clear segment cache
 						segment = "";
