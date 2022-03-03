@@ -197,7 +197,10 @@ public class RDFUpdater extends StreamRdfUpdater {
 						segtBufferOut.set(i, new ImmutablePair<Integer, Model>(-1, out));
 						break;
 					}
-				}				
+				}	
+				
+				//CF 2022-03-03: thread calls flush directly. Allows immediate responses in "live" pipelines
+				flushOutputBuffer();
 				
 				//go to sleep and let Updater take control
 					LOG.trace("Updater notified by "+threadID);

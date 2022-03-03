@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.acoli.fintan.core.util.IOUtils;
@@ -522,10 +523,14 @@ public class FintanManager {
 	 * @throws InterruptedException 
 	 */
 	public void start() throws InterruptedException {
+		ArrayList<Thread> threads = new ArrayList<Thread>();
 		for (FintanStreamComponent component:componentStack.values()) {
 			Thread t = new Thread(component);
 	        t.start();
-	        t.join();
+	        threads.add(t);
+		}
+		for (Thread t:threads) {
+			t.join();
 		}
 	}
 
