@@ -10,9 +10,9 @@ them as Fintan workflows as these are more portable.
 
 ## Contents
 
-  * [Simple Conversion, Linking and Labelling tasks](#simple-conversion--linking-and-labelling-tasks)
-  * [Creating Annotations (Syntax)](#creating-annotations--syntax-)
-  * [Merging Annotations (Semantics)](#merging-annotations--semantics-)
+  * [Simple Conversion, Linking and Labelling tasks](#simple-conversion-linking-and-labelling-tasks)
+  * [Creating Annotations (Syntax)](#creating-annotations-syntax)
+  * [Merging Annotations (Semantics)](#merging-annotations-semantics)
   * [Querying Annotations](#querying-annotations)
 
 ## Simple Conversion, Linking and Labelling tasks
