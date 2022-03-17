@@ -97,8 +97,9 @@ public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamCo
 		 * `iteratorQuery` for `ITERATE_CONSTRUCT` mode. Must be a select query. 
 		 * `constructQuery` for `ITERATE_CONSTRUCT` mode. Must be a construct or 
 		 * 		describe query. 
-		 * `initUpdate` for `RECURSIVE_UPDATE` mode. Optional update which is 
-		 * 		executed a single time at startup to initialize the recursion 
+		 * `initUpdate` for any mode. Optional update which is 
+		 * 		executed a single time at startup to initialize the recursion
+		 * 		or prepare the data. 
 		 * 		(e.g. to insert a “next” marker.)
 		 * `recursiveUpdate` for `RECURSIVE_UPDATE` mode. Repeated until it 
 		 * 		produces empty target graphs.
@@ -179,7 +180,7 @@ public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamCo
 		
 		
 		public SplitterMode validateSplitterMode() {
-			if (initUpdate == null && recursiveUpdate == null && iteratorQuery != null && constructQuery != null) {
+			if (recursiveUpdate == null && iteratorQuery != null && constructQuery != null) {
 				mode = SplitterMode.ITERATE_CONSTRUCT;
 			} else if (recursiveUpdate != null && iteratorQuery == null && constructQuery == null) {
 				//initUpdate is optional
@@ -350,9 +351,9 @@ public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamCo
 					parseConstructQuery(this.constructQuery, null);
 				} else if (mode == SplitterMode.RECURSIVE_UPDATE) {
 					recursiveUpdate = parseUpdate(this.recursiveUpdate);
-					if (this.initUpdate != null)
-						initUpdate = parseUpdate(this.initUpdate);
 				}
+				if (this.initUpdate != null)
+					initUpdate = parseUpdate(this.initUpdate);
 
 				//load streamed data into graphs
 				for (String name:listInputStreamNames()) {
@@ -367,10 +368,19 @@ public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamCo
 					tdbDataset.end();
 				}
 
+				if (initUpdate != null) {
+					tdbDataset.begin(ReadWrite.WRITE);
+					for(Update operation : initUpdate.getOperations()) {
+						UpdateAction.execute(operation, tdbDataset);
+					}
+					tdbDataset.commit();
+					tdbDataset.end();
+				}
+				
 				if (mode == SplitterMode.ITERATE_CONSTRUCT) {
 					executeIterateConstruct(iteratorQuery);
 				} else if (mode == SplitterMode.RECURSIVE_UPDATE) {
-					executeRecursiveUpdates(recursiveUpdate, initUpdate);
+					executeRecursiveUpdates(recursiveUpdate);
 				}
 
 			} finally {
@@ -443,15 +453,7 @@ public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamCo
 		}
 		
 		
-		private void executeRecursiveUpdates(UpdateRequest recursiveUpdate, UpdateRequest initUpdate) {
-			if (initUpdate != null) {
-				tdbDataset.begin(ReadWrite.WRITE);
-				for(Update operation : initUpdate.getOperations()) {
-					UpdateAction.execute(operation, tdbDataset);
-				}
-				tdbDataset.commit();
-				tdbDataset.end();
-			}
+		private void executeRecursiveUpdates(UpdateRequest recursiveUpdate) {
 			
 			//first: recursive Updates
 			while (doRecursiveUpdate(recursiveUpdate)) {
