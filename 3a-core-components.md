@@ -86,7 +86,7 @@ The Splitter has the following parameters which can be set in the JSON config:
 * `tdbPath` to specify a custom directory to create the temporary TDB database
 * `iteratorQuery` for `ITERATE_CONSTRUCT` mode. Must be a select query. 
 * `constructQuery` for `ITERATE_CONSTRUCT` mode. Must be a construct or describe query. 
-* `initUpdate` for `RECURSIVE_UPDATE` mode. Optional update which is executed a single time at startup to initialize the recursion (e.g. to insert a “next” marker.)
+* `initUpdate` for any mode. Optional update which is executed a single time at startup to initialize the recursion or prepare the data (e.g. to insert a “next” marker.)
 * `recursiveUpdate` for `RECURSIVE_UPDATE` mode. Repeated until it produces empty target graphs.
 * `segmentStreams` for `RECURSIVE_UPDATE` mode specify which of the target graphs host the target segments. Only these graphs are streamed after each recursion.
 * `deltaStreams` for `RECURSIVE_UPDATE` mode specifies a list of graphs whose content should be streamed after the last recursion.
