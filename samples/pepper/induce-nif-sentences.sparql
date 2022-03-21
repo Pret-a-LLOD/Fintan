@@ -1,0 +1,171 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX powla: <http://purl.org/powla/powla.owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
+PREFIX nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#>
+PREFIX paula: <https://github.com/korpling/paula-xml#> # annotation properties
+
+###################### induce-nif-sentences #######################
+
+# for generic POWLA data
+# with existing annotations for nif:nextWord and  nif:Word
+# remove all sentences and establish a sequence
+# then restore sentences
+# run before powla2conll
+
+# conversion to CoNLL-RDF
+# (0) infer powla data structures
+# (0.1) infer powla:Relation, powla:Node
+INSERT {
+  ?x a ?type.
+  ?y a powla:Node.
+  ?x ?prop ?y.
+} WHERE {
+  FILTER(?prop in (powla:next,powla:nextTerm,powla:hasParent,powla:hasTarget,powla:hasSource))
+  ?rel rdfs:subPropertyOf* ?prop. # poor man's inference ;)
+  ?x ?rel ?y.
+  VALUES(?x ?type) {
+    (powla:next powla:Node)
+    (powla:hasParent powla:Node)
+    (powla:hasTarget powla:Relation)
+    (powla:hasSource powla:Relation)
+  }
+};
+
+# (0.2) infer powla:next
+# (0.2.a) enforce powla:nextTerm
+INSERT {
+  ?a powla:nextTerm ?b
+} WHERE {
+  ?a powla:next ?b.
+  MINUS { ?a ^powla:hasParent [] }
+  MINUS { ?b ^powla:hasParent [] }
+  MINUS { ?a powla:next+ ?c. ?c powla:next+ ?b. MINUS { ?c ^powla:hasParent [] }}
+};
+
+# (0.2.b) remove other powla:next
+DELETE {
+  ?a powla:next ?b
+} WHERE {
+  ?a powla:next ?b.
+};
+
+# (0.2.c) overgenerate powla:next
+INSERT {
+  ?a powla:next ?b
+} WHERE {
+  ?a powla:hasParent ?parent.
+  ?b powla:hasParent ?parent.
+  FILTER(?a!=?b)
+  ?a (^powla:hasParent)*/powla:nextTerm+/powla:hasParent* ?b.
+};
+
+# (0.2.d) prune (this is a bit too restrictive if nodes are shared by multiple trees)
+DELETE {
+  ?a powla:next ?b.
+} WHERE {
+  ?a powla:next ?b.
+  ?a powla:hasParent ?p.
+  ?b powla:hasParent ?p.
+  ?a powla:next+ [ powla:hasParent ?p; powla:next+ ?b ]
+};
+
+# infer CoNLL-RDF data structures
+# (1) infer nif:Word, nif:nextWord
+INSERT {
+  ?v a nif:Word.
+  ?w a nif:Word.
+  ?v nif:nextWord ?w.
+} WHERE {
+  ?v (nif:nextWord|powla:nextTerm) ?w
+};
+
+# (2) remove sentences, restore sequence
+INSERT {
+  ?w nif:nextWord ?v.
+} WHERE {
+  ?s a nif:Sentence.
+  OPTIONAL {
+    ?s nif:nextSentence ?t.
+    ?w conll:HEAD+ ?s. MINUS { ?w a nif:Word; nif:nextWord [] }
+    ?v conll:HEAD+ ?t. MINUS { [ a nif:Word ] nif:nextWord ?v }
+  }
+};
+DELETE { ?a ?b ?s.  } WHERE { ?s a nif:Sentence. ?a ?b ?s };
+DELETE { ?s ?c ?d.  } WHERE { ?s a nif:Sentence. ?s ?c ?d };
+
+# (3) create temporary POWLA nodes for dependency trees (conll:HEAD)
+#     this is to make sure dependency trees won't be cut in the next step
+INSERT {
+  ?w powla:hasParent ?tmp.
+  ?tmp rdfs:label "temporary dep node".
+} WHERE {
+  ?w conll:HEAD+ ?root.
+  ?root a nif:Word.
+  MINUS { ?root a nif:Word; conll:HEAD [] }
+  BIND(uri(concat(str(?root),"_tmp")) as ?tmp)
+};
+
+# (4) in a sequence of nif:nextWord, create boundaries between non-overlapping powla:Nodes
+# (4.a) create a sentence for the first word
+INSERT {
+  ?s a nif:Sentence.
+  ?w nif:sentence ?s.
+} WHERE {
+  ?w a nif:Word.
+  MINUS { ?w a nif:Word; ^nif:nextWord [] }
+  BIND(uri(concat(str(?w),"_sentence")) as ?s)
+};
+
+# (4.b.) and for every non-overlapping tree/span annotation
+INSERT {
+  ?s a nif:Sentence.
+  ?w nif:sentence ?s.
+} WHERE {
+  ?w a nif:Word; powla:hasParent [].
+  MINUS { [a nif:Word; powla:hasParent [] ] nif:nextWord+ ?w; powla:hasParent+/(^powla:hasParent)+ ?w }
+  BIND(uri(concat(str(?w),"_sentence")) as ?s)
+};
+
+# (5) connect adjacent sentences
+INSERT { ?s nif:nextSentence ?t } WHERE { ?w nif:sentence ?s; nif:nextWord+/nif:sentence ?t. FILTER(?s!=?t)};
+DELETE { ?s nif:nextSentence ?t } WHERE { ?s nif:nextSentence/nif:nextSentence+ ?t };
+
+# (6) break nif:nextWord axis before any sentence
+DELETE { ?a nif:nextWord ?b}
+WHERE { ?a nif:nextWord ?b. ?b nif:sentence [] };
+
+# (7) propagate nif:sentence information to all words
+INSERT {
+  ?w nif:sentence ?s
+} WHERE {
+  ?first nif:sentence ?s; nif:nextWord+ ?w.
+};
+
+# (8) restrict nif:sentence to words without conll:HEAD
+DELETE {
+  ?w nif:sentence ?s
+} WHERE {
+  ?w conll:HEAD []; nif:sentence ?s.
+};
+
+# (9) rename nif:sentence to conll:HEAD (for root nodes)
+DELETE {
+  ?w nif:sentence ?s
+} INSERT {
+  ?w conll:HEAD ?s.
+} WHERE {
+  ?w nif:sentence ?s.
+};
+
+# (10) remove temporary nodes
+DELETE {
+  ?a ?b ?tmp. ?tmp ?c ?d.
+} WHERE {
+  ?tmp rdfs:label "temporary dep node".
+  ?a ?b ?tmp.
+  ?tmp ?c ?d.
+};
+

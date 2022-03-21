@@ -1,0 +1,79 @@
+{
+"input" : "data/pcc2_PAULA.zip"
+, "output" : "System.out"
+, "pipeline" : [ 
+	{
+	  "componentInstance" : "pepper",
+	  "class" : "OpenAPIServiceStreamTransformer",
+	  
+	  "segmentDelimiterIn" : null,
+	  "segmentDelimiterOut" : "",
+	  
+	  "supplyMethod" : "cachedFile",
+	  "cachePath" : null,
+	  
+	  "apiURI" : "http://localhost:8080/data",
+	  "apiMethodPath" : "/file/{id}",
+	  "apiMethodOperation" : "POST",
+	  "apiMethodList" : "get, post, put, patch, delete, head, and options",
+	  
+	  "acceptTypes" : [
+	  	"application/xml", "application/json"
+	  ],
+	  
+	  "contentTypes" : [
+	  	"multipart/form-data"
+	  ],
+	  
+	  "useStreamNameAsParam" : "path:::id",
+	  "useDataAsParam" : "form:::file",
+	  
+	  "pathParams" : {
+	  },
+	  
+	  "queryParams" : {
+	  },
+	  
+	  "collectionQueryParams" : {
+	  },
+	  
+	  "headerParams" : {
+	  },
+	  
+	  "formParams" : {
+	    "importer" : "PAULAImporter",
+	    "format" : "POWLA"
+	  }
+	  
+	},
+	{ 
+	  "class" : "RDFStreamSplitterTDB",
+	  "lang" : "ttl",
+	  "initUpdate" : [
+	      "samples/pepper/induce-nif-sentences.sparql", 
+	  	  "samples/pepper/powla2conll.sparql", 
+	  	  "samples/pepper/split-nif-sentences.sparql"
+	  ],
+	  "iteratorQuery" : "samples/splitter/iterate_sentences.sparql",
+	  "constructQuery" : "samples/splitter/construct_sentences.sparql",
+	  "recursiveUpdate" : null,
+	  "segmentStreams" : null,
+	  "deltaStreams" : null,
+	  "tdbPath" : null
+	},
+	{ 
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##next#Sentence##",
+	  "prefixDeduplication" : true,
+	  "INACTIVEcustomPrefixes" : {"" : "file:///tmp/salt/1007262495/FINTAN_DEFAULT_STREAM_CACHEFILE.zip//tmp/FINTAN_DEFAULT_STREAM_CACHEFILE.zip/"}
+	},
+	
+	{ 
+	  "class" : "CoNLLRDFFormatter",
+	  "modules" : [
+		{"mode":"RDF", "columns": ["ID", "WORD", "LEMMA", "UPOS", "POS", "FEAT", "HEAD", "EDGE", "DEPS", "MISC"]}
+	  ]
+	}
+]
+}

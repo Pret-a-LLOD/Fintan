@@ -1,0 +1,57 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX powla: <http://purl.org/powla/powla.owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
+PREFIX nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#>
+PREFIX paula: <https://github.com/korpling/paula-xml#> # annotation properties
+
+
+##################### split nif-sentences by punctuation ######################
+
+
+
+# (1) delete all nif:nextWord relations after terminal punctuations
+
+DELETE {
+  ?w_terminal nif:nextWord ?w_next .
+} WHERE {
+  ?w_terminal a nif:Word; conll:POS "$." .
+  ?w_terminal nif:nextWord ?w_next .
+};
+
+
+
+# (2) select all nif:Words still preceeding the terminal punctuations
+
+DELETE {
+  ?w conll:HEAD ?s_old .
+} INSERT {
+  ?s_new a nif:Sentence .
+  ?w conll:HEAD ?s_new .
+} WHERE {
+
+  #terminal word in sentence
+  ?w_terminal a nif:Word; conll:POS "$." .
+  
+  #any word in sentence with direct head to sentence
+  ?w a nif:Word; nif:nextWord* ?w_terminal .
+  ?w conll:HEAD ?s_old . 
+  ?s_old a nif:Sentence .
+  
+  #first word in sentence
+  ?w_first a nif:Word; nif:nextWord* ?w_terminal .
+  FILTER(NOT EXISTS {?w_any nif:nextWord ?w_first})
+  
+  #local name of sentence is first word's <tokname>_sentence
+  BIND(uri(concat(str(?w_first),"_sentence")) as ?s_new)
+  
+
+};
+
+
+
+
+
+

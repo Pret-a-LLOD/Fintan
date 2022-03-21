@@ -31,7 +31,7 @@
 	  "iteratorQuery" : null,
 	  "constructQuery" : null,
 	  "initUpdate" : null,
-	  "recursiveUpdate" : "samples/splitter/update_no_init_recursive_construct_sentences.sparql",
+	  "recursiveUpdate" : ["samples/splitter/update_no_init_recursive_construct_sentences.sparql"],
 	  "segmentStreams" : null,
 	  "deltaStreams" : null,
 	  "tdbPath" : null
