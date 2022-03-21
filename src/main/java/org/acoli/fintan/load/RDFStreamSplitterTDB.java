@@ -97,12 +97,12 @@ public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamCo
 		 * `iteratorQuery` for `ITERATE_CONSTRUCT` mode. Must be a select query. 
 		 * `constructQuery` for `ITERATE_CONSTRUCT` mode. Must be a construct or 
 		 * 		describe query. 
-		 * `initUpdate` for any mode. Optional update which is 
+		 * `initUpdate` for any mode. Optional array/list of updates which are 
 		 * 		executed a single time at startup to initialize the recursion
 		 * 		or prepare the data. 
 		 * 		(e.g. to insert a “next” marker.)
-		 * `recursiveUpdate` for `RECURSIVE_UPDATE` mode. Repeated until it 
-		 * 		produces empty target graphs.
+		 * `recursiveUpdate` for `RECURSIVE_UPDATE` mode. Array/list of updates 
+		 * 		repeated until they produce empty target graphs.
 		 * `segmentStreams` for `RECURSIVE_UPDATE` mode specify which of the 
 		 * 		target graphs host the target segments. Only these graphs are 
 		 * 		streamed after each recursion.
@@ -123,11 +123,39 @@ public class RDFStreamSplitterTDB extends StreamLoader implements FintanStreamCo
 			if (conf.hasNonNull("constructQuery")) {
 				splitter.setConstructQuery(IOUtils.readSourceAsString(conf.get("constructQuery").asText()));
 			}
+//			if (conf.hasNonNull("initUpdate")) {
+//				splitter.setInitUpdate(IOUtils.readSourceAsString(conf.get("initUpdate").asText()));
+//			}
 			if (conf.hasNonNull("initUpdate")) {
-				splitter.setInitUpdate(IOUtils.readSourceAsString(conf.get("initUpdate").asText()));
+				ArrayList<String> initUpdates = new ArrayList<String>();
+				for (JsonNode node:conf.withArray("initUpdate")) {
+					String update = IOUtils.readSourceAsString(node.asText());
+					if (!update.trim().equals("")) initUpdates.add(update);
+				}
+				if (!initUpdates.isEmpty()) {
+					String full_update = "";
+					for (String update:initUpdates) {
+						full_update += update + "\n\n";
+					}
+					splitter.setInitUpdate(full_update);
+				}
 			}
+//			if (conf.hasNonNull("recursiveUpdate")) {
+//				splitter.setRecursiveUpdate(IOUtils.readSourceAsString(conf.get("recursiveUpdate").asText()));
+//			}
 			if (conf.hasNonNull("recursiveUpdate")) {
-				splitter.setRecursiveUpdate(IOUtils.readSourceAsString(conf.get("recursiveUpdate").asText()));
+				ArrayList<String> recursiveUpdate = new ArrayList<String>();
+				for (JsonNode node:conf.withArray("recursiveUpdate")) {
+					String update = IOUtils.readSourceAsString(node.asText());
+					if (!update.trim().equals("")) recursiveUpdate.add(update);
+				}
+				if (!recursiveUpdate.isEmpty()) {
+					String full_update = "";
+					for (String update:recursiveUpdate) {
+						full_update += update + "\n\n";
+					}
+					splitter.setRecursiveUpdate(full_update);
+				}
 			}
 			if (conf.hasNonNull("segmentStreams")) {
 				ArrayList<String> segmentStreams = new ArrayList<String>();

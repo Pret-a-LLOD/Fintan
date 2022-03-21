@@ -18,6 +18,8 @@ package org.acoli.fintan.write;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.acoli.fintan.core.FintanStreamComponentFactory;
 import org.acoli.fintan.core.StreamWriter;
@@ -52,6 +54,8 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 	 * 		is contained in its own model, by default, the Jena API repeatedly 
 	 * 		outputs all prefixes for each segment. With this flag, the duplicates 
 	 * 		are removed from the resulting text stream.
+	 * `customPrefixes` optional object to override existing prefix assignments 
+	 * 		for optimized output. Syntax: "prefix1" : "uri1", "prefix2" : "uri2"
 	 */
 	@Override
 	public RDFStreamWriter buildFromJsonConf(ObjectNode conf) throws IOException, IllegalArgumentException {
@@ -66,6 +70,14 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 		if (conf.hasNonNull("prefixDeduplication")) {
 			writer.setPrefixDeduplication(conf.get("prefixDeduplication").asBoolean());
 		}
+		if (conf.hasNonNull("customPrefixes")) {
+			Iterator<String> iter = conf.get("customPrefixes").fieldNames();
+			while (iter.hasNext()) {
+				String entry = iter.next();
+				writer.getCustomPrefixes().put(entry, conf.get("customPrefixes").get(entry).asText());
+			}
+		}
+		
 		return writer;
 	}
 
@@ -81,6 +93,7 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 	private String lang = "TTL";
 	private String segmentDelimiter = null;
 	private boolean prefixDeduplication = false;
+	private HashMap<String,String> customPrefixes = new HashMap<String,String>();
 	
 	public String getLang() {
 		return lang;
@@ -107,6 +120,14 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 		this.prefixDeduplication = prefixDeduplication;
 	}
 
+	public HashMap<String,String> getCustomPrefixes() {
+		return customPrefixes;
+	}
+
+	public void setCustomPrefixes(HashMap<String,String> customPrefixes) {
+		this.customPrefixes = customPrefixes;
+	}
+
 	private void processStream() {
 		// Spawn writers for parallel processing, in case there are multiple streams.
 		for (String name:listInputStreamNames()) {
@@ -121,6 +142,7 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 			writer.setSegmentDelimiter(segmentDelimiter);
 			writer.setLang(lang);
 			writer.setPrefixDeduplication(prefixDeduplication);
+			writer.setCustomPrefixes(customPrefixes);
 			try {
 				writer.setInputStream(getInputStream(name));
 				writer.setOutputStream(getOutputStream(name));
@@ -143,6 +165,10 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 				Model m = getInputStream().read();
 				//read may return null in case the queue has been emptied and terminated since asking for canRead()
 				if (m == null) continue;
+				
+				for(String prefix:customPrefixes.keySet()) {
+					m.setNsPrefix(prefix, customPrefixes.get(prefix));
+				}
 				
 				if (prefixDeduplication) {
 					String outString = new String();
