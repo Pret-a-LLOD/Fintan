@@ -50,12 +50,12 @@
 	  "class" : "RDFStreamSplitterTDB",
 	  "lang" : "ttl",
 	  "initUpdate" : [
-	      "samples/pepper/induce-nif-sentences.sparql", 
-	  	  "samples/pepper/powla2conll.sparql", 
-	  	  "samples/pepper/split-nif-sentences.sparql"
+	      "induce-nif-sentences.sparql", 
+	  	  "powla2conll.sparql", 
+	  	  "split-nif-sentences.sparql"
 	  ],
-	  "iteratorQuery" : "samples/splitter/iterate_sentences.sparql",
-	  "constructQuery" : "samples/splitter/construct_sentences.sparql",
+	  "iteratorQuery" : "../splitter/iterate_sentences.sparql",
+	  "constructQuery" : "../splitter/construct_sentences.sparql",
 	  "recursiveUpdate" : null,
 	  "segmentStreams" : null,
 	  "deltaStreams" : null,
