@@ -86,8 +86,8 @@ The Splitter has the following parameters which can be set in the JSON config:
 * `tdbPath` to specify a custom directory to create the temporary TDB database
 * `iteratorQuery` for `ITERATE_CONSTRUCT` mode. Must be a select query. 
 * `constructQuery` for `ITERATE_CONSTRUCT` mode. Must be a construct or describe query. 
-* `initUpdate` for any mode. Optional update which is executed a single time at startup to initialize the recursion or prepare the data (e.g. to insert a “next” marker.)
-* `recursiveUpdate` for `RECURSIVE_UPDATE` mode. Repeated until it produces empty target graphs.
+* `initUpdate` for any mode. Optional array of updates which are executed a single time at startup to initialize the recursion or prepare the data (e.g. to insert a “next” marker.)
+* `recursiveUpdate` for `RECURSIVE_UPDATE` mode. Array/list of updates repeated until they produce empty target graphs.
 * `segmentStreams` for `RECURSIVE_UPDATE` mode specify which of the target graphs host the target segments. Only these graphs are streamed after each recursion.
 * `deltaStreams` for `RECURSIVE_UPDATE` mode specifies a list of graphs whose content should be streamed after the last recursion.
 
@@ -125,6 +125,7 @@ It has the following parameters which can be set in the JSON config:
 * `lang` to specify the target RDF syntax. Supported languages follow the naming convention of Apache Jena (ttl, TURTLE, RDF/XML, N3, …)
 * `delimiter` to specify the textual delimiter indicating the end of a segment. The specified delimiter is always expected to be the full content of a delimiting line of text. "" corresponds to an empty line.
 * `prefixDeduplication` (`true`/`false`) can be set to remove duplicate prefix declarations in Turtle syntax. Since in Fintan, each segment is contained in its own model, by default, the Jena API repeatedly outputs all prefixes for each segment. With this flag, the duplicates are removed from the resulting text stream.
+* `customPrefixes` optional object to override existing prefix assignments for optimized output. Syntax: "prefix1" : "uri1", "prefix2" : "uri2" ...
 
 ## Create custom exports (C/TSV, …) using SPARQL queries
 Apart from regular RDF serializations, it is possible to create complex tabular exports using SPARQL queries. For this purpose, two distinct classes are available:
