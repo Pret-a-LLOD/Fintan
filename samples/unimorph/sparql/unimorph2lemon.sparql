@@ -1,0 +1,64 @@
+PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontolex: <https://www.w3.org/ns/lemon/ontolex#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX nif:   <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#>
+
+#################
+# 1. lemon data #
+#################
+
+DELETE { ?a a nif:Word }			# nif:Word => ontolex:Form
+INSERT { ?a a ontolex:Form }
+WHERE { ?a a nif:Word };
+
+DELETE { ?a conll:WORD ?word }		# conll:WORD => ontolex:writtenRep
+INSERT { ?a ontolex:writtenRep ?word }
+WHERE { ?a conll:WORD ?word };
+
+DELETE { ?form conll:LEMMA ?lemma }	# conll:LEMMA => ontolex:LexicalEntry
+INSERT { 
+	?entry	ontolex:lexicalForm ?form;
+			a ontolex:LexicalEntry;
+			ontolex:canonicalForm [ ontolex:writtenRep ?lemma ].
+} WHERE {
+	?form conll:LEMMA ?lemma.
+	BIND(IRI(concat(replace(str(?form),"[/#][^/#]*$",""),"/",ENCODE_FOR_URI(?lemma))) as ?entry)
+};
+
+#####################
+# 2. lemon metadata #
+#####################
+
+INSERT {
+	?base	a lime:Lexicon; 		# define dictionary and declare language
+			lime:entry ?entry;		# language: rely on (current) naming conventions: unimorph inventories consist of the language id
+			lime:language ?lang.	# (in the future, version info may be added and needs to be stripped off here)
+} WHERE {
+	?entry ontolex:lexicalForm ?form.
+	BIND(IRI(replace(str(?form),"[/#][^/#]*$","")) as ?base)
+	BIND(replace(str(?base),".*[/#]","") as ?lang)
+};
+
+##############
+# 3. cleanup #
+##############
+
+# remove nif and conll data
+DELETE { ?a a nif:Sentence. } WHERE { ?a a nif:Sentence. };
+DELETE { ?a conll:HEAD ?b } WHERE { ?a conll:HEAD ?b. };
+DELETE { ?a nif:nextWord ?b } WHERE { ?a nif:nextWord ?b. };
+DELETE { ?a nif:nextSentence ?b } WHERE { ?a nif:nextSentence ?b. };
+
+# merge duplicate blank nodes for lexical entries
+DELETE { 
+	?a ontolex:canonicalForm ?blank1. ?blank1 ontolex:writtenRep ?lemma.
+} WHERE { 
+	?a ontolex:canonicalForm ?blank1. ?blank1 ontolex:writtenRep ?lemma.
+	?a ontolex:canonicalForm ?blank2. ?blank2 ontolex:writtenRep ?lemma.
+	FILTER(str(?blank1)!=str(?blank2))
+}
+	  
+
+# note that we still have conll:FEATs which need to be resolved against the Unimorph ontology
