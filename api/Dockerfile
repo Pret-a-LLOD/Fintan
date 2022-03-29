@@ -28,7 +28,7 @@ RUN git clone --depth 1 https://github.com/acoli-repo/fintan-service.git \
 
 # ------------------------ Step 2: Fintan Service --------------------
 
-FROM python:3.7.10-slim-buster AS api-builder
+FROM python:3.9-slim-buster AS api-builder
 WORKDIR /api-build
 
 COPY --from=fintan-builder /fintan/fintan-service/api/requirements.txt /api-build
@@ -68,7 +68,8 @@ COPY --from=fintan-builder /root/.m2 /home/fintan/.m2/
 COPY --from=fintan-builder /fintan/fintan-service/api/requirements.txt /fintan/fintan-service/api/api.py /fintan/fintan-service/api/openapi.yaml /fintan/
 COPY --from=api-builder /api-build/wheels /wheels
 
-RUN pip3 install --no-cache /wheels/*
+RUN pip3 install -U pip setuptools wheel && \
+    pip3 install --no-cache /wheels/*
 
 # chown all the files to the app user
 RUN chown -R fintan:fintan /fintan* /home/fintan/.m2
