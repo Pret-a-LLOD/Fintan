@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 
 
 def load_pipelines(path):
-    return set(os.path.split(pipeline)[-1].replace('.json', '') for pipeline in glob.glob(path))
+    return list(sorted(set(os.path.split(pipeline)[-1].replace('.json', '') for pipeline in glob.glob(path))))
 
 
 path_pipelines = os.environ.get('FINTAN_PIPELINES', './pipelines/')
@@ -52,16 +52,14 @@ def pipeline_list():
 
 @app.route('/api/files')
 @app.route('/api/files/<filename>')
-@app.route('/api/files/<filename>/')
 def files(filename=None):
     data_files = os.listdir(path_data)
     if not filename:
-        return jsonify({'files': sorted(files)})
-    return open(os.path.join(path_data, filename)).read() if filename in data_files else jsonify({'error': 'File not found'}), 404
+        return jsonify({'files': sorted(data_files)})
+    return open(os.path.join(path_data, filename)).read() if filename in data_files else (jsonify({'error': 'File not found'}), 404)
 
 
 @app.route('/api/upload', methods=['POST', 'PUT'])
-@app.route('/api/upload/', methods=['POST', 'PUT'])
 def upload():
     if 'file' not in request.files or not request.files['file'] or not request.files['file'].filename:
         return jsonify({'error': 'No file provided'}), 400
@@ -84,7 +82,6 @@ def upload():
 # TODO: do we want to save the file or give it through the STDIN?
 @app.route('/api/run', methods=['POST'])
 @app.route('/api/run/<pipeline>', methods=['POST'])
-@app.route('/api/run/<pipeline>/', methods=['POST'])
 def execute_pipeline(pipeline=None):
     if not pipeline:
         if not pipelines:
@@ -99,12 +96,12 @@ def execute_pipeline(pipeline=None):
     #    return 'Executable not found', 500
 
     content_type = request.mimetype
-    if content_type not in pipeline_validators:
+    if request.data and content_type not in pipeline_validators:
         return jsonify({'error:': 'Unsupported content-type for input data'}), 415
 
     params = request.values.get('params')
 
-    content = pipeline_content_getters[content_type](request)
+    content = pipeline_content_getters[content_type](request) if request.data else ''
     ret_val = subprocess.run(java_run +
                              ["-c", os.path.realpath(tmpl_pipelines.format(pipeline))] +
                              (["-p", params] if params else []),
