@@ -379,7 +379,7 @@ public class TarqlStreamTransformer extends StreamTransformerGenericIO implement
 				outputSegment(out, args, tsvsegment, headerRow);
 
 			} catch (IOException e) {
-				LOG.error("Error when reading from Stream: " +e);
+				LOG.trace("Error when reading from Stream: " +e);
 			}
 		}
 		out.close();
