@@ -161,7 +161,7 @@ public class RDFStreamLoader extends StreamLoader implements FintanStreamCompone
 			}
 			//final segment in case there is no segmentDelimiter in last row
 		} catch (IOException e) {
-			LOG.error("Error when reading from Stream: " +e);
+			LOG.trace("Error when reading from Stream: " +e);
 		}
 		if (!rdfsegment.trim().isEmpty())
 			outputSegment(rdfsegment, "");
