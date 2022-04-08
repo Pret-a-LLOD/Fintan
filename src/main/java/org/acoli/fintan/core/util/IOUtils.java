@@ -78,7 +78,10 @@ public class IOUtils {
 		OutputStream outputStream;
 		File f = new File(path);
 		if (!f.canWrite()) {
-			f.getParentFile().mkdirs();
+			File parent = f.getAbsoluteFile().getParentFile();
+			if (parent != null) {
+				parent.mkdirs();
+			}
 			if (!f.createNewFile()) {
 				throw new IOException("Could not write to " + path);
 			}
