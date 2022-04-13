@@ -18,6 +18,8 @@ package org.acoli.fintan.write;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -171,17 +173,30 @@ public class RDFStreamWriter extends StreamWriter implements FintanStreamCompone
 				}
 				
 				if (prefixDeduplication) {
+					//write model into buffer
 					String outString = new String();
 					StringWriter buffer = new StringWriter();
 					m.write(buffer, lang);
-					String prefixCacheTMP = new String();
+					
+					//put all prefix lines into an array, regular lines into outString
+					ArrayList<String> prefixCacheList = new ArrayList<String>();
 					for (String buffLine:buffer.toString().split("\n")) {
 						if (buffLine.trim().startsWith("@prefix")) {
-							prefixCacheTMP += buffLine+"\n";
+							prefixCacheList.add(buffLine+"\n");
 						} else if (!buffLine.trim().isEmpty()) {
 								outString += buffLine+"\n";
 						}
 					}
+					
+					//sort the prefixCacheList and create the prefix header in alphabetical order
+					Collections.sort(prefixCacheList);
+					String prefixCacheTMP = new String();
+					for (String prefix:prefixCacheList) {
+						prefixCacheTMP += prefix;
+					}
+					
+					//if the prefixes differ from the previous segment, 
+					//add them to the current outString and update the temp-String
 					if (!prefixCacheTMP.equals(prefixCacheOut)) {
 						prefixCacheOut = prefixCacheTMP;
 						outString = prefixCacheTMP + outString;
