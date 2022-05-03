@@ -1,6 +1,6 @@
-![Fintan](https://github.com/acoli-repo/fintan-doc/blob/main/img/Fintan.PNG)
-# Fintan
-**Flexible INtegrated Transformation and Annotation eNgineering platform**
+![Fintan](https://github.com/acoli-repo/fintan-doc/raw/master/img/Fintan.PNG)
+
+# Flexible INtegrated Transformation and Annotation eNgineering platform
 
 The Fintan platform is an effort of combining existing converter frameworks with stream-based graph transformation and a workflow management engine in order to create integrated transformation pipelines for various input and output format. It has been developed to address the challenge of **Transforming language resources and language data** within Task 3.3 of the ([**Prêt-à-LLOD**](https://cordis.europa.eu/project/id/825182/results)) project: Research and Innovation Action of the H2020 programme (ERC, grant agreement 825182).
 
