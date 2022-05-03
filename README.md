@@ -8,7 +8,7 @@ The Fintan platform is an effort of combining existing converter frameworks with
 
 Clone this repository including sub-modules:
 
-		$> git clone https://github.com/Pret-a-LLOD/Fintan.git --recurse-submodules --remote-submodules
+		$> git clone https://github.com/Pret-a-LLOD/Fintan.git --recurse-submodules
 
 Build the Fintan backend:
 
