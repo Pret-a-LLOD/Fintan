@@ -7,12 +7,15 @@ info:
 params:
   - name: threads
     label: CPU threads
+    help: Number of parallel worker threads. Default = Number of available threads.
     value: "0"
   - name: lookahead
     label: Number of segments for lookahead
+    help: Number of following segments to be prefetched in he graph https://github.com/acoli-repo/conll-rdf/lookahead
     value: "0"
   - name: lookback
     label: Number of segments for lookback
+    help: Number of preceeding segments to be cached in the graph https://github.com/acoli-repo/conll-rdf/lookback
     value: "0"
 inputs:
   - name: input

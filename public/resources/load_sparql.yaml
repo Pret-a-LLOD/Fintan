@@ -9,6 +9,7 @@ resources:
 params:
   - name: sparql
     label: Query
+    help: Queries will be executed in alphabetical order according to their name. Suggested naming scheme is 1-name, 2-name
     format: sparql
     type: editor
     import: true
