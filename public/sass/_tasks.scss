@@ -204,6 +204,11 @@
 	height: 50px;
 }
 
+#options span.required {
+	baseline-shift: super;
+	color: #D95360;
+}
+
 .dashed-line {
 	stroke-dasharray:10
 }

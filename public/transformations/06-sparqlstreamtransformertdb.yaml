@@ -12,6 +12,7 @@ params:
     value:
   - name: escapeChar
     label: Escape character
+    help: Use to override default escape character
     value: ""
   - name: delimiterCSV
     label: Column delimiter for CSV

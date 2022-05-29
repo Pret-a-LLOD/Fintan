@@ -179,11 +179,15 @@ window.onload = function() {
 			let option_label = option.label ? option.label : option.name;
 			let option_value = option.value ? option.value : '';
 			let option_type = option.type ? option.type : 'text';
+			let option_help = option.help ? option.help : '';
+			let option_required = option.required ? option.required : false;
 
 			let option_id = option.name; // for simplicity later on while updating, but might be prone to errors if names are weird
 
 			let option_html = '<div class="form-group">\n' +
-				'<label for="' + option_id + '">' + option_label +
+				'<label for="' + option_id + '"' +
+				' data-toggle="option-help" data-original-title="' + option_help +
+				'">' + option_label + (option_required ? '<span class="required">*</span>' : '') +
 				'</label>';
 			let option_html_end = '</div>';
 
@@ -194,6 +198,7 @@ window.onload = function() {
 					' data-index="' + option_index + '"' +
 					' id="' + option_id + '"' +
 					' value="' + option_value +'"/>' +
+
 					option_html_end;
 
 			if (option.values)
@@ -228,6 +233,7 @@ window.onload = function() {
 					' name="' + option_id + '_upload"' +
 					' data-for="' + option_id + '"' +
 					' data-index="' + option_index + '"' +
+					' data-original-title="test"' +
 					' id="' + option_id + '_upload"' : '') +
 					option_html_end;
 
@@ -295,16 +301,17 @@ window.onload = function() {
             onOperatorSelect: function (operatorId) {
                 let operator_options = $flowchart.flowchart('getOperatorOptions', operatorId);
                 let operator_title = $flowchart.flowchart('getOperatorTitle', operatorId);
+                // let operator_data = $flowchart.flowchart('getOperatorData', operatorId);
                 let options_count = Object.keys(operator_options).length;
                 let options_contents;
 
-                // TODO: populate with description
+                // TODO: populate with description, create another getter in jquery.flowchart.js
                 $('#optionsHelp').html('');
 
                 if (options_count > 0) {
 
                 	// Add an option for bubble title
-                	options_contents = generateOption({name: 'info.title', label: 'Name', value: operator_title}, operatorId, "title");
+                	options_contents = generateOption({name: 'info.title', label: 'Name', value: operator_title, required: true}, operatorId, "title");
                 	operator_options.forEach((option, i) => options_contents += generateOption(option, operatorId, i));
 
                 	$("#optionsContent").html(options_contents).find('input, select, textarea')
@@ -376,6 +383,7 @@ window.onload = function() {
 					}
 
                 	$("#options").show("slide", { direction: "right" }, 400);
+                	$('[data-toggle="option-help"]').tooltip();
                 } else {
                 	$("#options").hide("slide", { direction: "right" }, 400);
                 }
@@ -891,6 +899,49 @@ window.onload = function() {
 				$('#modal-server-address').trigger('focus');
 		});
 
+		function uploadFile(url, type, file) {
+			// file = File, file.name = filename
+			const response = $.ajax({
+				url: url + '/api/upload',
+				async: false,
+				cache: false,
+				method: 'POST'
+			});
+		}
+
+		function uploadAndRunPipeline(server, data) {
+			try {
+				json = generatePipelineJSON(data);
+			} catch (ex) {
+				if (ex instanceof PipelineError) {
+					alert('Validation error: ' + ex.message);
+					//$('#validationAlert span').val('Validation error: ' + e.message);
+					//$('#validationAlert').show();
+					e.stopPropagation();
+					return;
+				}
+			}
+
+			let pipelineName = 'pipeline-' + Date.now();
+			let pipeline = new File([window.pipeline.replaceAll('"data/', '"' + pipelineName + '/data/')], pipelineName + ".json");
+
+			uploadFile(pipeline, 'pipeline', server);
+			for (const [key, val] of Object.entries(window.filenames)) {
+				if (!val.name) {
+					alert('Some files are not uploaded. If you have loaded the configuration please upload the files once again');
+					e.stopPropagation();
+					return false;
+				}
+				uploadFile(val, 'data', server);
+			}
+
+			const response = $.ajax({
+				url: url + '/api/run/' + pipelineName,
+				async: false,
+				cache: false
+			});
+		}
+
 		function checkServer(url) {
 			const response = $.ajax({
 				url: url + '/api/docs',
@@ -898,16 +949,18 @@ window.onload = function() {
 				cache: false
 			});
 
-			console.log(response);
 			return response.status === 200;
 		}
 
 		$('#selectServer').on('click', function (event) {
 			const server = $('#modal-server-address').val();
+			const data = $flowchart.flowchart('getData');
 
 			if (checkServer(server)) {
 				$('#modalChooseServer').modal('hide');
 				$('#modalGenerate').modal('hide');
+
+				uploadAndRunPipeline(server, data);
 			} else {
 				alert('Server is not available');
 			}

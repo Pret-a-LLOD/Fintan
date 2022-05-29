@@ -5,6 +5,8 @@ info:
 params:
   - name: outFormat
     label: Output format
+    help: Which serialisation should be used
+    required: true
     values:
       - ""
       - CoNLL
