@@ -188,7 +188,7 @@ window.onload = function() {
 				'<span data-toggle="option-help" data-original-title="' + option_help + '">' +
 				'<label for="' + option_id + '"' +
 				'">' + option_label + (option_required ? '<span class="required">*</span>' : '') +
-				(option_help ? ' <i class="fa fa-question-circle-o"></i>' : '') +
+				(option_help ? ' <i class="fa fa-question-circle"></i>' : '') +
 				'</label></span>';
 			let option_html_end = '</div>';
 
