@@ -655,7 +655,7 @@ window.onload = function() {
 					const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 					const resName = resource.title
 						.toLowerCase()
-						.replace(" |(e|or)$|update$|(e|or)?query$|(e|ive)?update$", "");
+						.replace(/ |(e|or)$|update$|(e|or)?query$|(e|ive)?update$/, "");
 
 					if (!(resName in propertyNames))
 						throw new PipelineError('Cannot assign resource to a property: ' + resource.title);
