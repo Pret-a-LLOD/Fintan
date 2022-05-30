@@ -1,6 +1,6 @@
 info:
   title: RDF Loader
-  description: Load and split segmented RDF with the default splitting strategy
+  description: Load and split SERIALISED RDF into SEGMENTED RDF using a text delimiter.
   class: RDFStreamLoader
 params:
   - name: lang

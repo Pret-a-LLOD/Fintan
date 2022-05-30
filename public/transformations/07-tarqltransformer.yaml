@@ -1,42 +1,51 @@
 info:
   title: TARQL Transform
-  description: Transform TSV/CSV with TARQL
+  description: Transform TSV/CSV into Turtle with TARQL
   class: TarqlStreamTransformer
 params:
   - name: delimiterCSV
     label: Delimiter char for CSV
+    help: Corresponds to TARQL CLI parameter.
   - name: tabs
     label: Using tabs as separators
+    help: Corresponds to TARQL CLI parameter.
     values:
       - yes
       - no
     value: yes
   - name: quoteChar
     label: Character wrapping content
+    help: Corresponds to TARQL CLI parameter.
     value: ""
   - name: escapeChar
     label: Escape character
+    help: Corresponds to TARQL CLI parameter.
     value: ""
   - name: encoding
     label: Encoding
+    help: Corresponds to TARQL CLI parameter.
     value: UTF-8
   - name: headerRow
     label: First row is a header
+    help: Corresponds to TARQL CLI parameter.
     values:
       - true
       - false
     value: true
   - name: baseIRI
     label: Base IRI
+    help: Corresponds to TARQL CLI parameter.
     value: ""
   - name: write-base
-    label: Output @base
+    label: Output @base statement in TTL
+    help: Corresponds to TARQL CLI parameter.
     values:
       - true
       - false
     value: false
   - name: dedup
     label: Window size for deduplication
+    help: Corresponds to TARQL CLI parameter.
     value: "0"
 inputs:
   - name: input
