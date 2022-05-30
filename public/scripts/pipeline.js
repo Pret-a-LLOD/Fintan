@@ -185,10 +185,11 @@ window.onload = function() {
 			let option_id = option.name; // for simplicity later on while updating, but might be prone to errors if names are weird
 
 			let option_html = '<div class="form-group">\n' +
+				'<span data-toggle="option-help" data-original-title="' + option_help + '">' +
 				'<label for="' + option_id + '"' +
-				' data-toggle="option-help" data-original-title="' + option_help +
 				'">' + option_label + (option_required ? '<span class="required">*</span>' : '') +
-				'</label>';
+				(option_help ? ' <i class="fa fa-question-circle"></i>' : '') +
+				'</label></span>';
 			let option_html_end = '</div>';
 
 			if (option_type === 'file')
@@ -654,7 +655,7 @@ window.onload = function() {
 					const filename = uploadResourceFile(resource, component, resourceOperatorId, resource.action);
 					const resName = resource.title
 						.toLowerCase()
-						.replace(" |(e|or)$|update$|(e|or)?query$|(e|ive)?update$", "");
+						.replace(/ |(e|or)$|update$|(e|or)?query$|(e|ive)?update$/, "");
 
 					if (!(resName in propertyNames))
 						throw new PipelineError('Cannot assign resource to a property: ' + resource.title);
