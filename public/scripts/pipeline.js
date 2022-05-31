@@ -139,8 +139,9 @@ window.onload = function() {
 						type: 'data',
 						options: [{
 							name: "filename",
-							label: "Source file",
-							value: "System.in"
+							label: "Input data",
+							type: "file",
+							format: "text"
 						}],
 						inputs: {},
 						outputs: {
@@ -515,6 +516,18 @@ window.onload = function() {
 			let el = document.createElement('a');
 			el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
 			el.setAttribute('download', window.pipelineName + '.json');
+			el.style.display = 'none';
+			document.body.appendChild(el);
+
+			el.click();
+			document.body.removeChild(el);
+		});
+
+		$('#resultsDownload').on('click', function() {
+			const text = $('#results-text').html();
+			let el = document.createElement('a');
+			el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			el.setAttribute('download', 'results.txt');
 			el.style.display = 'none';
 			document.body.appendChild(el);
 
@@ -900,12 +913,32 @@ window.onload = function() {
 				$('#modal-server-address').trigger('focus');
 		});
 
-		function uploadFile(url, type, file) {
+		function uploadFile(file, type, url, pipelineName='') {
 			// file = File, file.name = filename
-			const response = $.ajax({
+			const formData = new FormData();
+
+    		// add assoc key values, this will be posts values
+    		formData.append('file', file, file.name);
+    		formData.append('type', type);
+    		if(type !== 'pipeline') {
+    			formData.append('pipeline', pipelineName);
+			}
+
+    		const response = $.ajax({
 				url: url + '/api/upload',
 				async: false,
 				cache: false,
+				data: formData,
+				contentType: false,
+				processData: false,
+				crossDomain: true,
+				headers: {
+					accept: "application/json",
+					"Access-Control-Allow-Origin": "x-requested-with"
+				},
+				beforeSend: function(xhr){
+					xhr.withCredentials = true;
+                },
 				method: 'POST'
 			});
 		}
@@ -923,8 +956,9 @@ window.onload = function() {
 				}
 			}
 
+			json = JSON.stringify(json, null, 2);
 			let pipelineName = 'pipeline-' + Date.now();
-			let pipeline = new File([window.pipeline.replaceAll('"data/', '"' + pipelineName + '/data/')], pipelineName + ".json");
+			let pipeline = new File([json.replaceAll('"data/', '"' + pipelineName + '/data/')], pipelineName + ".json");
 
 			uploadFile(pipeline, 'pipeline', server);
 			for (const [key, val] of Object.entries(window.filenames)) {
@@ -933,14 +967,17 @@ window.onload = function() {
 					e.stopPropagation();
 					return false;
 				}
-				uploadFile(val, 'data', server);
+				uploadFile(val, 'data', server, pipelineName);
 			}
 
 			const response = $.ajax({
-				url: url + '/api/run/' + pipelineName,
+				url: server + '/api/run/' + pipelineName,
 				async: false,
-				cache: false
+				cache: false,
+				method: 'POST'
 			});
+
+			return response;
 		}
 
 		function checkServer(url) {
@@ -950,7 +987,11 @@ window.onload = function() {
 				cache: false
 			});
 
-			return response.status === 200;
+			console.log(response);
+			if (response.status !== 200) {
+				alert('Error running the pipeline: ' + response.status)
+			}
+			return response;
 		}
 
 		$('#selectServer').on('click', function (event) {
@@ -958,13 +999,24 @@ window.onload = function() {
 			const data = $flowchart.flowchart('getData');
 
 			if (checkServer(server)) {
+				$(this).html('Running...').attr("disabled", true);
+
+				const result = uploadAndRunPipeline(server, data);
+
+				console.log(result.responseJSON);
+				if(result.status === 200) {
+					console.log(result.responseJSON.result);
+					$('#results-text').html(result.responseJSON.result);
+					$("#results").modal('show');
+				}
+
 				$('#modalChooseServer').modal('hide');
 				$('#modalGenerate').modal('hide');
-
-				uploadAndRunPipeline(server, data);
 			} else {
-				alert('Server is not available');
+				alert('Server returned an error: ' + result.json);
 			}
+
+			$(this).html('Select and run').attr('disabled', false);
 		});
 
 		$('#modal-server-address').on('keyup', function(event) {

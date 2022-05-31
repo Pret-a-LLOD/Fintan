@@ -919,6 +919,16 @@ footer.sticky-footer {
   position: absolute;
   z-index: 999; }
 
+/* TODO: Update bootstrap and this won't be necessary */
+#results .modal-dialog{
+    overflow-y: initial !important
+}
+
+#results .modal-body{
+    height: 60vh;
+    overflow-y: auto;
+}
+
 #options {
   z-index: 1000;
   width: 300px;

@@ -113,8 +113,8 @@
                                 <button type="button" class="btn btn-primary mr-1" id="pipelineClear">Clear</button>
 
                                 <span class="navbar-brand ml-auto" href="#">Pipeline:</span>
-                                <button type="button" class="btn btn-primary mr-1" id="pipelineGenerate" data-toggle="modal" data-target="#modalGenerate">Generate</button>
-<!--                                <button type="button" class="btn btn-primary" id="pipelineRun" data-toggle="modal" data-target="#modalChooseServer">Run</button>-->
+                                <button type="button" class="btn btn-primary mr-1" id="pipelineGenerate" data-toggle="modal" data-target="#modalGenerate">Save</button>
+                                <button type="button" class="btn btn-primary" id="pipelineRun" data-toggle="modal" data-target="#modalChooseServer">Run</button>
                             </nav>
 
                             </div>
@@ -240,11 +240,34 @@
                   </div>
                   <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary" id="selectServer">Select</button>
+                      <button type="button" class="btn btn-primary" id="selectServer">
+<!--                          <i class="fa-solid fa-spinner"></i>-->
+                          Select and run
+                      </button>
                   </div>
                 </div>
               </div>
             </div>
+
+            <div class="modal fade" id="results" tabindex="-1" role="dialog" aria-labelledby="modalResultsLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalResultsLabel">Results</h5>
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                      <span aria-hidden="true">&times;</span>-->
+<!--                    </button>-->
+                  </div>
+                  <div class="modal-body">
+                    <pre id="results-text"></pre>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-primary mr-1" id="resultsDownload">Download</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+
 
 <script type="text/javascript">
 var jsons_data = [];
