@@ -5,9 +5,11 @@ info:
 params:
   - name: baseURI
     label: Base URI
+    help: Base URI for the sentences and tokens of the resulting resource.
     value: "http://fintan-pipeline/"
   - name: columns
     label: Columns
+    help: Columns in order of source data e.g. ID WORD POS EDGE
     type: array
 inputs:
   - name: input

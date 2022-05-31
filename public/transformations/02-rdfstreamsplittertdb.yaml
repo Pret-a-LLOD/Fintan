@@ -1,6 +1,6 @@
 info:
   title: RDF Splitter
-  description: Load and split segmented RDF based on SPARQL queries
+  description: Load and split SERIALISED RDF into SEGMENTED RDF based on SPARQL queries.
   class: RDFStreamSplitterTDB
 params:
   - name: mode

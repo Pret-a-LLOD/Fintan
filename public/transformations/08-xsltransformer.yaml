@@ -1,10 +1,11 @@
 info:
   title: XSL Transform
-  description: Apply an XSL transformation
+  description: Apply an XSL transformation.
   class: XSLTStreamTransformer
 params:
   - name: args
     label: Additional arguments
+    help: Arguments to be handed to the XSL script. param1=value1 param2=value2 ...
     value: ""
 inputs:
   - name: input

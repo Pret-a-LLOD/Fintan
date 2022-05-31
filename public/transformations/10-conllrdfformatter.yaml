@@ -5,6 +5,7 @@ info:
 params:
   - name: mode
     label: Mode
+    help: detailed description of modes unter github.com/acoli-repo/conll-rdf
     values:
       - RDF
       - CONLL
@@ -15,6 +16,7 @@ params:
     value: "CONLL"
   - name: columns
     label: Columns (for RDF and CONLL modes)
+    help: conll:COLUMNS in desired output order, e.g. ID WORD POS EDGE
     type: array
 inputs:
   - name: input
