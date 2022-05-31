@@ -14,12 +14,13 @@ def load_pipelines(path):
 
 
 path_pipelines = os.environ.get('FINTAN_PIPELINES', './pipelines/')
-path_data = os.environ.get('FINTAN_DATA', './data/')
-path_fintan = os.environ.get('FINTAN_PATH', './fintan-backend/')
+path_data = os.environ.get('FINTAN_DATA', './')
+path_uploads = os.environ.get('FINTAN_UPLOADS', './')
+path_fintan = os.environ.get('FINTAN_PATH', '../../fintan-backend/')
 path_jar = os.environ.get('FINTAN_JAR', 'fintan-backend.jar')
-java_run = ['java', '-Dfile.encoding=UTF8', '-jar', path_jar]
+java_run = ['java', '-Dfile.encoding=UTF8', '-jar', os.path.join(path_fintan, path_jar)]
 
-upload_extensions = {'.json', '.ttl', '.n3', '.rdf', '.gz', '.zip', '.txt', '.yaml'}
+upload_extensions = {'.json', '.ttl', '.n3', '.rdf', '.gz', '.zip', '.txt', '.yaml', '.sparql', '.rq'}
 
 tmpl_pipelines = os.path.join(path_pipelines, '{}.json')
 
@@ -65,12 +66,17 @@ def upload():
         return jsonify({'error': 'No file provided'}), 400
 
     upload_file = request.files['file']
-    filename = secure_filename(upload_file.filename)
+    filename = secure_filename(os.path.split(upload_file.filename)[-1])
     if os.path.splitext(filename)[1].lower() not in upload_extensions:
         return jsonify({'error': 'Extension not supported'}), 400
 
+    pipeline_path = request.values.get('pipeline', '.')
+    if not os.path.exists(pipeline_path):
+        os.mkdir(pipeline_path)
+        os.mkdir(os.path.join(pipeline_path, 'data'))
+
     upload_type = request.values.get('type', 'data')
-    upload_file.save(os.path.join(path_data if upload_type == 'data' else path_pipelines, filename))
+    upload_file.save(os.path.join(os.path.join(os.path.join(path_uploads, pipeline_path), 'data') if upload_type == 'data' else path_pipelines, filename))
 
     if upload_type != 'data':
         global pipelines
@@ -101,6 +107,8 @@ def execute_pipeline(pipeline=None):
 
     params = request.values.get('params')
 
+    print(path_fintan)
+    print(os.path.realpath(tmpl_pipelines.format(pipeline)))
     content = pipeline_content_getters[content_type](request) if request.data else ''
     ret_val = subprocess.run(java_run +
                              ["-c", os.path.realpath(tmpl_pipelines.format(pipeline))] +
@@ -108,11 +116,11 @@ def execute_pipeline(pipeline=None):
                              capture_output=True,
                              input=content + '\n',
                              text=True,
-                             cwd=path_fintan,
+                             cwd=path_data,
                              encoding='utf-8')
 
     print(ret_val.stderr)
-    return ret_val.stdout
+    return jsonify({'result': ret_val.stdout})
 
 
 @app.route('/static/openapi.yaml')
@@ -126,4 +134,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
