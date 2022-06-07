@@ -72,6 +72,10 @@ public class RDFStreamLoader extends StreamLoader implements FintanStreamCompone
 		}
 		if (conf.hasNonNull("delimiter")) {
 			loader.setSegmentDelimiter(conf.get("delimiter").asText());
+			loader.setSplit(true);
+		}
+		if (conf.hasNonNull("split")) {
+			loader.setSplit(conf.get("split").asBoolean());
 		}
 		if (conf.hasNonNull("globalPrefixes")) {
 			loader.setGlobalPrefixes(conf.get("globalPrefixes").asBoolean());
@@ -89,7 +93,8 @@ public class RDFStreamLoader extends StreamLoader implements FintanStreamCompone
 
 
 	private String lang = "TTL";
-	private String segmentDelimiter = FINTAN_DEFAULT_SEGMENT_DELIMITER_TTL;
+	private boolean split = false;
+	private String segmentDelimiter = null;
 	private boolean globalPrefixes = false;
 	private String prefixCache = "";
 
@@ -99,6 +104,14 @@ public class RDFStreamLoader extends StreamLoader implements FintanStreamCompone
 
 	public void setLang(String lang) {
 		this.lang = lang;
+	}
+
+	public boolean isSplit() {
+		return split;
+	}
+
+	public void setSplit(boolean split) {
+		this.split = split;
 	}
 
 	public String getSegmentDelimiter() {
@@ -131,6 +144,7 @@ public class RDFStreamLoader extends StreamLoader implements FintanStreamCompone
 			RDFStreamLoader loader = new RDFStreamLoader();
 			loader.setSegmentDelimiter(segmentDelimiter);
 			loader.setLang(lang);
+			loader.setSplit(split);
 			loader.setGlobalPrefixes(globalPrefixes);
 			try {
 				loader.setInputStream(getInputStream(name));
@@ -151,7 +165,9 @@ public class RDFStreamLoader extends StreamLoader implements FintanStreamCompone
 		String rdfsegment = "";
 		try {
 			for(String line = in.readLine(); line !=null; line=in.readLine()) {
-				if (line.equals(segmentDelimiter)) {
+				if (split && segmentDelimiter == null) {
+					outputSegment(line+"\n", "");
+				} else if (split && line.equals(segmentDelimiter)) {
 					outputSegment(rdfsegment, "");
 
 					rdfsegment = "";

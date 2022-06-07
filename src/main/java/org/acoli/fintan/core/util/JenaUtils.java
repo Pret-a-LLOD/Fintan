@@ -56,7 +56,7 @@ public class JenaUtils {
 	}
 	
 	/**
-	 * Consumes a ResultSet and creates a custom serialization in the specified
+	 * Consumes a Jena ResultSet and creates a custom serialization in the specified
 	 * CustomCSVFormat.
 	 * 
 	 * @param out PrintStream to write to
@@ -67,21 +67,23 @@ public class JenaUtils {
 		List<String> cols = rs.getResultVars();
 		while(rs.hasNext()) {
 			QuerySolution sol = rs.next();
+			
+			boolean firstCol = true; //no delimiter before first column
+			
 			for(String col : cols) {
-				if(sol.get(col)==null) {
-					out.print(format.emptyChar+format.delimiterCSV);		
+				if (!firstCol) {
+					out.print(format.delimiterCSV);
 				} else {
-					String outString = sol.get(col).toString();
-					if(format.escapeChar != null) {
-						if (!format.quoteChar.equals("")) {
-							outString = outString.replace(format.quoteChar, format.escapeChar+format.quoteChar);
-						} else if (!format.delimiterCSV.equals("")){
-							outString = outString.replace(format.delimiterCSV, format.escapeChar+format.delimiterCSV);
-						}
-					}
-					out.print(format.quoteChar+outString+format.quoteChar+format.delimiterCSV);
+					firstCol = false;
+				}
+				
+				if(sol.get(col)==null) {
+					out.print(format.emptyChar);		
+				} else {
+					out.print(format.writeColumnContent(sol.get(col).toString()));
 				}
 			}
+			
 			out.println();
 			out.flush();
 		}

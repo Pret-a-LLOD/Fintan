@@ -27,10 +27,14 @@ import java.util.HashMap;
 public class CustomCSVFormat {
 	
     public static final CustomCSVFormat CoNLL = new CustomCSVFormat(null, "\t", null, "_");
+    public static final CustomCSVFormat TSV = new CustomCSVFormat(null, "\t", null, null);
+    public static final CustomCSVFormat CSV = new CustomCSVFormat(null, ",", null, null);
     
     private static final HashMap<String, CustomCSVFormat> formats = new HashMap<String, CustomCSVFormat>();
     static {
     	formats.put("conll", CoNLL);
+    	formats.put("tsv", TSV);
+    	formats.put("CSV", CSV);
     }
 
     public static CustomCSVFormat lookup(String name) {
@@ -52,18 +56,39 @@ public class CustomCSVFormat {
 	 */
 	public CustomCSVFormat(String escapeChar, String delimiterCSV, String quoteChar, String emptyChar) {
 		this.escapeChar = escapeChar;
+		
 		if (delimiterCSV == null)
 			this.delimiterCSV = "";
 		else
 			this.delimiterCSV = delimiterCSV;
+		
 		if (quoteChar == null)
 			this.quoteChar = "";
 		else 
 			this.quoteChar = quoteChar;
+		
 		if (emptyChar == null)
 			this.emptyChar = "";
 		else
 			this.emptyChar = emptyChar;
+	}
+	
+	/**
+	 * Escape and format a given String using this custom CSV format.
+	 * @param content 
+	 * 		The content of a column
+	 * @return 
+	 * 		the escaped and formatted content
+	 */
+	public String writeColumnContent(String content) {
+		if(escapeChar != null) {
+			if (!quoteChar.equals("")) {
+				content = content.replace(quoteChar, escapeChar+quoteChar);
+			} else if (!delimiterCSV.equals("")){
+				content = content.replace(delimiterCSV, escapeChar+delimiterCSV);
+			}
+		}
+		return quoteChar+content+quoteChar;
 	}
 	
 }
