@@ -116,3 +116,49 @@ In addition, the `TBX2RDFStreamLoader` accepts the following parameters:
 * `bigFile`: (`true`/`false`) switches between bigFile and default mode.
 * `cachePath`: allows to define a custom path for caching in `bigFile` mode. If unspecified, Fintan's temp folder will be used.
 
+## Read from SQL databases (still experimental)
+The `SQLStreamtransformer` reads directly from an SQL database. Therefore, *no input stream* can be defined. It accepts an SQL query and writes formated output in customizable C/TSV formats to the *default output stream*, only. 
+
+The database connection can be adjusted by the following parameters:
+* `driver` (OPTIONAL) for legacy code in some cases, the JDBC driver must be loaded by a Class.forName("fully.qualified.ClassName") statement. In case of doubt, set this to null.
+* `connectUrl` URL to your SQL server
+* `user` name for DB access.
+* `password` for DB access. For security reasons, this should be parameterized according to the guidelines in [Running pipelines with parameters](2-run-pipelines.md#running-pipelines-with-parameters).
+
+
+The other parameters reflect that of the SPARQL classes in Fintan Core:
+* `query` to define the path to the SQL query
+* `outFormat` can be used to denote a preconfigured output format. At the time of writing, it can be either `CSV`, `TSV` or `CoNLL`. 
+
+If no `outFormat` is specified, a custom format can be applied with the following parameters. The `outFormat` always takes precedence.
+* `escapeChar` for escaping functional characters 
+* `delimiterCSV` for the column delimiter. `\t` for CoNLL
+* `quoteChar` optional for wrapping cell content
+* `emptyChar` optional to denote an empty cell. `_` for CoNLL
+
+JSON conf snippet for `pipeline{}` or `components{}`:
+
+```
+	{
+	  "componentInstance" : "YOUR_NAME",
+	  "class" : "SQLStreamTransformer",
+	  
+	  "driver" : null,
+	  "connectUrl" : "jdbc:mysql://localhost/mydatabase",
+	  "user" : "some_user",
+	  "password" : "<$param0>",
+	  
+	  "query" : "samples/sql/YOUR_SCRIPT.sql"
+	  
+	  "outFormat" : "TSV",
+	  
+	  //the following will be ignored, since outFormat is defined.
+	  "escapeChar" : null ,
+	  "delimiterCSV" : "\t",
+	  "quoteChar" : null,
+	  "emptyChar" : "_"
+	  
+	}
+```
+
+
