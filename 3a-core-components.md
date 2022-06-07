@@ -29,6 +29,10 @@ It has three parameters which can be set in the JSON config:
 
 * `lang` to specify the RDF syntax. Supported languages follow the naming convention of Apache Jena (ttl, TURTLE, RDF/XML, N3, …)
 * `delimiter` to specify the textual delimiter indicating the end of a segment. The specified delimiter is always expected to be the full content of a delimiting line of text. "" corresponds to an empty line.
+* `split` (`true`/`false`) can be used to deactivate or enforce splitting.
+     * if `null` or unspecified: delimiter decides, if and how to split.
+     * if `true`: if no delimiter is defined, split after each line break, else use the delimiter.
+     * if `false`: never split. Enforce bulk load.
 * `globalPrefixes` (`true`/`false`) is specifically designed for Turtle syntax. In a Turtle file, usually the prefixes are defined globally in the beginning of the File. However, they can be overridden in between. Without the `globalPrefixes` setting Fintan expects the prefixes to be repeated for every segment of data. If it fails to load, it will still retry with the last successful set of prefixes, but this will increase processing overhead. In this case the `globalPrefixes` flag should be set to `true`.
 
 The following example shows properly segmented Turtle data. Each `LexicalEntry` and all its adjacent nodes are listed in blocks delimited by an empty line:
