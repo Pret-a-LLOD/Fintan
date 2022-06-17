@@ -1,0 +1,37 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX conll: <https://github.com/acoli-repo/conll-rdf/blob/master/owl/conll.ttl#>
+PREFIX vartrans: <http://www.w3.org/ns/lemon/vartrans#>
+
+# This query must be called on all three TTL: lexica _and_ a translation set
+
+DELETE {
+	?sense 	ontolex:isSenseOf ?old_entry ;
+			a ontolex:LexicalSense .
+	?translation ?prop ?sense .
+}
+INSERT {
+	?new_sense 	a ontolex:LexicalSense ;
+				ontolex:isSenseOf ?new_entry .
+	?translation ?prop ?new_sense .
+}
+WHERE {
+	?sense ontolex:isSenseOf ?old_entry .
+
+	?translation vartrans:source|vartrans:target ?sense .
+	?translation ?prop ?sense .
+	
+	GRAPH ?g {
+		?old_entry rdfs:comment "delete_me" .
+		?new_entry owl:sameAs ?old_entry .
+	}
+	
+	# replacing lexiconXX to tranSetXX-YY
+	BIND(STRBEFORE(STRAFTER(STR(?sense), "http://linguistic.linkeddata.es/id/apertium/"), "/") as ?tranSet) .
+	BIND(URI(CONCAT(REPLACE(STR(?new_entry), "lexicon[A-Z]+", ?tranSet), '-sense')) as ?new_sense) .
+##OLD
+#	BIND(URI(CONCAT(STR(?new_entry), '-sense')) as ?new_sense)
+	# BIND(URI(CONCAT(STR(?new_entry), '-sense-trans')) as ?new_translation)
+}

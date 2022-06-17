@@ -34,7 +34,14 @@
         <xsl:text> a lime:Lexicon</xsl:text>
         <xsl:text>;&#10; lime:language "</xsl:text>
         <xsl:value-of select="lower-case($LANG)"/>
-        <xsl:text>".&#10; </xsl:text>
+        <xsl:text>";&#10; </xsl:text>
+
+        <xsl:text> rdfs:label "Apertium </xsl:text>
+        <xsl:value-of select="upper-case($LANG)"/>
+        <xsl:text> Lexicon"@en;&#10; </xsl:text>
+        <xsl:text> rdfs:comment "This is an RDF OntoLex-lemon </xsl:text>
+        <xsl:value-of select="upper-case($LANG)"/>
+        <xsl:text> lexicon that comes from the original Apertium bilingual dictionaries."@en .&#10; </xsl:text>
         
         <xsl:for-each select="//e/p/r">
             <xsl:variable name="l">
@@ -47,8 +54,26 @@
                 <xsl:value-of select="replace(normalize-space($tmp),'&quot;','')"/>
             </xsl:variable>
             <xsl:if test="normalize-space($l)!='' and matches(encode-for-uri($l),'^[_a-zA-Z0-9%].*')">
-                <xsl:variable name="s" select="s[1]/@n"/>
-                <xsl:variable name="lexent" select="concat(':',replace(acoli:encode-for-uri-rdf(concat($l,'-',$s,'-',lower-case($LANG))),'---*','-'))"/>
+                <!-- try to get POS in a variety of ways -->
+                <!-- note, this one is only to include the tag in the URI, adding to the entry is below -->
+                <xsl:variable name="s-raw">
+                    <xsl:variable name="pos1" select="s[1]/@n"/>
+                    <xsl:variable name="pos2" select="../../par[1]/@n"/>
+                    
+                    <xsl:choose>
+                        <xsl:when test="string-length($pos1)>0">
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($pos1)"/>
+                        </xsl:when>
+                        <xsl:when test="string-length($pos2)>0">
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($pos2)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($pos1)"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <xsl:variable name="s" select="replace($s-raw, '.*__', '')"/>
+                <xsl:variable name="lexent" select="concat(':',replace(acoli:encode-for-uri-rdf(concat($l,'-',$s,'-',lower-case($LANG))),'---*','-unkn-'))"/>
                 <xsl:variable name="form" select="concat($lexent,'-form')"/>
                 
                 <xsl:value-of select="concat('&lt;',$lexicon,'>')"/>
@@ -74,6 +99,13 @@
                         </xsl:if>
                     </xsl:for-each>
                 </xsl:if>
+
+                <!-- if this is a composite tag, add the last part (POS) as a morphosyntactic property -->
+                <xsl:if test="contains($s-raw, '__')">
+                    <xsl:text>; &#10; lexinfo:morphosyntacticProperty apertium:</xsl:text>
+                    <xsl:value-of select="$s"/>
+                </xsl:if>
+
                 <xsl:text>; &#10; ontolex:lexicalForm </xsl:text>
                 <xsl:value-of select="$form"/>
                 <xsl:if test="string-length($dc_source)>0">

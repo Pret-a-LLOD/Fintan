@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:acoli="http://acoli.cs.uni-frankfurt.de/" version="2.0">
+
+<!-- Better string escape for URI than encode-for-uri: also replaces dots with underscores and escapes backslashes -->
+<xsl:function name="acoli:encode-for-uri-rdf">
+    <xsl:param name="str"/>
+    <xsl:value-of select="replace(encode-for-uri($str), '[.;]+', '_')"/>
+</xsl:function>
 
 <xsl:output method="text" indent="no"/>
    
@@ -38,8 +44,8 @@
         <xsl:text disable-output-escaping="yes">@prefix ontolex: &lt;http://www.w3.org/ns/lemon/ontolex#> .&#10;</xsl:text>
         <xsl:text disable-output-escaping="yes">@prefix lime: &lt;http://www.w3.org/ns/lemon/lime#> .&#10;</xsl:text>
         <xsl:text disable-output-escaping="yes">@prefix vartrans: &lt;http://www.w3.org/ns/lemon/vartrans#> .&#10;</xsl:text>
-        <xsl:value-of disable-output-escaping="yes" select="concat('@prefix : &lt;',$lexicon,'/> . &#10;&#10;')"/>
-        <xsl:value-of disable-output-escaping="yes" select="concat('@prefix src: &lt;',$src,'/> . &#10;&#10;')"/>
+        <xsl:value-of disable-output-escaping="yes" select="concat('@prefix : &lt;',$lexicon,'/> . &#10;')"/>
+        <xsl:value-of disable-output-escaping="yes" select="concat('@prefix src: &lt;',$src,'/> . &#10;')"/>
         <xsl:value-of disable-output-escaping="yes" select="concat('@prefix tgt: &lt;',$tgt,'/> . &#10;&#10;')"/>
         
         <xsl:value-of select="concat('&lt;',$lexicon,'>')"/>
@@ -84,13 +90,52 @@
                 <xsl:value-of select="replace(normalize-space($tmp),'&quot;','')"/>
             </xsl:variable>            
             <xsl:if test="normalize-space(concat($r,$l))!='' and matches(encode-for-uri($l),'^[_a-zA-Z0-9%].*') and matches(encode-for-uri($r),'^[_a-zA-Z0-9%].*')">
-                <xsl:variable name="ls" select="l/s[1]/@n"/>
-                <xsl:variable name="rs" select="l/s[1]/@n"/>                
-                <xsl:variable name="llexent" select="concat('src:',replace(encode-for-uri(concat($l,'-',$ls,'-',lower-case($SRC_LANG))),'---*','-'))"/>
-                <xsl:variable name="rlexent" select="concat('tgt:',replace(encode-for-uri(concat($r,'-',$rs,'-',lower-case($TGT_LANG))),'---*','-'))"/>
+                <!-- try to get POS in a variety of ways -->
+                <!-- note, this one is only to include the tag in the URI, adding to the entry is below -->
+                <xsl:variable name="ls-raw">
+                    <xsl:variable name="lpos1" select="l/s[1]/@n"/>
+                    <xsl:variable name="lpos2" select="../par[1]/@n"/>
+                    
+                    <xsl:choose>
+                        <xsl:when test="string-length($lpos1)>0">
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($lpos1)"/>
+                        </xsl:when>
+                        <xsl:when test="string-length($lpos2)>0">
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($lpos2)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($lpos1)"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <xsl:variable name="ls" select="replace($ls-raw, '.*__', '')"/>
+
+                <!-- try to get POS in a variety of ways -->
+                <!-- note, this one is only to include the tag in the URI, adding to the entry is below -->
+                <xsl:variable name="rs-raw">
+                    <xsl:variable name="rpos1" select="r/s[1]/@n"/>
+                    <xsl:variable name="rpos2" select="../par[1]/@n"/>
+                    
+                    <xsl:choose>
+                        <xsl:when test="string-length($rpos1)>0">
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($rpos1)"/>
+                        </xsl:when>
+                        <xsl:when test="string-length($rpos2)>0">
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($rpos2)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="acoli:encode-for-uri-rdf($rpos1)"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <xsl:variable name="rs" select="replace($rs-raw, '.*__', '')"/>
                 
-                <xsl:variable name="lsense" select="concat(':',replace(encode-for-uri(concat($l,'_',$r,'-',$ls,'-',lower-case($SRC_LANG),'-sense')),'---*','-'))"/>
-                <xsl:variable name="rsense" select="concat(':',replace(encode-for-uri(concat($r,'_',$l,'-',$rs,'-',lower-case($TGT_LANG),'-sense')),'---*','-'))"/>
+                <xsl:variable name="llexent" select="concat('src:',replace(acoli:encode-for-uri-rdf(concat($l,'-',$ls,'-',lower-case($SRC_LANG))),'---*','-unkn-'))"/>
+                <xsl:variable name="rlexent" select="concat('tgt:',replace(acoli:encode-for-uri-rdf(concat($r,'-',$rs,'-',lower-case($TGT_LANG))),'---*','-unkn-'))"/>
+                
+                <xsl:variable name="lsense" select="concat(':',replace(acoli:encode-for-uri-rdf(concat($l,'_',$r,'-',$ls,'-',lower-case($SRC_LANG),'-sense')),'---*','-unkn-'))"/>
+                <xsl:variable name="rsense" select="concat(':',replace(acoli:encode-for-uri-rdf(concat($r,'_',$l,'-',$rs,'-',lower-case($TGT_LANG),'-sense')),'---*','-unkn-'))"/>
+
                 <xsl:variable name="trans" select="concat($lsense,'-',replace($rsense,'^:',''),'-trans')"/>
                 
                 <xsl:value-of select="concat('&lt;',$lexicon,'>')"/>

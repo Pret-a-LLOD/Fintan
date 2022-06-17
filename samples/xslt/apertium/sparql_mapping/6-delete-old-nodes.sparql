@@ -1,0 +1,33 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX conll: <https://github.com/acoli-repo/conll-rdf/blob/master/owl/conll.ttl#>
+
+DELETE {
+	#?sense ontolex:isSenseOf ?old_entry .
+	?new_entry owl:sameAs ?old_entry ;
+			   conll:UPOS ?ud_tag .
+	?lexicon lime:entry ?old_entry .
+
+	?old_entry ontolex:lexicalForm ?old_form .
+	?old_form ?prop1 ?obj1 .
+}
+WHERE {
+	?old_entry rdfs:comment "delete_me" ;
+			   ontolex:lexicalForm ?old_form .
+	
+	?old_form ?prop1 ?obj1 .
+	
+	?new_entry owl:sameAs ?old_entry ;
+			   conll:UPOS ?ud_tag .
+	?lexicon lime:entry ?old_entry .
+};
+
+#in case some entries were not updated
+DELETE {
+	?any_entry conll:UPOS ?ud_tag .
+}
+WHERE {
+	?any_entry conll:UPOS ?ud_tag .
+}
