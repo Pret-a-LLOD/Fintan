@@ -511,7 +511,7 @@ public class FintanManager {
 			return null;
 		}
 		} catch (ClassCastException e) {
-			throw new IOException("Error when trying to connect srcComp: "+sourceComp.getInstanceName()+" srcGraph: "+sourceGraph+" tgtComp: "+destComp.getInstanceName()+"tgtGraph: "+destGraph, e);
+			throw new IOException("Error when trying to connect srcComp: <"+sourceComp.getInstanceName()+"> srcGraph: <"+sourceGraph+"> tgtComp: <"+destComp.getInstanceName()+"> tgtGraph: <"+destGraph+">", e);
 		}
 		
 		return nextInput;
