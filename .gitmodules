@@ -1,6 +1,0 @@
-[submodule "aux/tarql"]
-	path = aux/tarql
-	url = https://github.com/tarql/tarql
-[submodule "aux/tbx2rdf"]
-	path = aux/tbx2rdf
-	url = https://github.com/cfaeth/tbx2rdf
