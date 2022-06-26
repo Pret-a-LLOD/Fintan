@@ -1,0 +1,4 @@
+flask
+flask-cors
+flask-swagger-ui
+gunicorn

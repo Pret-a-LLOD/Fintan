@@ -1,0 +1,65 @@
+FROM openjdk:11-jdk-slim-buster AS fintan-builder
+WORKDIR /fintan-backend
+
+# required for some of the packages since man pages are cut from the slim debian image
+RUN mkdir -p /usr/share/man/man1
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    openjfx \
+    maven \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Downloading Fintan release and removing all things Git
+#RUN git clone --depth 1 -b conll-rdf-v0.1alpha-mvn https://github.com/acoli-repo/CoNLL-RDF.git . \
+RUN git clone --depth 1 https://github.com/acoli-repo/fintan-backend.git . \
+  && rm -rf ./.git
+# Fixes for the tests that do not work when OLiA ontology is not available
+#RUN  sed -e '9,12s/^/# /g' -i '' build.sh \
+#  && sed -e '63s/^/<!--/' -i '' pom.xml \
+#  && sed -e '73s/$/-->/' -i '' pom.xml \
+#  && chmod +x build.sh run.sh \
+#  && ./build.sh
+RUN chmod +x build.sh run.sh && ./build.sh
+
+FROM python:3.7.10-slim-buster AS api-builder
+WORKDIR /api-build
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install system dependencies
+#RUN apt-get update && \
+#    apt-get install -y --no-install-recommends gcc
+RUN pip install --upgrade pip
+COPY ./requirements.txt ./api.py ./openapi.yaml ./
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir ./wheels -r requirements.txt
+
+FROM openjdk:11-jre-slim-buster AS fintan-api
+
+WORKDIR /fintan
+
+# create the app user
+RUN addgroup --system fintan && adduser --system --group fintan
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends python3.7 python3-pip
+
+ENV FINTAN_PIPELINES=/fintan/pipelines/
+ENV FINTAN_PATH=/conll-rdf/run.sh
+COPY ./*.json /fintan/pipelines/
+
+COPY --from=conll-builder /conll-rdf /conll-rdf
+COPY --from=api-builder /api-build/wheels /wheels
+COPY --from=api-builder /api-build/requirements.txt /api-build/api.py /api-build/openapi.yaml /fintan/
+
+RUN pip3 install --no-cache /wheels/*
+
+# chown all the files to the app user
+RUN chown -R fintan:fintan /fintan
+
+# change to the app user
+USER fintan
+
+EXPOSE 8080
+ENTRYPOINT ["python", "api.py"]
