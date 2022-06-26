@@ -1,0 +1,16 @@
+info:
+  title: SPARQL
+  description: Loads a SPARQL query
+inputs:
+outputs:
+resources:
+  - label: LOAD SPARQL
+    required: true
+params:
+  - name: sparql
+    label: Query
+    help: Queries will be executed in alphabetical order according to their name. Suggested naming scheme is 1-name, 2-name
+    format: sparql
+    type: editor
+    import: true
+    value: ""

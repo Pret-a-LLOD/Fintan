@@ -1,0 +1,38 @@
+info:
+  title: Merge and Query 
+  description: Read and Merge SERIALSED RDF and create tabular formats using SPARQL SELECT.
+  class: SparqlStreamTransformerTDB
+params:
+  - name: outFormat
+    label: Output format
+    help: Choose a default serialization for the query results. If empty, the OPTIONAL parameters can be used for creating custom CSV formats.
+    required: true
+    values:
+      - ""
+      - CoNLL
+      - TSV
+      - CSV
+    value:
+  - name: escapeChar
+    label: Escape character
+    help: (OPTIONAL) define a custom escape character.
+    value: ""
+  - name: delimiterCSV
+    label: Column delimiter for CSV
+    help: (OPTIONAL) define a custom column delimiter.
+    value: "\t"
+  - name: quoteChar
+    label: Cell wrapping character
+    help: (OPTIONAL) define a custom quote character.
+    value: ""
+  - name: emptyChar
+    label: Character denoting an empty cell
+    help: (OPTIONAL) define a character for empty cells, e.g. _ in CoNLL.
+    value: _
+inputs:
+  - name: input
+    label: RDF
+outputs:
+  - name: output
+    label: Data
+resources:

@@ -1,0 +1,43 @@
+info:
+  title: RDF Splitter
+  description: Load and split SERIALISED RDF into SEGMENTED RDF based on SPARQL queries.
+  class: RDFStreamSplitterTDB
+params:
+  - name: mode
+    label: Splitter mode
+    help: ITERATE_CONSTRUCT uses one query <iterat> to recieve a list of entities and one query <construct> to construct a segment for each entity. RECURSIVE_UPDATE executes one SPARQL update <recurs> until no further changes occur. Optionally, a set of initialization updates <init> can be executed beforehand.
+    values:
+      - ITERATE_CONSTRUCT
+      - RECURSIVE_UPDATE
+    value: ITERATE_CONSTRUCT
+  - name: lang
+    label: RDF serialization
+    help: Specify the syntax for the RDF serialization. Default is Turtle.
+    values:
+      - Turtle
+      - RDF/XML
+      - N3
+    value: Turtle
+  - name: tdbPath
+    label: TDB path
+    help: (OPTIONAL) Default path is <workingDir>/tdb/
+    value: ""
+  - name: segmentStreams
+    label: Segment streams
+    help: (OPTIONAL) List of named graphs the segments should be taken from. (If empty, data is taken from all graphs for which a corresponding output stream is connected.)
+    type: editor
+    format: text
+    value: ""
+  - name: deltaStreams
+    label: Delta streams
+    help: (OPTIONAL) List of named graphs from which to stream unsegmented bulk data after the final recursion. Only for RECURSIVE UPDATE.
+    type: editor
+    format: text
+    value: ""
+inputs:
+  - name: input
+    label: Data
+outputs:
+  - name: output
+    label: Graph
+resources:

@@ -1,0 +1,402 @@
+// Syntax Highlight for JSON output
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }
+
+@import "../plugins/jquery-flowchart/jquery.flowchart.css";
+
+.flowchart-operator-connector {
+	position: absolute;
+	background: #337ab7;
+	color: white;
+	padding: 5px 5px 5px 0px;
+	border-radius: 15px;
+	display: inline-block;
+	width: 110% !important;
+}
+
+.flowchart-operator-outputs .flowchart-operator-connector {
+	background: #F0AD4E; }
+
+.flowchart-operator-resources .flowchart-operator-connector {
+	background: #4C4B63; }
+
+.flowchart-operator.selected:before{
+	border: 2px dashed #D95360;
+	animation:spin 10s linear infinite;
+	content: " ";
+	position: absolute;
+	z-index: 0;
+	top: -15px;
+	left: -15px;
+	right: -15px;
+	bottom: -15px;
+	border-radius: 80px;
+}
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+.flowchart-operator .flowchart-operator-inputs-outputs {
+	width: 115%;
+	margin-left: -70px;
+	text-transform: capitalize
+}
+.flowchart-operator .flowchart-operator-inputs,
+.flowchart-default-operator .flowchart-operator-outputs {
+	width: 100%
+}
+.flowchart-operator-connector-small-arrow {
+	border-left-color: rgb(92, 184, 92) !important
+}
+
+.flowchart-operator-resources .flowchart-operator-connector-arrow {
+    right: -10px;
+}
+
+.flowchart-operator-resources .flowchart-operator-connector-small-arrow {
+    right: -7px;
+}
+
+.flowchart-operator-resources .flowchart-operator-connector-label {
+    text-align: right;
+    margin-right: 5px;
+}
+
+.flowchart-default-operator {
+	height: 110px !important;
+	width: 110px !important;
+	border-radius: 70px !important
+}
+
+.flowchart-resource-operator {
+  height: 60px !important;
+  width: 100px !important;
+  border-radius: 20px !important
+}
+
+.flowchart-operator .flowchart-operator-title {
+  width: 80%;
+  text-align: center;
+  padding-top: 20%;
+  border-bottom: none;
+  background: transparent;
+  text-overflow: unset;
+  white-space: unset;
+  height: 55%;
+  margin: auto;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.flowchart-resource-operator .flowchart-operator-title {
+  padding-top: 10px;
+}
+
+.flowchart-resource-operator .flowchart-operator-connector-arrow {
+	top: 4px;
+	left: 100%;
+}
+.flowchart-resource-operator .flowchart-operator-connector-small-arrow {
+	top: 9px;
+	left: 100%
+}
+.flowchart-example pre {
+	display: none
+}
+#create_operator {
+	margin-bottom: 10px
+}
+.flowchart-example-event {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	color: #3366FF
+}
+#last_event_example_6 {
+	display: block;
+	overflow-y: auto;
+	height: 100px
+}
+#flowchart_data {
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 40px;
+	height: 140px
+}
+
+#operator_properties,
+#link_properties {
+	display: none;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	border: 4px solid;
+	padding: 10px
+}
+#chart_area {
+	width: 200%;
+	height: 200%;
+	position: relative;
+	background-color: #efefef;
+	background-image: linear-gradient(white 2px, transparent 2px), linear-gradient(90deg, white 2px, transparent 2px), linear-gradient(rgba(255, 255, 255, .5) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .5) 1px, transparent 1px);
+	background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+	background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+	/*text-transform: capitalize;*/
+}
+#chart_container {
+	width: 100%;
+	height: 500px;
+	overflow: hidden
+}
+.draggable_operator {
+	display: inline-block;
+	cursor: grab;
+	-webkit-touch-callout: none;
+	/* iOS Safari */
+
+	-webkit-user-select: none;
+	/* Chrome/Safari/Opera */
+
+	-khtml-user-select: none;
+	/* Konqueror */
+
+	-moz-user-select: none;
+	/* Firefox */
+
+	-ms-user-select: none;
+	/* IE/Edge */
+
+	user-select: none;
+	/* non-prefixed version, currently not supported by any browser */
+}
+.draggable_operators {
+	margin-top: 10px
+}
+.draggable_operators_label {
+	margin-bottom: 5px
+}
+.draggable_operators_divs {
+	margin-bottom: 0
+}
+
+.delete_selected_button{
+	top: 520px;
+	left: 20px;
+	position: absolute;
+	z-index: 999
+}
+
+#options {
+	z-index: 1000;
+	width: 300px;
+	border: 1px #999 solid;
+	display: none;
+	position: absolute;
+	right: 0;
+	background: #fff;
+	top: 4em
+}
+
+#options textarea {
+	height: 300px;
+}
+
+#options textarea.small {
+	height: 50px;
+}
+
+#options span.required {
+	baseline-shift: super;
+	color: #D95360;
+}
+
+/* TODO: Update bootstrap and this won't be necessary */
+#results .modal-dialog{
+    overflow-y: initial !important
+}
+
+#results .modal-body{
+    height: 60vh;
+    overflow-y: auto;
+}
+
+.dashed-line {
+	stroke-dasharray:10
+}
+
+.option{
+	border: 1px solid #ccc;
+	padding: 2px 5px;
+	margin-left: 10px;
+	border-radius: 4px;
+}
+
+.process-steps{
+	text-transform: capitalize;
+}
+
+/*tabs section*/
+
+.wizard {
+	margin: 0 auto 20px;
+	background: #fff
+}
+.wizard .nav-tabs {
+	position: relative;
+	margin: 0 auto 40px;
+	margin-bottom: 0;
+	border-bottom-color: #e0e0e0
+}
+.wizard > div.wizard-inner {
+	position: relative
+}
+.connecting-line {
+	height: 2px;
+	background: #e0e0e0;
+	position: absolute;
+	width: 75%;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	top: 50%;
+	z-index: 1
+}
+.wizard .nav-tabs > li.active > a,
+.wizard .nav-tabs > li.active > a:hover,
+.wizard .nav-tabs > li.active > a:focus {
+	color: #555555;
+	cursor: default;
+	border: 0;
+	border-bottom-color: transparent
+}
+span.round-tab {
+	width: 70px;
+	height: 70px;
+	line-height: 66px;
+	display: inline-block;
+	border-radius: 100px;
+	background: #fff;
+	border: 2px solid #e0e0e0;
+	z-index: 2;
+	position: absolute;
+	left: 0;
+	text-align: center;
+	font-size: 25px
+}
+span.round-tab i {
+	color: #555555
+}
+.wizard li.active span.round-tab {
+	background: #fff;
+	border: 2px solid #337ab7
+}
+.wizard li.active span.round-tab i {
+	color: #337ab7
+}
+span.round-tab:hover {
+	color: #333;
+	border: 2px solid #333
+}
+.wizard .nav-tabs > li {
+	width: 25%
+}
+.wizard li:after {
+	content: " ";
+	position: absolute;
+	left: 46%;
+	opacity: 0;
+	margin: 0 auto;
+	bottom: 0px;
+	border: 5px solid transparent;
+	border-bottom-color: #337ab7;
+	transition: 0.1s ease-in-out
+}
+.wizard li.active:after {
+	content: " ";
+	position: absolute;
+	left: 47%;
+	opacity: 1;
+	margin: 0 auto;
+	bottom: 0px;
+	border: 10px solid transparent;
+	border-bottom-color: #337ab7
+}
+.wizard .nav-tabs > li a {
+	width: 70px;
+	height: 70px;
+	margin: 0 auto 20px;
+	border-radius: 100%;
+	padding: 0
+}
+.wizard .nav-tabs > li a:hover {
+	background: transparent
+}
+.wizard .tab-pane {
+	position: relative;
+	padding: 20px 20px 0
+}
+.wizard h3 {
+	margin-top: 0
+}
+
+@media( max-width : 585px ) {
+
+	.wizard {
+		width: 90%;
+		height: auto !important;
+	}
+
+	span.round-tab {
+		font-size: 16px;
+		width: 50px;
+		height: 50px;
+		line-height: 50px;
+	}
+
+	.wizard .nav-tabs > li a {
+		width: 50px;
+		height: 50px;
+		line-height: 50px;
+	}
+
+	.wizard li.active:after {
+		content: " ";
+		position: absolute;
+		left: 35%;
+	}
+}
+
+.btn-circle.btn-xl {
+	width: 100px;
+	height: 100px;
+	border-radius: 60px;
+	font-size: 12px;
+	white-space: normal;
+	padding: 30px 16px;
+	margin: 0 10px 10px;
+	text-transform: capitalize;
+}
+
+.panel-heading.results a{
+	text-transform: capitalize;
+}
+.panel-heading.results a:after {
+	font-family:'FontAwesome';
+	content:"\f078";
+	float: right;
+	color: grey;
+}
+.panel-heading.results a.collapsed:after {
+	content:"\f054";
+}
+.truncate {
+	width: 80%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+
+#check_workflow{
+	background: #eee;
+	padding: 20px;
+}

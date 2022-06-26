@@ -1,0 +1,18 @@
+info:
+  title: Write RDF
+  description: Writes RDF data
+params:
+  - name: filename
+    label: Destination file
+  - name: format
+    label: Serialization
+    values:
+      - Turtle
+      - RDF/XML
+      - N-Triples
+    value: Turtle
+inputs:
+  - name: result
+    label: RDF
+outputs:
+resources:

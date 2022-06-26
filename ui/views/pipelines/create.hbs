@@ -1,0 +1,291 @@
+
+
+			<div class="row">
+				<div class="col-md-6 col-8">
+					<h3 class="text-special">New pipeline</h3>
+					<!-- Breadcrumbs-->
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item">
+							<a href="../..">Home</a>
+						</li>
+						<li class="breadcrumb-item active">Create a pipeline</li>
+					</ol>
+				</div>
+			</div><!-- /.row -->
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+                            <p>Create your workflow by dragging transformations and resources to the the chart area, and then connect them to each other.</p>
+                            <button class="delete_selected_button btn btn-danger" id="delete">Delete selected</button>
+                            <div id="chart_container">
+                                <div class="flowchart-example-container" id="chart_area" tabindex="0">
+
+                                </div>
+                                <!-- Start options panel -->
+                                <div class="card" id="options">
+                                    <div class="card-header">
+                                        Options
+
+                                        <button type="button" class="close">
+                                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div id="optionsContent"></div>
+                                                <div id="optionsHelp" class="card-text">
+<!--                                                    Apply a SPARQL Update to a graph.-->
+<!--                                                    Can take any number of SPARQL and RDF resources (at least one SPARQL UPDATE is required)-->
+                                                </div>
+<!--                                                <a href="#" class="card-link">Documentation</a>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <!-- End options panel -->
+                            </div> <!-- /#chart_container -->
+			                <div class="draggable_operators" id="accordion">
+                                <div class="card">
+                                    <div class="card-header" id="headingData">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseData" aria-expanded="true" aria-controls="collapseData">
+                                            <i class="fa fa-plus"></i> Data upload and export
+                                        </button>
+                                    </div>
+                                    <div id="collapseData" class="collapse show" aria-labelledby="headingData">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="draggable_operators_divs" id="data_area">
+                                                    <!-- empty div to be filled with the services bubbles from the javascript code -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header" id="headingTransf">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTransf" aria-expanded="true" aria-controls="collapseTransf">
+                                            <i class="fa fa-plus"></i> Data transformations
+                                        </button>
+                                    </div>
+                                    <div id="collapseTransf" class="collapse show" aria-labelledby="headingTransf">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="draggable_operators_divs" id="transformations_area">
+                                                    <!-- empty div to be filled with the services bubbles from the javascript code -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header" id="headingRes">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseRes" aria-expanded="true" aria-controls="collapseRes">
+                                            <i class="fa fa-plus"></i> Resources: queries, mappings and ontologies
+                                        </button>
+                                    </div>
+                                    <div id="collapseRes" class="collapse show" aria-labelledby="headingRes">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="draggable_operators_divs" id="resources_area">
+                                                    <!-- empty div to be filled with the services bubbles from the javascript code -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div> <!-- ./draggable_operators -->
+                            <br clear="both">
+
+                            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                                <span class="navbar-brand" href="#">Configuration:</span>
+                                <button type="button" class="btn btn-primary mr-1" id="pipelineDownload">Download</button>
+                                <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#modalSave">Save</button>
+                                <button type="button" class="btn btn-primary mr-1" data-toggle="modal" data-target="#modalLoad">Load</button>
+                                <button type="button" class="btn btn-primary mr-1" id="pipelineClear">Clear</button>
+
+                                <span class="navbar-brand ml-auto" href="#">Pipeline:</span>
+                                <button type="button" class="btn btn-primary mr-1" id="pipelineGenerate" data-toggle="modal" data-target="#modalGenerate">Save</button>
+                                <button type="button" class="btn btn-primary" id="pipelineRun" data-toggle="modal" data-target="#modalChooseServer">Run</button>
+                            </nav>
+
+                            </div>
+						</div> <!-- /.card-body -->
+					</div> <!-- /.card -->
+				</div> <!-- /.col-lg-12 -->
+			</div> <!-- /.row -->
+
+            <div class="modal fade" id="modalSave" tabindex="-1" role="dialog" aria-labelledby="modalSaveLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalSaveLabel">Save pipeline</h5>
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                      <span aria-hidden="true">&times;</span>-->
+<!--                    </button>-->
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group">
+                        <label for="modal-save-pipeline-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="modal-save-pipeline-name">
+                      </div>
+                      <div class="form-group">
+                        <label for="modal-save-pipeline-json" class="col-form-label">Pipeline JSON:</label>
+                        <textarea class="form-control" id="modal-save-pipeline-json"></textarea>
+                      </div>
+                      <div class="alert alert-warning" role="alert">
+                      Note: this will save only the configuration, uploaded files will be lost
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="pipelineSave">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade" id="modalLoad" tabindex="-1" role="dialog" aria-labelledby="modalLoadLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalLoadLabel">Load pipeline</h5>
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                      <span aria-hidden="true">&times;</span>-->
+<!--                    </button>-->
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="form-group">
+                        <label for="dropdownLoad" class="col-form-label">Name:</label>
+                        <select class="custom-select" id="dropdownLoad">
+                            <option selected>Choose a pipeline</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="modal-pipeline-load-json" class="col-form-label">Pipeline JSON:</label>
+                        <textarea class="form-control" id="modal-pipeline-load-json"></textarea>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="pipelineLoad">Load</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="modal fade" id="modalGenerate" tabindex="-1" role="dialog" aria-labelledby="modalGenerateLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalGenerateLabel">Generate and save pipeline</h5>
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                      <span aria-hidden="true">&times;</span>-->
+<!--                    </button>-->
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group">
+                        <label for="modal-generate-pipeline-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="modal-generate-pipeline-name">
+                      </div>
+
+                      <p>Your pipeline contains files:</p>
+                      <ul id="uploadFiles" class="list-group">
+
+                      </ul>
+                      <p></p>
+                      <p>After downloading the pipeline, unzip it and start the container:</p>
+                      <pre> cd pipeline
+ docker build -t fintan .
+ docker run -d -p 8080:8080 --name fintan fintan
+                      </pre>
+                      <p>Fintan API will be running on <a target="_blank" href="http://localhost:8080">http://localhost:8080</a></p>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="getZip">Get ZIP</button>
+                      <button type="button" class="btn btn-primary" id="getJson">Get JSON only</button>
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalChooseServer">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="modal fade" id="modalChooseServer" tabindex="-1" role="dialog" aria-labelledby="modalChooseServerLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalChooseServerLabel">Please specify Fintan API server</h5>
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                      <span aria-hidden="true">&times;</span>-->
+<!--                    </button>-->
+                  </div>
+                  <div class="modal-body">
+                      <div class="form-group">
+                        <label for="modal-server-address" class="col-form-label">IP:port</label>
+                        <input type="text" class="form-control" id="modal-server-address">
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="selectServer">
+<!--                          <i class="fa-solid fa-spinner"></i>-->
+                          Select and run
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade" id="results" tabindex="-1" role="dialog" aria-labelledby="modalResultsLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalResultsLabel">Results</h5>
+<!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                      <span aria-hidden="true">&times;</span>-->
+<!--                    </button>-->
+                  </div>
+                  <div class="modal-body">
+                    <pre id="results-text"></pre>
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-primary mr-1" id="resultsDownload">Download</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+
+
+<script type="text/javascript">
+var jsons_data = [];
+var jsons_resources = [];
+var jsons_transformations = [];
+
+{{# each jsonsArray_data}}
+	jsons_data.push("{{this}}");
+{{/each}}
+
+{{# each jsonsArray_resources}}
+	jsons_resources.push("{{this}}");
+{{/each}}
+
+{{# each jsonsArray_transformations}}
+	jsons_transformations.push("{{this}}");
+{{/each}}
+
+    // TODO: Remove this random argument generator in production
+</script>
+<script src="/scripts/pipeline.js?dev=' + Math.floor(Math.random() * 100) + '"></script>

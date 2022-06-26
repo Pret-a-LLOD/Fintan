@@ -1,0 +1,101 @@
+/*******************
+  Fonts
+*******************/
+@import 'https://fonts.googleapis.com/css?family=Nunito:700|Rubik:300,400,500,700,900';
+$fontMain: "Rubik", sans-serif;
+$fontTitles: "Nunito", sans-serif;
+$fontIcons: "FontAwesome";
+
+/*******************
+  Colours
+*******************/
+/* Backgrounds */
+$blueBG     : #0694BB;
+$pinkBG     : #cc1265;
+$greyBG     : #f2f7f8;
+
+/* Main Colours */
+$textMain       : #54667a;
+$textTitle      : #212529;
+$textSpecial    : #009efb;
+$textSilver     : #d3d3d3;
+$textDarkSilver : #616670;
+$blueMain       : #0394BB;
+$greenMain      : #9FD18B;
+$redMain        : #EC1B52;
+$pinkMain       : #C71265;
+$orangeMain     : #F37043;
+$greyMain       : #90a4ae;
+$ironMain       : #54667a;
+$blackMain      : #111;
+
+/*******************
+  Mixins
+*******************/
+@mixin shadow {
+  -webkit-box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08);
+}
+
+@mixin gradientEm {
+	background: $textSpecial;
+	background: -moz-linear-gradient(left, #0178bc 0%, #00bdda 100%);
+	background: -webkit-linear-gradient(left, #0178bc 0%, #00bdda 100%);
+	background: linear-gradient(to right, #0178bc 0%, #00bdda 100%);
+}
+
+@mixin fillEm {
+	fill: $textSpecial;
+	fill: -moz-linear-gradient(left, #0178bc 0%, #00bdda 100%);
+	background: -webkit-linear-gradient(left, #0178bc 0%, #00bdda 100%);
+	background: linear-gradient(to right, #0178bc 0%, #00bdda 100%);
+}
+
+@mixin buttonColours($colour){
+	background:$colour;
+	color: white !important;
+
+	&:hover {
+		background:lighten( $colour, 10% );
+		opacity:0.9
+	}
+	&:active {
+		background:lighten( $colour, 10% ) !important
+	}
+}
+
+
+/*******************
+  Animations
+*******************/
+@-moz-keyframes pulse{
+	0%{-moz-transform:scale(0);opacity:0.0;}
+	25%{-moz-transform:scale(0.1);opacity:0.1;}
+	50%{-moz-transform:scale(0.5);opacity:0.3;}
+	75%{-moz-transform:scale(0.8);opacity:0.5;}
+	100%{-moz-transform:scale(1);opacity:0.0;}
+}
+
+@-webkit-keyframes pulse{
+	0%{-webkit-transform:scale(0);opacity:0.0;}
+	25%{-webkit-transform:scale(0.1);opacity:0.1;}
+	50%{-webkit-transform:scale(0.5);opacity:0.3;}
+	75%{-webkit-transform:scale(0.8);opacity:0.5;}
+	100%{-webkit-transform:scale(1);opacity:0.0;}
+}
+
+@-webkit-keyframes rotate{
+	from{-webkit-transform:rotate(0deg);}
+	to{-webkit-transform:rotate(360deg);}
+}
+
+@-moz-keyframes rotate{
+	from{-moz-transform:rotate(0deg);}
+	to{-moz-transform:rotate(360deg);}
+}
+
+@keyframes rotate{
+	from{-webkit-transform:rotate(0deg);transform:rotate(0deg);}
+	to{-webkit-transform:rotate(360deg);transform:rotate(360deg);}
+}
+

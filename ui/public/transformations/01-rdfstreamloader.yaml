@@ -1,0 +1,32 @@
+info:
+  title: RDF Loader
+  description: Load and split SERIALISED RDF into SEGMENTED RDF using a text delimiter.
+  class: RDFStreamLoader
+params:
+  - name: lang
+    label: RDF serialization
+    help: Specify the syntax for the RDF serialization. Default is Turtle.
+    values:
+      - Turtle
+      - RDF/XML
+      - N3
+    value: Turtle
+  - name: delimiter
+    help: Specify the textual delimiter indicating the end of a segment. The specified delimiter is always expected to be the full content of a delimiting line of text. "" corresponds to an empty line.
+    label: Delimiter
+    value: ""
+  - name: globalPrefixes
+    help: Specifically designed for Turtle syntax. Fintan will load one segment at a time. In a Turtle file, usually the prefixes are defined globally in the beginning of the File. They can however be repeated and overriden for each segment. *true* Fintan propagates the global prefixes to each segment automatically. *false* Fintan expects individual prefixes for each segment.
+    label: Prefixes are set globally
+    type: bool
+    value: true
+    values:
+      - true
+      - false
+inputs:
+  - name: input
+    label: RDF
+outputs:
+  - name: output
+    label: Graph
+resources:

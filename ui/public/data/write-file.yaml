@@ -1,0 +1,10 @@
+info:
+  title: Write File
+  description: Writes a file
+params:
+  - name: filename
+    label: Destination file
+inputs:
+  - name: input
+    label: Data
+resources:

@@ -1,0 +1,13 @@
+info:
+  title: Upload TSV
+  description: Upload input data in TSV/CSV
+params:
+  - name: filename
+    label: Source file
+    type: file
+    format: text
+inputs:
+outputs:
+  - name: uploaded
+    label: Uploaded Data
+resources:

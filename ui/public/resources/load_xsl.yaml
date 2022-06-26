@@ -1,0 +1,15 @@
+info:
+  title: XSL
+  description: Loads an XSL transformation
+inputs:
+outputs:
+resources:
+  - label: LOAD XSL
+    required: true
+params:
+  - name: xslt
+    label: Transformation
+    type: editor
+    value: ""
+    format: xsl
+    import: true

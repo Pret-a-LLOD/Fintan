@@ -1,0 +1,32 @@
+info:
+  title: RDF Writer
+  description: Serialize RDF data
+  class: RDFStreamWriter
+params:
+  - name: lang
+    label: RDF serialization
+    help: Specify the syntax for the RDF serialization. Default is Turtle.
+    values:
+      - Turtle
+      - RDF/XML
+      - N3
+    value: Turtle
+  - name: delimiter
+    label: Delimiter
+    help: Specify the textual delimiter indicating the end of a segment. The specified delimiter is always expected to be the full content of a delimiting line of text. "" corresponds to an empty line.
+    value: ""
+  - name: prefixDeduplication
+    label: Prefixes are set globally
+    help: Specifically designed for Turtle syntax. Fintan will write one segment at a time. This by default creates a prefix header for each segment of data. For piping the output in a file, the redundant prefixes can be removed.
+    type: bool
+    value: true
+    values:
+      - true
+      - false
+inputs:
+  - name: input
+    label: Graph
+outputs:
+  - name: output
+    label: RDF
+resources:

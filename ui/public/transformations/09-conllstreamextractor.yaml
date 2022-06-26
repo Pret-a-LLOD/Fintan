@@ -1,0 +1,20 @@
+info:
+  title: CoNLL to RDF
+  description: Load CoNLL data into CoNLL-RDF
+  class: CoNLLStreamExtractor
+params:
+  - name: baseURI
+    label: Base URI
+    help: Base URI for the sentences and tokens of the resulting resource.
+    value: "http://fintan-pipeline/"
+  - name: columns
+    label: Columns
+    help: Columns in order of source data e.g. ID WORD POS EDGE
+    type: array
+inputs:
+  - name: input
+    label: CoNLL
+outputs:
+  - name: output
+    label: CoNLL-RDF
+resources:

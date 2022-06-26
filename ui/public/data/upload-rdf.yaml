@@ -1,0 +1,20 @@
+info:
+  title: Upload RDF
+  description: Upload input data in RDF
+params:
+  - name: filename
+    label: Source file
+    type: file
+    format: rdf
+  - name: lang
+    label: RDF serialization
+    values:
+      - Turtle
+      - RDF/XML
+      - N3
+    value: Turtle
+inputs:
+outputs:
+  - name: uploaded
+    label: Uploaded RDF
+resources:

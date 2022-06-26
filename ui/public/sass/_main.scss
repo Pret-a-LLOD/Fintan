@@ -1,0 +1,206 @@
+body{
+	font-family: $fontMain;
+	color: $blackMain;
+	margin:0;
+	overflow-x:hidden;
+	font-weight:300
+}
+
+
+a{
+	color: $textSpecial;
+	transition:color .2s;
+	-moz-transition:color .2s;
+	-webkit-transition:color .2s;
+
+	&:hover, &:focus{
+		color: lighten( $textSpecial, 10% );
+		text-decoration:none
+	}
+}
+
+
+h1, h2, h3, h4, h5, h6, .testimonial-name{
+	font-family: $fontTitles;
+	color: $textTitle
+}
+
+.btn{
+	border: none;
+}
+
+.btn-default {
+	@include buttonColours($textSpecial);
+}
+
+.btn-secondary{
+	@include buttonColours($greyMain);
+}
+
+.btn-primary{
+	@include buttonColours($pinkMain);
+}
+
+.btn-success{
+	@include buttonColours($greenMain);
+}
+
+.btn-danger{
+	@include buttonColours($redMain);
+}
+
+.btn-big-round{
+	padding: .5rem 2rem;
+	border-radius: 30px;
+	margin-left: 20px
+}
+
+
+.name{
+	position: relative;
+}
+.beta {
+	position: absolute;
+	background-color: #cc1265;
+	color: white !important;
+	border-radius: 19px;
+	font-size: 10px;
+	padding: .7em .4em;
+	top: -10px;
+}
+
+.tooltip > .tooltip-inner {
+	background-color:  $pinkBG!important
+}
+.tooltip .arrow:before {
+	border-bottom-color: $pinkBG !important;
+	border-top-color: $pinkBG !important
+}
+
+.card{
+	border: none;
+	margin-bottom: 30px;
+}
+.breadcrumb {
+	padding: 0px;
+	background: transparent;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+	content: "\f0da";
+	font-family: $fontIcons;
+	color: $greyMain;
+	font-size: 14px;
+}
+
+.content-wrapper{
+	background: $greyBG !important;
+	padding: 30px 0 0 20px !important;
+}
+
+.addShadow{
+	@include shadow
+}
+
+.navbar-sidenav li a {
+	color: $ironMain;
+	padding: 14px 35px 14px 15px;
+	display: block;
+	font-size: 15px;
+
+	&:hover, &:active, &:hover i{
+		color: $textSpecial
+	}
+}
+
+.navbar-sidenav li a i {
+	color: $greyMain;
+	width: 27px;
+	font-size: 21px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.navbar-sidenav > li > a {
+	border-left: 3px solid white;
+}
+
+
+.navbar-sidenav > li > a.active,
+.navbar-sidenav > li > a:hover {
+	border-left: 3px solid $textSpecial;
+}
+
+.navbar-sidenav > li.active > a {
+	border-left: 3px solid $textSpecial;
+	color: $textSpecial;
+}
+
+.navbar-sidenav li.nav-devider {
+	height: 1px;
+	background: $greyBG;
+	display: block;
+	margin: 20px 0;
+}
+
+.nav-pills{
+	margin-bottom: 20px
+}
+
+.hidden{
+	visibility: hidden;
+}
+
+.stopped{
+	background: rgba($pinkBG, .2) !important;
+}
+
+.running{
+	background: rgba($greenMain, .2) !important;
+}
+
+td.cut100{
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap
+}
+
+
+
+.topbar {
+	@include gradientEm
+}
+
+.text-uppercase {
+	text-transform:uppercase !important;
+}
+
+
+
+.text-white  {color: white !important}
+.text-silver {color: $textSilver !important}
+.text-danger {color: $redMain !important}
+.text-muted  {color: $greyMain !important}
+.text-warning{color: $orangeMain !important}
+.text-success{color: $greenMain !important}
+.text-special{color: $textSpecial !important}
+
+
+*:focus {
+	outline: none !important;
+	border:none !important;
+	box-shadow: none !important;
+}
+
+
+.emailEncoded:before {
+	content: attr(data-website) "\0040" attr(data-user);
+	unicode-bidi: bidi-override;
+	direction: rtl;
+}
+
+
+
+
+
