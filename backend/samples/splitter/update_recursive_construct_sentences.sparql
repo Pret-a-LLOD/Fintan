@@ -1,0 +1,33 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
+PREFIX nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#>
+
+DELETE {
+  GRAPH <http://input> {
+    ?s ?sp ?so .
+    ?w ?wp ?wo .
+    <http://start> nif:nextSentence ?s .
+  }
+} INSERT {
+  GRAPH <http://input> {
+    <http://start> nif:nextSentence ?s_next .
+  }
+  GRAPH <http://output> {
+    ?s ?sp ?so .
+    ?w ?wp ?wo .
+  }
+} WHERE {
+  GRAPH <http://input> {
+    <http://start> nif:nextSentence ?s .
+    ?s a nif:Sentence .
+    ?s ?sp ?so .
+    OPTIONAL {
+      ?w conll:HEAD+ ?s .
+      ?w ?wp ?wo .
+    }
+    OPTIONAL {?s nif:nextSentence ?s_next .}
+  }
+}

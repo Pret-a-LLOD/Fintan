@@ -1,0 +1,201 @@
+PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:  <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontolex: <https://www.w3.org/ns/lemon/ontolex#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX unimorph: <http://purl.org/olia/unimorph.owl#>
+
+###################
+# 1. preparations #
+###################
+
+# load ontology
+# CREATE SILENT GRAPH <http://purl.org/olia/unimorph.owl>;
+# LOAD <http://purl.org/olia/owl/experimental/unimorph/unimorph.owl> INTO GRAPH <http://purl.org/olia/unimorph.owl>;	# pre-publication version
+# # LOAD <http://purl.org/olia/unimorph.owl> INTO GRAPH <http://purl.org/olia/unimorph.owl>;							# if published
+
+# split FEATS
+# the order of FEATS is random, so we split them and treat them individually. we don't know how many features we have, so this iterated 100 times
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEATS ?tail; conll:FEAT ?head. } WHERE { ?a conll:FEATS ?feats. FILTER(contains(str(?feats),';')) BIND(strbefore(str(?feats),';') AS ?head) BIND(strafter(str(?feats),';') AS ?tail) };
+
+DELETE { ?a conll:FEATS ?feats. } INSERT { ?a conll:FEAT ?feats; } WHERE { ?a conll:FEATS ?feats };
+
+# preprocess compound features #
+# # In Unimorph, features can be boundled with + (or) or / (and). 
+# # The semantics of either + or / are not fully clear, however: As we talk about word types, not word tokens, the type itself
+# # must have both values (but the word token may have only one).
+# # With the individual-based modeling of Unimorph features, we can only express logical and, logical or, if it can be 
+# # distinguished from logical and, can be represented using a class-based model.
+# # In the Unimorph ontology, some feature bundles correspond to a single individual, because they can only occur in this way, 
+# # so, we duplicate those features
+# # 10 iterations, these expressions are rare and short
+
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+INSERT { ?a conll:FEAT ?head. ?a conll:FEAT ?tail. } WHERE { ?a conll:FEAT ?feat. FILTER(regex(str(?feat),'[+/]')) BIND(regex(str(?f),"^[^/+]*[/+]","") AS ?tail) BIND(strbefore(str(?f),concat("[^/+]",?tail)) AS ?head)  };
+
+##########################
+# 2. link basic features #
+##########################
+# for compound features, see preprocessing
+
+# generate links for ;-separated feats (unimorph:hasLabel)
+DELETE {
+	?a conll:FEAT ?f
+} INSERT {
+	?a unimorph:hasFeature ?feat
+} WHERE {
+	?a conll:FEAT ?f.
+	GRAPH <http://purl.org/olia/unimorph.owl> {
+		?feat unimorph:hasLabel ?f.
+	}
+};
+
+# generate links for ;-separated feats (unimorph:hasLabelStartingWith)
+DELETE {
+	?a conll:FEAT ?f
+} INSERT {
+	?a unimorph:hasFeature ?feat
+} WHERE {
+	?a conll:FEAT ?f.
+	GRAPH <http://purl.org/olia/unimorph.owl> {
+		?feat unimorph:hasLabelStartingWith ?start.
+	}
+	FILTER(strstarts(str(?f),str(?start)))
+};
+
+# generate links for ;-separated feats (unimorph:hasLabelMatching)
+DELETE {
+	?a conll:FEAT ?f
+} INSERT {
+	?a unimorph:hasFeature ?feat
+} WHERE {
+	?a conll:FEAT ?f.
+	GRAPH <http://purl.org/olia/unimorph.owl> {
+		?feat unimorph:hasLabelMatching ?regex.
+	}
+	FILTER(regex(str(?f),str(?regex)))
+};
+
+
+##############
+# 3. pruning #
+##############
+
+# remove unresolved compound features (but only compound features)
+DELETE {
+	?a conll:FEAT ?feat
+} WHERE {
+	?a conll:FEAT ?feat.
+	FILTER (regex(str(?feat),'[/+]'))
+};
+
+# note that we preserve conll:FEAT for unresolved features only, we keep them for debugging purposes 
+
+# TODO: add unimorph hasFeature

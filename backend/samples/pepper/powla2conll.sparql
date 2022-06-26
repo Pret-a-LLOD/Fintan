@@ -1,0 +1,483 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX powla: <http://purl.org/powla/powla.owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
+PREFIX nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#>
+PREFIX paula: <https://github.com/korpling/paula-xml#> # annotation properties
+
+
+
+########################### powla2conll ###########################
+
+
+
+# conversion to CoNLL-RDF
+# (0) infer powla data structures
+# (0.1) infer powla:Relation, powla:Node
+INSERT {
+  ?x a ?type.
+  ?y a powla:Node.
+  ?x ?prop ?y.
+} WHERE {
+  FILTER(?prop in (powla:next,powla:nextTerm,powla:hasParent,powla:hasTarget,powla:hasSource))
+  ?rel rdfs:subPropertyOf* ?prop. # poor man's inference ;)
+  ?x ?rel ?y.
+  VALUES(?x ?type) {
+    (powla:next powla:Node)
+    (powla:hasParent powla:Node)
+    (powla:hasTarget powla:Relation)
+    (powla:hasSource powla:Relation)
+  }
+};
+
+# (0.2) infer powla:next
+# (0.2.a) enforce powla:nextTerm
+INSERT {
+  ?a powla:nextTerm ?b
+} WHERE {
+  ?a powla:next ?b.
+  MINUS { ?a ^powla:hasParent [] }
+  MINUS { ?b ^powla:hasParent [] }
+  MINUS { ?a powla:next+ ?c. ?c powla:next+ ?b. MINUS { ?c ^powla:hasParent [] }}
+};
+
+# (0.2.b) remove other powla:next
+DELETE {
+  ?a powla:next ?b
+} WHERE {
+  ?a powla:next ?b.
+};
+
+# (0.2.c) overgenerate powla:next
+INSERT {
+  ?a powla:next ?b
+} WHERE {
+  ?a powla:hasParent ?parent.
+  ?b powla:hasParent ?parent.
+  FILTER(?a!=?b)
+  ?a (^powla:hasParent)*/powla:nextTerm+/powla:hasParent* ?b.
+};
+
+# (0.2.d) prune (this is a bit too restrictive if nodes are shared by multiple trees)
+DELETE {
+  ?a powla:next ?b.
+} WHERE {
+  ?a powla:next ?b.
+  ?a powla:hasParent ?p.
+  ?b powla:hasParent ?p.
+  ?a powla:next+ [ powla:hasParent ?p; powla:next+ ?b ]
+};
+
+# (a) infer nif:Word
+# (a.1) nif:Word
+INSERT {
+  ?v a nif:Word.
+  ?w a nif:Word.
+} WHERE {
+  ?v (nif:nextWord|powla:nextTerm) ?w
+};
+
+# (a.2) nif:nextWord but only if not used (anywhere in the graph)
+INSERT {
+  ?v nif:nextWord ?w.
+} WHERE {
+  ?v powla:nextTerm ?w.
+  FILTER(not exists { ?a nif:nextWord ?b })
+};
+
+# (b) conll:ID and conll:WORD
+# (b.1) conll:ID
+INSERT {
+  ?w conll:ID ?id
+} WHERE {
+  {
+    SELECT ?w (str(COUNT(distinct ?pre)) as ?id)
+    WHERE {
+      ?w a nif:Word.
+      ?pre nif:nextWord* ?w.
+    } GROUP BY ?w
+  }
+};
+
+# (b.2) conll:WORD, conll:ID for singletons
+INSERT {
+  ?w conll:WORD ?string.
+  ?w conll:ID ?id.
+} WHERE {
+  ?w powla:string ?string. MINUS { ?w a nif:Word; conll:WORD [] }
+  OPTIONAL {
+    ?w conll:ID ?oldid
+  }
+  BIND(if(bound(?oldid),?oldid,"1") as ?id)
+};
+
+# (c) infer powla:Root (to detect markables)
+INSERT {
+  ?r a powla:Root
+} WHERE {
+  ?w a nif:Word; powla:hasParent* ?r.
+  MINUS { ?r powla:hasParent [] }
+};
+
+# (d) use powla:Nonterminal for non-Terms and non-Roots
+DELETE {
+  ?x a powla:Nonterminal
+} WHERE {
+  ?x a powla:Nonterminal
+};
+INSERT {
+  ?x a powla:Nonterminal.
+} WHERE {
+  ?x powla:hasParent [].
+  [] powla:hasParent ?x.
+};
+
+# (e) infer layer
+# (e.1) propagate from root
+# (note that this can lead to assign the same node multiple layers)
+INSERT {
+  ?w powla:hasLayer ?layer
+} WHERE {
+  ?w powla:hasParent+/powla:hasLayer ?layer.
+  MINUS { ?w powla:hasLayer [] }
+};
+
+# (e.2)
+# there is no layer, create one from the baseURI
+INSERT {
+  ?w powla:hasLayer ?layer.
+  ?layer a powla:Layer.
+} WHERE {
+  ?w a powla:Node. MINUS { ?w a powla:Node; powla:hasLayer [] }
+  BIND(URI(concat(replace(str(?w),"[#/][^#/]*$",""),"_layer")) as ?layer)
+};
+
+# (f) classify layer type
+# note: these are currently not formally part of POWLA, resurrect?
+# (f.1) token layer (note that we do not enforce uniqueness)
+INSERT {
+  ?layer a powla:TokenLayer.
+} WHERE {
+  ?layer a powla:Layer.
+  MINUS { ?layer a powla:StructLayer }
+  MINUS { ?layer a powla:MarkLayer }
+  ?w a nif:Word; powla:hasLayer ?layer.
+  MINUS {
+    ?w powla:hasLayer ?layer.
+    MINUS { ?w a nif:Word. }
+  }
+};
+
+# (f.2) struct layer: labelled dependencies or deep nesting
+INSERT {
+  ?layer a powla:StructLayer.
+} WHERE {
+  ?layer a powla:Layer.
+  MINUS { ?layer a powla:TokenLayer }
+  MINUS { ?layer a powla:MarkLayer }
+   { # recursive (deep) structure
+    [] powla:hasParent/powla:hasParent+/powla:hasLayer ?layer.
+   } UNION
+   { ?p powla:hasLayer ?layer.               # or labelled edges
+     ?n powla:hasParent ?p; ^powla:hasSource ?rel.
+     ?rel powla:hasTarget ?p.
+     MINUS {
+      ?rel powla:hasTarget/powla:hasLayer ?layer.
+      ?rel powla:hasLayer ?tmp.
+      FILTER(?tmp!=?layer)
+      }
+   }
+};
+
+# (f.3) mark layer: flat annotations over tokens
+INSERT {
+  ?layer a powla:MarkLayer
+} WHERE {
+  ?layer a powla:Layer.
+  MINUS { ?layer a powla:TokenLayer }
+  MINUS { ?layer a powla:StructLayer }
+  [ a nif:Word ] powla:hasParent/powla:hasLayer ?layer.
+  # deep nesting excluded because of (f.2)
+};
+
+# (f.4) rel layer: relations, no nodes
+INSERT {
+  ?layer a powla:RelLayer
+} WHERE {
+  ?layer a powla:Layer.
+  MINUS { ?layer a powla:TokenLayer }
+  MINUS { ?layer a powla:StructLayer }
+  MINUS { ?layer a powla:MarkLayer }
+  [a powla:Relation ] powla:hasLayer ?layer.
+  MINUS {
+    [ a powla:Node ] powla:hasLayer ?layer.
+  }
+};
+
+# (f.5) other: struct layer
+# this is a fallback solutions if no layers were specified, but note that we
+# cannot be certain that these actually form valid trees
+# in the serialization, we will make them trees without warning
+INSERT {
+  ?layer a powla:StructLayer
+} WHERE {
+  ?layer a powla:Layer.
+  MINUS { ?layer a powla:TokenLayer }
+  MINUS { ?layer a powla:StructLayer }
+  MINUS { ?layer a powla:MarkLayer }
+  MINUS { ?layer a powla:RelLayer }
+  [a powla:Node ] powla:hasLayer ?layer
+};
+
+# (f.5.a) struct layers require an explicit name to generate a column label
+# in PAULA, these names are prefixes in the *anno_feat.xml file
+# e.g., "tiger" from value="tiger.tok_pos"
+# but these files are optional, so, we resort to the file name, instead
+# and use the first string before . from the basename
+# (should produce the same result, but somewhat more robust;
+# potentially risky if files do not obey naming conventions)
+INSERT {
+  ?layer rdfs:label ?label
+} WHERE {
+  ?layer a powla:StructLayer.
+  MINUS { ?layer rdfs:label [] }
+  BIND(replace(replace(str(?layer),".*/",""),"\\..*","") as ?label)
+};
+
+# (g) transform annotations to conll properties
+# (g.1) token layer: note that we do not create sentence objects, yet.
+DELETE {
+  ?w ?prop ?val.
+} INSERT {
+  ?w a nif:Word.
+  ?w ?conll ?val.
+} WHERE {
+  ?prop rdfs:subPropertyOf* powla:hasAnnotation.
+  ?w a nif:Word. # powla:hasLayer/a powla:TokenLayer.
+  ?w ?prop ?val.
+  FILTER(isLiteral(?val))
+  BIND(URI(concat("http://ufal.mff.cuni.cz/conll2009-st/task-description.html#",
+    ucase(replace(str(?prop),".*[#/]([^#/]+)$","$1")))) as ?conll)
+};
+
+# (g.2) mark layer: IOBES encoding
+DELETE {
+  ?p ?prop ?val.
+} INSERT {
+  ?w ?conll ?iobVal.
+} WHERE {
+  ?prop rdfs:subPropertyOf* powla:hasAnnotation.
+  ?p ?prop ?val.
+  FILTER(isLiteral(?val))
+  ?p powla:hasLayer/a powla:MarkLayer.
+  ?w a nif:Word; powla:hasParent ?p.
+  OPTIONAL {
+    ?w a nif:Word; powla:hasParent ?p.
+    ?pre a nif:Word; powla:hasParent ?p.
+    ?pre nif:nextWord+ ?w.
+  }
+  OPTIONAL {
+    ?w a nif:Word; powla:hasParent ?p.
+    ?post a nif:Word; powla:hasParent ?p.
+    ?w nif:nextWord+ ?post.
+  }
+  BIND(
+    concat(
+      if(bound(?pre), if(bound(?post),"I-","E-"),
+                      if(bound(?post),"B-","S-")),
+      ?val) as ?iobVal)
+  BIND(URI(concat("http://ufal.mff.cuni.cz/conll2009-st/task-description.html#",
+    ucase(replace(str(?prop),".*[#/]([^#/]+)$","$1")))) as ?conll)
+};
+
+# (g.3) struct layer: phrasal encoding
+# note that we use URI encoding to encode attribute-value pairs
+# also, feats are not ordered
+INSERT {
+  ?w ?conll ?phrases
+} WHERE {
+  ?l a powla:StructLayer.
+  ?struct powla:hasLayer ?l.
+  ?w powla:hasParent* ?struct; a nif:Word.
+
+  OPTIONAL {
+    SELECT ?root ?l ?w (GROUP_CONCAT(?par; separator=" ") as ?pre)
+    WHERE {
+      ?l a powla:StructLayer.
+      ?root powla:hasLayer ?l.
+      MINUS { ?root powla:hasLayer ?l; powla:hasParent/powla:hasLayer ?l }
+      ?root (^powla:hasParent)* ?p.
+      MINUS { ?p a powla:Relation }
+
+# debugging
+#      BIND(concat(
+#          "(",
+#          replace(str(?p),".*[#/]","")) as ?par)
+
+
+      OPTIONAL {
+        SELECT ?p (GROUP_CONCAT(?anno; separator="|") as ?annos)
+        WHERE {
+          ?rel rdfs:subPropertyOf* powla:hasAnnotation.
+          ?p ?rel ?val.
+          FILTER(isLiteral(?val))
+          BIND(concat(
+            replace(str(?rel),".*[#/]([^#/]+)$","$1"),
+            "=",
+            encode_for_uri(?val)) as ?anno)
+        } GROUP BY ?p
+      }
+      OPTIONAL {
+        # note: no edge labels of annotations if annotated to elements from another layer
+        # e.g., if directly annotated on tokens
+        SELECT ?p (GROUP_CONCAT(?anno; separator="|") as ?rels)
+        WHERE {
+          ?p powla:hasParent ?parent.
+          ?rel powla:hasSource ?p; powla:hasTarget ?parent. # check directions!
+          ?relAnno rdfs:subPropertyOf* powla:hasAnnotation.
+          ?rel ?relAnno ?val.
+          FILTER(isliteral(?val))
+          BIND(concat(
+            replace(str(?relAnno),".*[#/]([^#/]+)$","$1"),
+            "=",
+            encode_for_uri(?val)) as ?anno)
+        } GROUP BY ?p
+      }
+
+      BIND(if(bound(?annos), if(bound(?rels), concat("(",?rels,"|",?annos),
+                                              concat("(",?annos)),
+                             if(bound(?rels), concat("(",?rels),
+                                              "(")) as ?par)
+
+      # with OPTIONAL, the following statement preserves search order for ?p elements
+      # tested on Apache Jena, not guaranteed to work this way on other SPARQL engines
+      OPTIONAL {
+        ?p (^powla:hasParent)* ?w.
+        ?w a nif:Word.
+        MINUS { ?p (^powla:hasParent)* ?w, ?tmp.
+          ?tmp nif:nextWord+ ?w
+        }
+      }
+    } GROUP BY ?root ?l ?w
+  }
+
+  OPTIONAL {
+    SELECT ?root ?l ?w (GROUP_CONCAT(?par; separator="") as ?post)
+    WHERE {
+      ?l a powla:StructLayer.
+      ?root powla:hasLayer ?l.
+      MINUS { ?root powla:hasLayer ?l; powla:hasParent/powla:hasLayer ?l }
+      ?root (^powla:hasParent)* ?p.
+      MINUS { ?p a powla:Relation }
+
+      BIND(")" as ?par)
+      # we go top-down in analogy with ?pre
+
+        ?p (^powla:hasParent)* ?w.
+        ?w a nif:Word.
+        MINUS { ?p (^powla:hasParent)* ?w, ?tmp.
+          ?w nif:nextWord+ ?tmp
+        }
+    } GROUP BY ?root ?l ?w
+  }
+
+  BIND( concat(
+          if(bound(?pre), concat(?pre," "), ""),
+          "*",
+          if(bound(?post), concat(" ",?post),"")) as ?phrases)
+
+  # column label: using an explicit label (actually, all labels)
+  OPTIONAL {
+    ?l rdfs:label ?label
+  }
+  # if no label is defined, call it STRUCT
+  BIND(if(bound(?label),
+        URI(concat("http://ufal.mff.cuni.cz/conll2009-st/task-description.html#",
+            ucase(replace(?label,"[^a-zA-Z]+","_")))), conll:STRUCT) as ?conll)
+}
+;
+
+# (g.4) relations, CoNLL-U DEPS-style encoding (4:nsubj|11:nsubj)
+#       note that we create these as datatype properties
+DELETE {
+  ?rel ?anno ?val
+} INSERT {
+  ?w ?conll ?dep
+} WHERE {
+  ?anno rdfs:subPropertyOf* powla:hasAnnotation.
+  ?rel a powla:Relation; ?anno ?val; powla:hasSource ?W; powla:hasTarget ?TGT.
+  MINUS { ?W powla:hasParent ?TGT }
+  # CoNLL allows to annotate relations between words, only, so we expand this silently into an n:m relation
+  ?w powla:hasParent* ?W; a nif:Word.
+  ?tgt powla:hasParent* ?TGT; a nif:Word.
+  ?tgt conll:ID ?head.
+  OPTIONAL {
+    ?rel a powla:Relation; ?anno ?val; powla:hasSource ?W; powla:hasTarget ?TGT.
+    ?W (^powla:hasParent)* ?w. ?w a nif:Word.
+    ?TGT (^powla:hasParent)* ?tgt. ?tgt a nif:Word.
+    ?tgt conll:HEAD+ ?tS. ?tS a nif:Sentence.
+    ?w conll:HEAD+ ?wS. ?wS a nif:Sentence.
+    FILTER(?wS!=?tS)
+    OPTIONAL { SELECT ?wS ?tS (COUNT(distinct ?tmp) as ?positiveDist)
+      WHERE { ?wS nif:nextSentence+ ?tS. ?wS nif:nextSentence* ?tmp. ?tmp nif:nextSentence+ ?tS
+      } GROUP BY ?wS ?tS
+    }
+    OPTIONAL { SELECT ?wS ?tS (COUNT(distinct ?tmp) as ?negativeDist)
+      WHERE { ?tS nif:nextSentence+ ?wS. ?tS nif:nextSentence* ?tmp. ?tmp nif:nextSentence+ ?wS
+      } GROUP BY ?wS ?tS
+    }
+  }
+  bind(if(bound(?positiveDist),concat(str(?positiveDist),":"),
+       if(bound(?negativeDist),concat("-",str(?negativeDist),":"), "")) as ?offset)
+
+  FILTER(isliteral(?val))
+  BIND(concat(?offset,str(?head),":",?val) as ?dep)
+  BIND(URI(concat("http://ufal.mff.cuni.cz/conll2009-st/task-description.html#",
+    ucase(replace(str(?anno),".*[#/]([^#/]+)$","$1")))) as ?conll)
+};
+
+# (h) create one nif:Sentence for every continuous sequence of words
+#     (should be the entire text)
+#     unless sentence annotation is already available
+#     note: this will fail if a powla property powla:head or the like does exist
+DELETE {
+  ?a ?b ?olds.
+  ?olds ?c ?d.
+} INSERT {
+  ?w conll:HEAD ?s.
+  ?s a nif:Sentence.
+} WHERE {
+  ?w a nif:Word.
+  MINUS { ?w conll:HEAD [] }
+  ?first nif:nextWord* ?w.
+  MINUS { [] nif:nextWord ?first }
+  BIND(URI(concat(str(?first),"_sentence")) as ?s)
+};
+
+# (i) deduplicate CoNLL properties
+DELETE {
+  ?w ?conll ?v
+} INSERT {
+  ?w ?conll ?agg
+} WHERE {
+  ?w a nif:Word; ?conll ?v
+  FILTER(strstarts(str(?conll),"http://ufal.mff.cuni.cz/conll2009-st/task-description.html#"))
+  { SELECT ?w ?conll (GROUP_CONCAT(distinct(?val);separator="|") as ?agg)
+    WHERE {
+      ?w a nif:Word; ?conll ?val.
+      FILTER(strstarts(str(?conll),"http://ufal.mff.cuni.cz/conll2009-st/task-description.html#"))
+      FILTER(isLiteral(?val))
+    } GROUP BY ?w ?conll
+  }
+};
+
+# note:
+# - struct encoding can lead to duplications in the data if layers had to be inferred,
+# - if the same property occurs multiple times, it will be assigned multiple values => aggregate values
+# - in CoNLL, we loose structured annotation layers, so the same layer will be broken into many columns
+#   (and if the same property occurs on different layers, a single column will conflate information from
+#   different layers)
+# - in CoNLL, we loose all metadata
+

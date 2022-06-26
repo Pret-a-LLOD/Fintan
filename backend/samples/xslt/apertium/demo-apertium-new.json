@@ -1,0 +1,344 @@
+{
+"input" : null
+, "output" : null
+, "pipeline" : null
+, "components" : [
+	{
+	  "componentInstance" : "dix_Dupl",
+	  "class" : "IOStreamDuplicator"
+	} ,
+	{ 
+	  "componentInstance" : "dix2src",
+	  "class" : "XSLTStreamTransformer",
+	  "xsl" : "samples/xslt/apertium/dix2src-ttl.xsl LANG=<$param1> dc_source=<$param0>"
+	},
+	{ 
+	  "componentInstance" : "dix2tgt",
+	  "class" : "XSLTStreamTransformer",
+	  "xsl" : "samples/xslt/apertium/dix2tgt-ttl.xsl LANG=<$param2> dc_source=<$param0>"
+	},
+	{ 
+	  "componentInstance" : "dix2trans",
+	  "class" : "XSLTStreamTransformer",
+	  "xsl" : "samples/xslt/apertium/dix2trans-ttl.xsl SRC_LANG=<$param1> TGT_LANG=<$param2> dc_source=<$param0>"
+	},
+	{
+	  "componentInstance" : "src_noLexinfoDupl",
+	  "class" : "IOStreamDuplicator"
+	} ,
+	{
+	  "componentInstance" : "tgt_noLexinfoDupl",
+	  "class" : "IOStreamDuplicator"
+	} ,
+	{
+	  "componentInstance" : "trans_noLexinfoDupl",
+	  "class" : "IOStreamDuplicator"
+	} ,
+	{ 
+	  "componentInstance" : "ttlLoader",
+	  "class" : "RDFStreamLoader",
+	  "lang" : "ttl",
+	  "delimiter" : "",
+	  "globalPrefixes" : true
+	} ,
+	{ 
+	  "componentInstance" : "src_update",
+	  "class" : "RDFUpdater"
+	    , "models" : [
+			{"source":"samples/xslt/apertium/sparql_mapping/lexinfo-enrichment-ud-update.ttl", "graph":"http://apertium-lexinfo-enrichment-update.ttl"}
+	    ]
+		, "updates" : [
+			 {"path":"samples/xslt/apertium/sparql_mapping/1-add-ud-tags.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/2-add-lexinfo-tags.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/3-rename-entries.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/4-copy-properties.sparql", "iter":"1"}
+		]
+	} ,
+	{ 
+	  "componentInstance" : "tgt_update",
+	  "class" : "RDFUpdater"
+	    , "models" : [
+			{"source":"samples/xslt/apertium/sparql_mapping/lexinfo-enrichment-ud-update.ttl", "graph":"http://apertium-lexinfo-enrichment-update.ttl"}
+	    ]
+		, "updates" : [
+			 {"path":"samples/xslt/apertium/sparql_mapping/1-add-ud-tags.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/2-add-lexinfo-tags.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/3-rename-entries.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/4-copy-properties.sparql", "iter":"1"}
+		]
+	} ,
+	{
+	  "componentInstance" : "src_rdf_Dupl",
+	  "class" : "RDFStreamDuplicator"
+	} ,
+	{
+	  "componentInstance" : "tgt_rdf_Dupl",
+	  "class" : "RDFStreamDuplicator"
+	} ,
+	{ 
+	  "componentInstance" : "trans_update",
+	  "class" : "RDFUpdater"
+	    , "models" : [
+			{"source":"samples/xslt/apertium/sparql_mapping/lexinfo-enrichment-ud-update.ttl", "graph":"http://apertium-lexinfo-enrichment-update.ttl"}
+	    ]
+		, "updates" : [
+			 {"path":"samples/xslt/apertium/sparql_mapping/5-rename-senses.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/8-rename-translations.sparql", "iter":"1"}
+		]
+	} ,
+	{ 
+	  "componentInstance" : "src_update_clean",
+	  "class" : "RDFUpdater"
+	    , "models" : []
+		, "updates" : [
+			 {"path":"samples/xslt/apertium/sparql_mapping/6-delete-old-nodes.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/7-delete-old-entries.sparql", "iter":"1"}
+		]
+	} ,
+	{ 
+	  "componentInstance" : "tgt_update_clean",
+	  "class" : "RDFUpdater"
+	    , "models" : []
+		, "updates" : [
+			 {"path":"samples/xslt/apertium/sparql_mapping/6-delete-old-nodes.sparql", "iter":"1"}
+			,{"path":"samples/xslt/apertium/sparql_mapping/7-delete-old-entries.sparql", "iter":"1"}
+		]
+	} ,
+	{ 
+	  "componentInstance" : "ttlWriter",
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "",
+	  "prefixDeduplication" : true
+	} ,
+	{
+	  "componentInstance" : "src_LexinfoDupl",
+	  "class" : "IOStreamDuplicator"
+	} ,
+	{
+	  "componentInstance" : "tgt_LexinfoDupl",
+	  "class" : "IOStreamDuplicator"
+	} ,
+	{
+	  "componentInstance" : "trans_LexinfoDupl",
+	  "class" : "IOStreamDuplicator"
+	} ,
+	{
+	  "componentInstance" : "all_2tiad",
+	  "class" : "SparqlStreamTransformerTDB",
+	  "lang" : "ttl",
+	  "outFormat" : "CoNLL",
+	  "query" : "samples/xslt/apertium/ontolex2tsv.sparql"
+	} ,
+	{
+	  "componentInstance" : "tiad_Dupl",
+	  "class" : "IOStreamDuplicator"
+	}
+  ]
+  
+  
+  
+  
+, "streams" : [
+
+//XML to RDF
+    {
+    	"readsFromSource" : "samples/xslt/apertium/data/apertium-en-es.en-es.dix",
+    	"writesToInstance" : "dix_Dupl"
+    },
+    
+    
+    {
+    	"readsFromInstance" : "dix_Dupl",
+    	"readsFromInstanceGraph" : "http://src",
+    	"writesToInstance" : "dix2src"
+    },
+    {
+    	"readsFromInstance" : "dix2src",
+    	"writesToInstance" : "src_noLexinfoDupl"
+    },
+    
+    
+    {
+    	"readsFromInstance" : "dix_Dupl",
+    	"readsFromInstanceGraph" : "http://tgt",
+    	"writesToInstance" : "dix2tgt"
+    },
+    {
+    	"readsFromInstance" : "dix2tgt",
+    	"writesToInstance" : "tgt_noLexinfoDupl"
+    },
+    
+    
+    {
+    	"readsFromInstance" : "dix_Dupl",
+    	"readsFromInstanceGraph" : "http://trans",
+    	"writesToInstance" : "dix2trans"
+    },
+    {
+    	"readsFromInstance" : "dix2trans",
+    	"writesToInstance" : "trans_noLexinfoDupl"
+    },
+    
+    
+// update src    
+    {
+    	"readsFromInstance" : "src_noLexinfoDupl",
+    	"writesToInstance" : "ttlLoader",
+    	"writesToInstanceGraph" : "http://src_noLexinfo"
+    },
+    {
+    	"readsFromInstance" : "ttlLoader",
+    	"readsFromInstanceGraph" : "http://src_noLexinfo",
+    	"writesToInstance" : "src_update"
+    },
+    {
+    	"readsFromInstance" : "src_update",
+    	"writesToInstance" : "src_rdf_Dupl"
+    },
+    {
+    	"readsFromInstance" : "src_rdf_Dupl",
+    	"writesToInstance" : "src_update_clean"
+    },
+    {
+    	"readsFromInstance" : "src_update_clean",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : "http://src_Lexinfo"
+    },
+    {
+    	"readsFromInstance" : "ttlWriter",
+    	"readsFromInstanceGraph" : "http://src_Lexinfo",
+    	"writesToInstance" : "src_LexinfoDupl"
+    },
+    
+    
+// update tgt    
+    {
+    	"readsFromInstance" : "tgt_noLexinfoDupl",
+    	"writesToInstance" : "ttlLoader",
+    	"writesToInstanceGraph" : "http://tgt_noLexinfo"
+    },
+    {
+    	"readsFromInstance" : "ttlLoader",
+    	"readsFromInstanceGraph" : "http://tgt_noLexinfo",
+    	"writesToInstance" : "tgt_update"
+    },
+    {
+    	"readsFromInstance" : "tgt_update",
+    	"writesToInstance" : "tgt_rdf_Dupl"
+    },
+    {
+    	"readsFromInstance" : "tgt_rdf_Dupl",
+    	"writesToInstance" : "tgt_update_clean"
+    },
+    {
+    	"readsFromInstance" : "tgt_update_clean",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : "http://tgt_Lexinfo"
+    },
+    
+    {
+    	"readsFromInstance" : "ttlWriter",
+    	"readsFromInstanceGraph" : "http://tgt_Lexinfo",
+    	"writesToInstance" : "tgt_LexinfoDupl"
+    },
+    
+
+//update trans (incl. tgt+src)        
+    {
+    	"readsFromInstance" : "trans_noLexinfoDupl",
+    	"writesToInstance" : "ttlLoader",
+    	"writesToInstanceGraph" : "http://trans"
+    },
+    {
+    	"readsFromInstance" : "ttlLoader",
+    	"readsFromInstanceGraph" : "http://trans",
+    	"writesToInstance" : "trans_update"
+    },
+    {
+    	"readsFromInstance" : "src_rdf_Dupl",
+    	"writesToInstance" : "trans_update",
+    	"writesToInstanceGraph" : "http://src"
+    },
+    {
+    	"readsFromInstance" : "tgt_rdf_Dupl",
+    	"writesToInstance" : "trans_update",
+    	"writesToInstanceGraph" : "http://tgt"
+    },
+    {
+    	"readsFromInstance" : "trans_update",
+    	"writesToInstance" : "ttlWriter",
+    	"writesToInstanceGraph" : "http://trans_Lexinfo"
+    },
+    {
+    	"readsFromInstance" : "ttlWriter",
+    	"readsFromInstanceGraph" : "http://trans_Lexinfo",
+    	"writesToInstance" : "trans_LexinfoDupl"
+    },
+    
+    
+// all to TIAD    
+    {
+    	"readsFromInstance" : "src_LexinfoDupl",
+    	"writesToInstance" : "all_2tiad",
+    	"writesToInstanceGraph" : "http://src"
+    },
+    {
+    	"readsFromInstance" : "tgt_LexinfoDupl",
+    	"writesToInstance" : "all_2tiad",
+    	"writesToInstanceGraph" : "http://tgt"
+    },
+    {
+    	"readsFromInstance" : "trans_LexinfoDupl",
+    	"writesToInstance" : "all_2tiad",
+    	"writesToInstanceGraph" : "http://trans"
+    },
+    {
+    	"readsFromInstance" : "all_2tiad",
+    	"writesToInstance" : "tiad_Dupl"
+    },
+    {
+    	"readsFromInstance" : "tiad_Dupl",
+    	"writesToDestination" : "System.out"
+    },
+    
+    
+    
+    
+    {
+    	"readsFromInstance" : "src_noLexinfoDupl",
+    	"readsFromInstanceGraph" : "http://src_noLexinfo.ttl",
+    	"writesToDestination" : "samples/xslt/apertium/data2/src_noLexinfo.ttl"
+    },
+    {
+    	"readsFromInstance" : "tgt_noLexinfoDupl",
+    	"readsFromInstanceGraph" : "http://tgt_noLexinfo.ttl",
+    	"writesToDestination" : "samples/xslt/apertium/data2/tgt_noLexinfo.ttl"
+    },
+    {
+    	"readsFromInstance" : "trans_noLexinfoDupl",
+    	"readsFromInstanceGraph" : "http://trans.ttl",
+    	"writesToDestination" : "samples/xslt/apertium/data2/trans_noLexinfo.ttl"
+    },
+    {
+    	"readsFromInstance" : "src_LexinfoDupl",
+    	"readsFromInstanceGraph" : "http://src_Lexinfo.ttl",
+    	"writesToDestination" : "samples/xslt/apertium/data2/src_Lexinfo.ttl"
+    },
+    {
+    	"readsFromInstance" : "tgt_LexinfoDupl",
+    	"readsFromInstanceGraph" : "http://tgt_Lexinfo.ttl",
+    	"writesToDestination" : "samples/xslt/apertium/data2/tgt_Lexinfo.ttl"
+    },
+    {
+    	"readsFromInstance" : "trans_LexinfoDupl",
+    	"readsFromInstanceGraph" : "http://trans.ttl",
+    	"writesToDestination" : "samples/xslt/apertium/data2/trans_Lexinfo.ttl"
+    },
+    {
+    	"readsFromInstance" : "tiad_Dupl",
+    	"readsFromInstanceGraph" : "http://tiad.tsv",
+    	"writesToDestination" : "samples/xslt/apertium/data2/tiad.tsv"
+    }
+  ]
+}

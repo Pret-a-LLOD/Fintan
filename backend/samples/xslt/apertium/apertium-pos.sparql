@@ -1,0 +1,16 @@
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+#PREFIX lexinfo: <http://www.lexinfo.net/ontology/3.0/lexinfo#>
+PREFIX lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX conll: <https://github.com/acoli-repo/conll-rdf/blob/master/owl/conll.ttl#>
+PREFIX apertium: <http://wiki.apertium.org/wiki/Bidix#>
+
+DELETE { ?entry lexinfo:morphosyntacticProperty ?apertium_tag }
+INSERT { ?entry ?repl_prop ?repl_obj }
+WHERE {
+  ?entry a ontolex:LexicalEntry .
+  ?entry lexinfo:morphosyntacticProperty ?apertium_tag .
+  GRAPH <http://apertium-lexinfo-enrichment-update.ttl> {
+    ?apertium_tag conll:replace [ ?repl_prop ?repl_obj ] .
+  }
+}

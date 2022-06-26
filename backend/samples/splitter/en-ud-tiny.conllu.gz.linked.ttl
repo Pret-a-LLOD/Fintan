@@ -1,0 +1,286 @@
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s1_0 a nif:Sentence .
+:s1_1 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "From"; conll:ID "1"; conll:LEMMA "from"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s1_3; conll:EDGE "case"; nif:nextWord :s1_2 .
+:s1_2 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "2"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s1_3; conll:EDGE "det"; nif:nextWord :s1_3 .
+:s1_3 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "AP"; conll:ID "3"; conll:LEMMA "AP"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s1_4; conll:EDGE "nmod"; nif:nextWord :s1_4 .
+:s1_4 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "comes"; conll:ID "4"; conll:LEMMA "come"; conll:UPOS "VERB"; conll:POS "VBZ"; conll:FEAT "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin"; conll:HEAD :s1_0; conll:EDGE "root"; nif:nextWord :s1_5 .
+:s1_5 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "this"; conll:ID "5"; conll:LEMMA "this"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Number=Sing|PronType=Dem"; conll:HEAD :s1_6; conll:EDGE "det"; nif:nextWord :s1_6 .
+:s1_6 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "story"; conll:ID "6"; conll:LEMMA "story"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s1_4; conll:EDGE "nsubj"; nif:nextWord :s1_7 .
+:s1_7 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD ":"; conll:ID "7"; conll:LEMMA ":"; conll:UPOS "PUNCT"; conll:POS ":"; conll:HEAD :s1_4; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s1_0 nif:nextSentence :s2_0 .
+:s2_0 a nif:Sentence .
+:s2_1 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "President"; conll:ID "1"; conll:LEMMA "President"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s2_2; conll:EDGE "compound"; nif:nextWord :s2_2 .
+:s2_2 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Bush"; conll:ID "2"; conll:LEMMA "Bush"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s2_5; conll:EDGE "nsubj"; nif:nextWord :s2_3 .
+:s2_3 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "on"; conll:ID "3"; conll:LEMMA "on"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s2_4; conll:EDGE "case"; nif:nextWord :s2_4 .
+:s2_4 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Tuesday"; conll:ID "4"; conll:LEMMA "Tuesday"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s2_5; conll:EDGE "nmod"; nif:nextWord :s2_5 .
+:s2_5 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "nominated"; conll:ID "5"; conll:LEMMA "nominate"; conll:UPOS "VERB"; conll:POS "VBD"; conll:FEAT "Mood=Ind|Tense=Past|VerbForm=Fin"; conll:HEAD :s2_0; conll:EDGE "root"; nif:nextWord :s2_6 .
+:s2_6 a nif:Word, <http://purl.org/olia/olia.owl#Numeral>; conll:WORD "two"; conll:ID "6"; conll:LEMMA "two"; conll:UPOS "NUM"; conll:POS "CD"; conll:FEAT "NumType=Card"; conll:HEAD :s2_7; conll:EDGE "nummod"; nif:nextWord :s2_7 .
+:s2_7 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "individuals"; conll:ID "7"; conll:LEMMA "individual"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s2_5; conll:EDGE "dobj"; nif:nextWord :s2_8 .
+:s2_8 a nif:Word, <http://purl.org/olia/olia.owl#Particle>; conll:WORD "to"; conll:ID "8"; conll:LEMMA "to"; conll:UPOS "PART"; conll:POS "TO"; conll:HEAD :s2_9; conll:EDGE "mark"; nif:nextWord :s2_9 .
+:s2_9 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "replace"; conll:ID "9"; conll:LEMMA "replace"; conll:UPOS "VERB"; conll:POS "VB"; conll:FEAT "VerbForm=Inf"; conll:HEAD :s2_5; conll:EDGE "advcl"; nif:nextWord :s2_10 .
+:s2_10 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "retiring"; conll:ID "10"; conll:LEMMA "retire"; conll:UPOS "VERB"; conll:POS "VBG"; conll:FEAT "VerbForm=Ger"; conll:HEAD :s2_11; conll:EDGE "amod"; nif:nextWord :s2_11 .
+:s2_11 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "jurists"; conll:ID "11"; conll:LEMMA "jurist"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s2_9; conll:EDGE "dobj"; nif:nextWord :s2_12 .
+:s2_12 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "on"; conll:ID "12"; conll:LEMMA "on"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s2_14; conll:EDGE "case"; nif:nextWord :s2_13 .
+:s2_13 a nif:Word, <http://purl.org/olia/olia.owl#Adjective>; conll:WORD "federal"; conll:ID "13"; conll:LEMMA "federal"; conll:UPOS "ADJ"; conll:POS "JJ"; conll:FEAT "Degree=Pos"; conll:HEAD :s2_14; conll:EDGE "amod"; nif:nextWord :s2_14 .
+:s2_14 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "courts"; conll:ID "14"; conll:LEMMA "court"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s2_11; conll:EDGE "nmod"; nif:nextWord :s2_15 .
+:s2_15 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "in"; conll:ID "15"; conll:LEMMA "in"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s2_18; conll:EDGE "case"; nif:nextWord :s2_16 .
+:s2_16 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "16"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s2_18; conll:EDGE "det"; nif:nextWord :s2_17 .
+:s2_17 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Washington"; conll:ID "17"; conll:LEMMA "Washington"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s2_18; conll:EDGE "compound"; nif:nextWord :s2_18 .
+:s2_18 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "area"; conll:ID "18"; conll:LEMMA "area"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s2_14; conll:EDGE "nmod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s2_19 .
+:s2_19 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "."; conll:ID "19"; conll:LEMMA "."; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s2_5; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s2_0 nif:nextSentence :s3_0 .
+:s3_0 a nif:Sentence .
+:s3_1 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Bush"; conll:ID "1"; conll:LEMMA "Bush"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_2; conll:EDGE "nsubj"; nif:nextWord :s3_2 .
+:s3_2 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "nominated"; conll:ID "2"; conll:LEMMA "nominate"; conll:UPOS "VERB"; conll:POS "VBD"; conll:FEAT "Mood=Ind|Tense=Past|VerbForm=Fin"; conll:HEAD :s3_0; conll:EDGE "root"; nif:nextWord :s3_3 .
+:s3_3 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Jennifer"; conll:ID "3"; conll:LEMMA "Jennifer"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_5; conll:EDGE "name"; nif:nextWord :s3_4 .
+:s3_4 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "M."; conll:ID "4"; conll:LEMMA "M."; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_5; conll:EDGE "name"; nif:nextWord :s3_5 .
+:s3_5 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Anderson"; conll:ID "5"; conll:LEMMA "Anderson"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_2; conll:EDGE "dobj"; nif:nextWord :s3_6 .
+:s3_6 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "for"; conll:ID "6"; conll:LEMMA "for"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s3_11; conll:EDGE "case"; nif:nextWord :s3_7 .
+:s3_7 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "a"; conll:ID "7"; conll:LEMMA "a"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Ind|PronType=Art"; conll:HEAD :s3_11; conll:EDGE "det"; nif:nextWord :s3_8 .
+:s3_8 a nif:Word, <http://purl.org/olia/olia.owl#Numeral>; conll:WORD "15"; conll:ID "8"; conll:LEMMA "15"; conll:UPOS "NUM"; conll:POS "CD"; conll:FEAT "NumType=Card"; conll:HEAD :s3_10; conll:EDGE "nummod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s3_9 .
+:s3_9 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:ID "9"; conll:UPOS "PUNCT"; conll:POS "HYPH"; conll:HEAD :s3_10; conll:EDGE "punct"; conll:MISC "SpaceAfter=No"; nif:nextWord :s3_10 .
+:s3_10 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "year"; conll:ID "10"; conll:LEMMA "year"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s3_11; conll:EDGE "compound"; nif:nextWord :s3_11 .
+:s3_11 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "term"; conll:ID "11"; conll:LEMMA "term"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s3_2; conll:EDGE "nmod"; nif:nextWord :s3_12 .
+:s3_12 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "as"; conll:ID "12"; conll:LEMMA "as"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s3_14; conll:EDGE "case"; nif:nextWord :s3_13 .
+:s3_13 a nif:Word, <http://purl.org/olia/olia.owl#Adjective>; conll:WORD "associate"; conll:ID "13"; conll:LEMMA "associate"; conll:UPOS "ADJ"; conll:POS "JJ"; conll:FEAT "Degree=Pos"; conll:HEAD :s3_14; conll:EDGE "amod"; nif:nextWord :s3_14 .
+:s3_14 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "judge"; conll:ID "14"; conll:LEMMA "judge"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s3_11; conll:EDGE "nmod"; nif:nextWord :s3_15 .
+:s3_15 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "15"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s3_18; conll:EDGE "case"; nif:nextWord :s3_16 .
+:s3_16 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "16"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s3_18; conll:EDGE "det"; nif:nextWord :s3_17 .
+:s3_17 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Superior"; conll:ID "17"; conll:LEMMA "Superior"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_18; conll:EDGE "compound"; nif:nextWord :s3_18 .
+:s3_18 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Court"; conll:ID "18"; conll:LEMMA "Court"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_14; conll:EDGE "nmod"; nif:nextWord :s3_19 .
+:s3_19 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "19"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s3_21; conll:EDGE "case"; nif:nextWord :s3_20 .
+:s3_20 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "20"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s3_21; conll:EDGE "det"; nif:nextWord :s3_21 .
+:s3_21 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "District"; conll:ID "21"; conll:LEMMA "District"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_18; conll:EDGE "nmod"; nif:nextWord :s3_22 .
+:s3_22 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "22"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s3_23; conll:EDGE "case"; nif:nextWord :s3_23 .
+:s3_23 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Columbia"; conll:ID "23"; conll:LEMMA "Columbia"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_21; conll:EDGE "nmod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s3_24 .
+:s3_24 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD ","; conll:ID "24"; conll:LEMMA ","; conll:UPOS "PUNCT"; conll:POS ","; conll:HEAD :s3_2; conll:EDGE "punct"; nif:nextWord :s3_25 .
+:s3_25 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "replacing"; conll:ID "25"; conll:LEMMA "replace"; conll:UPOS "VERB"; conll:POS "VBG"; conll:FEAT "VerbForm=Ger"; conll:HEAD :s3_2; conll:EDGE "advcl"; nif:nextWord :s3_26 .
+:s3_26 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Steffen"; conll:ID "26"; conll:LEMMA "Steffen"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_28; conll:EDGE "name"; nif:nextWord :s3_27 .
+:s3_27 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "W."; conll:ID "27"; conll:LEMMA "W."; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_28; conll:EDGE "name"; nif:nextWord :s3_28 .
+:s3_28 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Graae"; conll:ID "28"; conll:LEMMA "Graae"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s3_25; conll:EDGE "dobj"; conll:MISC "SpaceAfter=No"; nif:nextWord :s3_29 .
+:s3_29 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "."; conll:ID "29"; conll:LEMMA "."; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s3_2; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s3_0 nif:nextSentence :s4_0 .
+:s4_0 a nif:Sentence .
+:s4_1 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "***"; conll:ID "1"; conll:LEMMA "***"; conll:UPOS "PUNCT"; conll:POS "NFP"; conll:HEAD :s4_0; conll:EDGE "root" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s4_0 nif:nextSentence :s5_0 .
+:s5_0 a nif:Sentence .
+:s5_1 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Bush"; conll:ID "1"; conll:LEMMA "Bush"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_3; conll:EDGE "nsubj"; nif:nextWord :s5_2 .
+:s5_2 a nif:Word, <http://purl.org/olia/olia.owl#Adverb>; conll:WORD "also"; conll:ID "2"; conll:LEMMA "also"; conll:UPOS "ADV"; conll:POS "RB"; conll:HEAD :s5_3; conll:EDGE "advmod"; nif:nextWord :s5_3 .
+:s5_3 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "nominated"; conll:ID "3"; conll:LEMMA "nominate"; conll:UPOS "VERB"; conll:POS "VBD"; conll:FEAT "Mood=Ind|Tense=Past|VerbForm=Fin"; conll:HEAD :s5_0; conll:EDGE "root"; nif:nextWord :s5_4 .
+:s5_4 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "A."; conll:ID "4"; conll:LEMMA "A."; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_7; conll:EDGE "name"; nif:nextWord :s5_5 .
+:s5_5 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Noel"; conll:ID "5"; conll:LEMMA "Noel"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_7; conll:EDGE "name"; nif:nextWord :s5_6 .
+:s5_6 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Anketell"; conll:ID "6"; conll:LEMMA "Anketell"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_7; conll:EDGE "name"; nif:nextWord :s5_7 .
+:s5_7 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Kramer"; conll:ID "7"; conll:LEMMA "Kramer"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_3; conll:EDGE "dobj"; nif:nextWord :s5_8 .
+:s5_8 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "for"; conll:ID "8"; conll:LEMMA "for"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s5_13; conll:EDGE "case"; nif:nextWord :s5_9 .
+:s5_9 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "a"; conll:ID "9"; conll:LEMMA "a"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Ind|PronType=Art"; conll:HEAD :s5_13; conll:EDGE "det"; nif:nextWord :s5_10 .
+:s5_10 a nif:Word, <http://purl.org/olia/olia.owl#Numeral>; conll:WORD "15"; conll:ID "10"; conll:LEMMA "15"; conll:UPOS "NUM"; conll:POS "CD"; conll:FEAT "NumType=Card"; conll:HEAD :s5_12; conll:EDGE "nummod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s5_11 .
+:s5_11 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:ID "11"; conll:UPOS "PUNCT"; conll:POS "HYPH"; conll:HEAD :s5_12; conll:EDGE "punct"; conll:MISC "SpaceAfter=No"; nif:nextWord :s5_12 .
+:s5_12 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "year"; conll:ID "12"; conll:LEMMA "year"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s5_13; conll:EDGE "compound"; nif:nextWord :s5_13 .
+:s5_13 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "term"; conll:ID "13"; conll:LEMMA "term"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s5_3; conll:EDGE "nmod"; nif:nextWord :s5_14 .
+:s5_14 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "as"; conll:ID "14"; conll:LEMMA "as"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s5_16; conll:EDGE "case"; nif:nextWord :s5_15 .
+:s5_15 a nif:Word, <http://purl.org/olia/olia.owl#Adjective>; conll:WORD "associate"; conll:ID "15"; conll:LEMMA "associate"; conll:UPOS "ADJ"; conll:POS "JJ"; conll:FEAT "Degree=Pos"; conll:HEAD :s5_16; conll:EDGE "amod"; nif:nextWord :s5_16 .
+:s5_16 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "judge"; conll:ID "16"; conll:LEMMA "judge"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s5_13; conll:EDGE "nmod"; nif:nextWord :s5_17 .
+:s5_17 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "17"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s5_19; conll:EDGE "case"; nif:nextWord :s5_18 .
+:s5_18 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "18"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s5_19; conll:EDGE "det"; nif:nextWord :s5_19 .
+:s5_19 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "District"; conll:ID "19"; conll:LEMMA "District"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_16; conll:EDGE "nmod"; nif:nextWord :s5_20 .
+:s5_20 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "20"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s5_22; conll:EDGE "case"; nif:nextWord :s5_21 .
+:s5_21 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Columbia"; conll:ID "21"; conll:LEMMA "Columbia"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_22; conll:EDGE "compound"; nif:nextWord :s5_22 .
+:s5_22 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Court"; conll:ID "22"; conll:LEMMA "Court"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_19; conll:EDGE "nmod"; nif:nextWord :s5_23 .
+:s5_23 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "23"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s5_24; conll:EDGE "case"; nif:nextWord :s5_24 .
+:s5_24 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Appeals"; conll:ID "24"; conll:LEMMA "Appeals"; conll:UPOS "PROPN"; conll:POS "NNPS"; conll:FEAT "Number=Plur"; conll:HEAD :s5_22; conll:EDGE "nmod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s5_25 .
+:s5_25 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD ","; conll:ID "25"; conll:LEMMA ","; conll:UPOS "PUNCT"; conll:POS ","; conll:HEAD :s5_3; conll:EDGE "punct"; nif:nextWord :s5_26 .
+:s5_26 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "replacing"; conll:ID "26"; conll:LEMMA "replace"; conll:UPOS "VERB"; conll:POS "VBG"; conll:FEAT "VerbForm=Ger"; conll:HEAD :s5_3; conll:EDGE "advcl"; nif:nextWord :s5_27 .
+:s5_27 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "John"; conll:ID "27"; conll:LEMMA "John"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_29; conll:EDGE "name"; nif:nextWord :s5_28 .
+:s5_28 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Montague"; conll:ID "28"; conll:LEMMA "Montague"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_29; conll:EDGE "name"; nif:nextWord :s5_29 .
+:s5_29 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Steadman"; conll:ID "29"; conll:LEMMA "Steadman"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s5_26; conll:EDGE "dobj"; conll:MISC "SpaceAfter=No"; nif:nextWord :s5_30 .
+:s5_30 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "."; conll:ID "30"; conll:LEMMA "."; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s5_3; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s5_0 nif:nextSentence :s6_0 .
+:s6_0 a nif:Sentence .
+:s6_1 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "The"; conll:ID "1"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s6_2; conll:EDGE "det"; nif:nextWord :s6_2 .
+:s6_2 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "sheikh"; conll:ID "2"; conll:LEMMA "sheikh"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s6_9; conll:EDGE "nsubjpass"; nif:nextWord :s6_3 .
+:s6_3 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "in"; conll:ID "3"; conll:LEMMA "in"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s6_6; conll:EDGE "case"; nif:nextWord :s6_4 .
+:s6_4 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "wheel"; conll:ID "4"; conll:LEMMA "wheel"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s6_6; conll:EDGE "compound"; conll:MISC "SpaceAfter=No"; nif:nextWord :s6_5 .
+:s6_5 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:ID "5"; conll:UPOS "PUNCT"; conll:POS "HYPH"; conll:HEAD :s6_6; conll:EDGE "punct"; conll:MISC "SpaceAfter=No"; nif:nextWord :s6_6 .
+:s6_6 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "chair"; conll:ID "6"; conll:LEMMA "chair"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s6_2; conll:EDGE "nmod"; nif:nextWord :s6_7 .
+:s6_7 a nif:Word, <http://purl.org/olia/olia.owl#AuxiliaryVerb>; conll:WORD "has"; conll:ID "7"; conll:LEMMA "have"; conll:UPOS "AUX"; conll:POS "VBZ"; conll:FEAT "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin"; conll:HEAD :s6_9; conll:EDGE "aux"; nif:nextWord :s6_8 .
+:s6_8 a nif:Word, <http://purl.org/olia/olia.owl#AuxiliaryVerb>; conll:WORD "been"; conll:ID "8"; conll:LEMMA "be"; conll:UPOS "AUX"; conll:POS "VBN"; conll:FEAT "Tense=Past|VerbForm=Part"; conll:HEAD :s6_9; conll:EDGE "auxpass"; nif:nextWord :s6_9 .
+:s6_9 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "attacked"; conll:ID "9"; conll:LEMMA "attack"; conll:UPOS "VERB"; conll:POS "VBN"; conll:FEAT "Tense=Past|VerbForm=Part"; conll:HEAD :s6_0; conll:EDGE "root"; nif:nextWord :s6_10 .
+:s6_10 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "with"; conll:ID "10"; conll:LEMMA "with"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s6_17; conll:EDGE "case"; nif:nextWord :s6_11 .
+:s6_11 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "a"; conll:ID "11"; conll:LEMMA "a"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Ind|PronType=Art"; conll:HEAD :s6_17; conll:EDGE "det"; nif:nextWord :s6_12 .
+:s6_12 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "F"; conll:ID "12"; conll:LEMMA "f"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s6_16; conll:EDGE "compound"; conll:MISC "SpaceAfter=No"; nif:nextWord :s6_13 .
+:s6_13 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:ID "13"; conll:UPOS "PUNCT"; conll:POS "HYPH"; conll:HEAD :s6_12; conll:EDGE "punct"; conll:MISC "SpaceAfter=No"; nif:nextWord :s6_14 .
+:s6_14 a nif:Word, <http://purl.org/olia/olia.owl#Numeral>; conll:WORD "16"; conll:ID "14"; conll:LEMMA "16"; conll:UPOS "NUM"; conll:POS "CD"; conll:FEAT "NumType=Card"; conll:HEAD :s6_12; conll:EDGE "compound"; conll:MISC "SpaceAfter=No"; nif:nextWord :s6_15 .
+:s6_15 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:ID "15"; conll:UPOS "PUNCT"; conll:POS "HYPH"; conll:HEAD :s6_16; conll:EDGE "punct"; conll:MISC "SpaceAfter=No"; nif:nextWord :s6_16 .
+:s6_16 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "launched"; conll:ID "16"; conll:LEMMA "launch"; conll:UPOS "VERB"; conll:POS "VBN"; conll:FEAT "Tense=Past|VerbForm=Part"; conll:HEAD :s6_17; conll:EDGE "acl"; nif:nextWord :s6_17 .
+:s6_17 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "bomb"; conll:ID "17"; conll:LEMMA "bomb"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s6_9; conll:EDGE "nmod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s6_18 .
+:s6_18 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "."; conll:ID "18"; conll:LEMMA "."; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s6_9; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s6_0 nif:nextSentence :s7_0 .
+:s7_0 a nif:Sentence .
+:s7_1 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "He"; conll:ID "1"; conll:LEMMA "he"; conll:UPOS "PRON"; conll:POS "PRP"; conll:FEAT "Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs"; conll:HEAD :s7_4; conll:EDGE "nsubjpass"; nif:nextWord :s7_2 .
+:s7_2 a nif:Word, <http://purl.org/olia/olia.owl#AuxiliaryVerb>; conll:WORD "could"; conll:ID "2"; conll:LEMMA "could"; conll:UPOS "AUX"; conll:POS "MD"; conll:FEAT "VerbForm=Fin"; conll:HEAD :s7_4; conll:EDGE "aux"; nif:nextWord :s7_3 .
+:s7_3 a nif:Word, <http://purl.org/olia/olia.owl#AuxiliaryVerb>; conll:WORD "be"; conll:ID "3"; conll:LEMMA "be"; conll:UPOS "AUX"; conll:POS "VB"; conll:FEAT "VerbForm=Inf"; conll:HEAD :s7_4; conll:EDGE "auxpass"; nif:nextWord :s7_4 .
+:s7_4 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "killed"; conll:ID "4"; conll:LEMMA "kill"; conll:UPOS "VERB"; conll:POS "VBN"; conll:FEAT "Tense=Past|VerbForm=Part"; conll:HEAD :s7_0; conll:EDGE "root"; nif:nextWord :s7_5 .
+:s7_5 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "years"; conll:ID "5"; conll:LEMMA "year"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s7_6; conll:EDGE "nmod:tmod"; nif:nextWord :s7_6 .
+:s7_6 a nif:Word, <http://purl.org/olia/olia.owl#Adverb>; conll:WORD "ago"; conll:ID "6"; conll:LEMMA "ago"; conll:UPOS "ADV"; conll:POS "RB"; conll:HEAD :s7_4; conll:EDGE "advmod"; nif:nextWord :s7_7 .
+:s7_7 a nif:Word, <http://purl.org/olia/olia.owl#CoordinatingConjunction>; conll:WORD "and"; conll:ID "7"; conll:LEMMA "and"; conll:UPOS "CONJ"; conll:POS "CC"; conll:HEAD :s7_4; conll:EDGE "cc"; nif:nextWord :s7_8 .
+:s7_8 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "8"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s7_9; conll:EDGE "det"; nif:nextWord :s7_9 .
+:s7_9 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "israelians"; conll:ID "9"; conll:LEMMA "israelians"; conll:UPOS "PROPN"; conll:POS "NNPS"; conll:FEAT "Number=Plur"; conll:HEAD :s7_10; conll:EDGE "nsubj"; nif:nextWord :s7_10 .
+:s7_10 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "have"; conll:ID "10"; conll:LEMMA "have"; conll:UPOS "VERB"; conll:POS "VBP"; conll:FEAT "Mood=Ind|Tense=Pres|VerbForm=Fin"; conll:HEAD :s7_4; conll:EDGE "conj"; nif:nextWord :s7_11 .
+:s7_11 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "all"; conll:ID "11"; conll:LEMMA "all"; conll:UPOS "DET"; conll:POS "PDT"; conll:HEAD :s7_13; conll:EDGE "det:predet"; nif:nextWord :s7_12 .
+:s7_12 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "12"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s7_13; conll:EDGE "det"; nif:nextWord :s7_13 .
+:s7_13 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "reasons"; conll:ID "13"; conll:LEMMA "reason"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s7_10; conll:EDGE "dobj"; conll:MISC "SpaceAfter=No"; nif:nextWord :s7_14 .
+:s7_14 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD ","; conll:ID "14"; conll:LEMMA ","; conll:UPOS "PUNCT"; conll:POS ","; conll:HEAD :s7_10; conll:EDGE "punct"; nif:nextWord :s7_15 .
+:s7_15 a nif:Word, <http://purl.org/olia/olia.owl#SubordinatingConjunction>; conll:WORD "since"; conll:ID "15"; conll:LEMMA "since"; conll:UPOS "SCONJ"; conll:POS "IN"; conll:HEAD :s7_17; conll:EDGE "mark"; nif:nextWord :s7_16 .
+:s7_16 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "he"; conll:ID "16"; conll:LEMMA "he"; conll:UPOS "PRON"; conll:POS "PRP"; conll:FEAT "Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs"; conll:HEAD :s7_17; conll:EDGE "nsubj"; nif:nextWord :s7_17 .
+:s7_17 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "founded"; conll:ID "17"; conll:LEMMA "found"; conll:UPOS "VERB"; conll:POS "VBD"; conll:FEAT "Mood=Ind|Tense=Past|VerbForm=Fin"; conll:HEAD :s7_10; conll:EDGE "advcl"; nif:nextWord :s7_18 .
+:s7_18 a nif:Word, <http://purl.org/olia/olia.owl#CoordinatingConjunction>; conll:WORD "and"; conll:ID "18"; conll:LEMMA "and"; conll:UPOS "CONJ"; conll:POS "CC"; conll:HEAD :s7_17; conll:EDGE "cc"; nif:nextWord :s7_19 .
+:s7_19 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "he"; conll:ID "19"; conll:LEMMA "he"; conll:UPOS "PRON"; conll:POS "PRP"; conll:FEAT "Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs"; conll:HEAD :s7_23; conll:EDGE "nsubj"; nif:nextWord :s7_20 .
+:s7_20 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "is"; conll:ID "20"; conll:LEMMA "be"; conll:UPOS "VERB"; conll:POS "VBZ"; conll:FEAT "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin"; conll:HEAD :s7_23; conll:EDGE "cop"; nif:nextWord :s7_21 .
+:s7_21 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "the"; conll:ID "21"; conll:LEMMA "the"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Def|PronType=Art"; conll:HEAD :s7_23; conll:EDGE "det"; nif:nextWord :s7_22 .
+:s7_22 a nif:Word, <http://purl.org/olia/olia.owl#Adjective>; conll:WORD "spiritual"; conll:ID "22"; conll:LEMMA "spiritual"; conll:UPOS "ADJ"; conll:POS "JJ"; conll:FEAT "Degree=Pos"; conll:HEAD :s7_23; conll:EDGE "amod"; nif:nextWord :s7_23 .
+:s7_23 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "leader"; conll:ID "23"; conll:LEMMA "leader"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s7_17; conll:EDGE "conj"; nif:nextWord :s7_24 .
+:s7_24 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "24"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s7_25; conll:EDGE "case"; nif:nextWord :s7_25 .
+:s7_25 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Hamas"; conll:ID "25"; conll:LEMMA "Hamas"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s7_23; conll:EDGE "nmod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s7_26 .
+:s7_26 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD ","; conll:ID "26"; conll:LEMMA ","; conll:UPOS "PUNCT"; conll:POS ","; conll:HEAD :s7_4; conll:EDGE "punct"; nif:nextWord :s7_27 .
+:s7_27 a nif:Word, <http://purl.org/olia/olia.owl#CoordinatingConjunction>; conll:WORD "but"; conll:ID "27"; conll:LEMMA "but"; conll:UPOS "CONJ"; conll:POS "CC"; conll:HEAD :s7_4; conll:EDGE "cc"; nif:nextWord :s7_28 .
+:s7_28 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "they"; conll:ID "28"; conll:LEMMA "they"; conll:UPOS "PRON"; conll:POS "PRP"; conll:FEAT "Case=Nom|Number=Plur|Person=3|PronType=Prs"; conll:HEAD :s7_29; conll:EDGE "nsubj"; nif:nextWord :s7_29 .
+:s7_29 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "did"; conll:ID "29"; conll:LEMMA "do"; conll:UPOS "VERB"; conll:POS "VBD"; conll:FEAT "Mood=Ind|Tense=Past|VerbForm=Fin"; conll:HEAD :s7_4; conll:EDGE "conj"; conll:MISC "SpaceAfter=No"; nif:nextWord :s7_30 .
+:s7_30 a nif:Word, <http://purl.org/olia/olia.owl#Particle>; conll:WORD "n't"; conll:ID "30"; conll:LEMMA "not"; conll:UPOS "PART"; conll:POS "RB"; conll:HEAD :s7_29; conll:EDGE "neg"; conll:MISC "SpaceAfter=No"; nif:nextWord :s7_31 .
+:s7_31 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "."; conll:ID "31"; conll:LEMMA "."; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s7_4; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s7_0 nif:nextSentence :s8_0 .
+:s8_0 a nif:Sentence .
+:s8_1 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "Today"; conll:ID "1"; conll:LEMMA "today"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s8_3; conll:EDGE "nmod:poss"; conll:MISC "SpaceAfter=No"; nif:nextWord :s8_2 .
+:s8_2 a nif:Word, <http://purl.org/olia/olia.owl#Particle>; conll:WORD "'s"; conll:ID "2"; conll:LEMMA "'s"; conll:UPOS "PART"; conll:POS "POS"; conll:HEAD :s8_1; conll:EDGE "case"; nif:nextWord :s8_3 .
+:s8_3 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "incident"; conll:ID "3"; conll:LEMMA "incident"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s8_4; conll:EDGE "nsubj"; nif:nextWord :s8_4 .
+:s8_4 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "proves"; conll:ID "4"; conll:LEMMA "prove"; conll:UPOS "VERB"; conll:POS "VBZ"; conll:FEAT "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin"; conll:HEAD :s8_0; conll:EDGE "root"; nif:nextWord :s8_5 .
+:s8_5 a nif:Word, <http://purl.org/olia/olia.owl#SubordinatingConjunction>; conll:WORD "that"; conll:ID "5"; conll:LEMMA "that"; conll:UPOS "SCONJ"; conll:POS "IN"; conll:HEAD :s8_8; conll:EDGE "mark"; nif:nextWord :s8_6 .
+:s8_6 a nif:Word, <http://purl.org/olia/olia.owl#ProperNoun>; conll:WORD "Sharon"; conll:ID "6"; conll:LEMMA "Sharon"; conll:UPOS "PROPN"; conll:POS "NNP"; conll:FEAT "Number=Sing"; conll:HEAD :s8_8; conll:EDGE "nsubj"; nif:nextWord :s8_7 .
+:s8_7 a nif:Word, <http://purl.org/olia/olia.owl#AuxiliaryVerb>; conll:WORD "has"; conll:ID "7"; conll:LEMMA "have"; conll:UPOS "AUX"; conll:POS "VBZ"; conll:FEAT "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin"; conll:HEAD :s8_8; conll:EDGE "aux"; nif:nextWord :s8_8 .
+:s8_8 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "lost"; conll:ID "8"; conll:LEMMA "lose"; conll:UPOS "VERB"; conll:POS "VBN"; conll:FEAT "Tense=Past|VerbForm=Part"; conll:HEAD :s8_4; conll:EDGE "ccomp"; nif:nextWord :s8_9 .
+:s8_9 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "his"; conll:ID "9"; conll:LEMMA "he"; conll:UPOS "PRON"; conll:POS "PRP$"; conll:FEAT "Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs"; conll:HEAD :s8_10; conll:EDGE "nmod:poss"; nif:nextWord :s8_10 .
+:s8_10 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "patience"; conll:ID "10"; conll:LEMMA "patience"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s8_8; conll:EDGE "dobj"; nif:nextWord :s8_11 .
+:s8_11 a nif:Word, <http://purl.org/olia/olia.owl#CoordinatingConjunction>; conll:WORD "and"; conll:ID "11"; conll:LEMMA "and"; conll:UPOS "CONJ"; conll:POS "CC"; conll:HEAD :s8_10; conll:EDGE "cc"; nif:nextWord :s8_12 .
+:s8_12 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "his"; conll:ID "12"; conll:LEMMA "he"; conll:UPOS "PRON"; conll:POS "PRP$"; conll:FEAT "Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs"; conll:HEAD :s8_13; conll:EDGE "nmod:poss"; nif:nextWord :s8_13 .
+:s8_13 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "hope"; conll:ID "13"; conll:LEMMA "hope"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s8_10; conll:EDGE "conj"; nif:nextWord :s8_14 .
+:s8_14 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "in"; conll:ID "14"; conll:LEMMA "in"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s8_15; conll:EDGE "case"; nif:nextWord :s8_15 .
+:s8_15 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "peace"; conll:ID "15"; conll:LEMMA "peace"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s8_13; conll:EDGE "nmod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s8_16 .
+:s8_16 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "."; conll:ID "16"; conll:LEMMA "."; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s8_4; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s8_0 nif:nextSentence :s9_0 .
+:s9_0 a nif:Sentence .
+:s9_1 a nif:Word, <http://purl.org/olia/olia.owl#Adjective>; conll:WORD "Nervous"; conll:ID "1"; conll:LEMMA "nervous"; conll:UPOS "ADJ"; conll:POS "JJ"; conll:FEAT "Degree=Pos"; conll:HEAD :s9_2; conll:EDGE "amod"; nif:nextWord :s9_2 .
+:s9_2 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "people"; conll:ID "2"; conll:LEMMA "people"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s9_3; conll:EDGE "nsubj"; nif:nextWord :s9_3 .
+:s9_3 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "make"; conll:ID "3"; conll:LEMMA "make"; conll:UPOS "VERB"; conll:POS "VBP"; conll:FEAT "Mood=Ind|Tense=Pres|VerbForm=Fin"; conll:HEAD :s9_0; conll:EDGE "root"; nif:nextWord :s9_4 .
+:s9_4 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "mistakes"; conll:ID "4"; conll:LEMMA "mistake"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s9_3; conll:EDGE "dobj"; conll:MISC "SpaceAfter=No"; nif:nextWord :s9_5 .
+:s9_5 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD ","; conll:ID "5"; conll:LEMMA ","; conll:UPOS "PUNCT"; conll:POS ","; conll:HEAD :s9_3; conll:EDGE "punct"; nif:nextWord :s9_6 .
+:s9_6 a nif:Word, <http://purl.org/olia/olia.owl#Adverb>; conll:WORD "so"; conll:ID "6"; conll:LEMMA "so"; conll:UPOS "ADV"; conll:POS "RB"; conll:HEAD :s9_8; conll:EDGE "advmod"; nif:nextWord :s9_7 .
+:s9_7 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "I"; conll:ID "7"; conll:LEMMA "I"; conll:UPOS "PRON"; conll:POS "PRP"; conll:FEAT "Case=Nom|Number=Sing|Person=1|PronType=Prs"; conll:HEAD :s9_8; conll:EDGE "nsubj"; nif:nextWord :s9_8 .
+:s9_8 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "suppose"; conll:ID "8"; conll:LEMMA "suppose"; conll:UPOS "VERB"; conll:POS "VBP"; conll:FEAT "Mood=Ind|Tense=Pres|VerbForm=Fin"; conll:HEAD :s9_3; conll:EDGE "ccomp"; nif:nextWord :s9_9 .
+:s9_9 a nif:Word, <http://purl.org/olia/olia.owl#Pronoun>; conll:WORD "there"; conll:ID "9"; conll:LEMMA "there"; conll:UPOS "PRON"; conll:POS "EX"; conll:HEAD :s9_11; conll:EDGE "expl"; nif:nextWord :s9_10 .
+:s9_10 a nif:Word, <http://purl.org/olia/olia.owl#AuxiliaryVerb>; conll:WORD "will"; conll:ID "10"; conll:LEMMA "will"; conll:UPOS "AUX"; conll:POS "MD"; conll:FEAT "VerbForm=Fin"; conll:HEAD :s9_11; conll:EDGE "aux"; nif:nextWord :s9_11 .
+:s9_11 a nif:Word, <http://purl.org/olia/olia.owl#Verb>; conll:WORD "be"; conll:ID "11"; conll:LEMMA "be"; conll:UPOS "VERB"; conll:POS "VB"; conll:FEAT "VerbForm=Inf"; conll:HEAD :s9_8; conll:EDGE "ccomp"; nif:nextWord :s9_12 .
+:s9_12 a nif:Word, <http://purl.org/olia/olia.owl#Determiner>; conll:WORD "a"; conll:ID "12"; conll:LEMMA "a"; conll:UPOS "DET"; conll:POS "DT"; conll:FEAT "Definite=Ind|PronType=Art"; conll:HEAD :s9_13; conll:EDGE "det"; nif:nextWord :s9_13 .
+:s9_13 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "wave"; conll:ID "13"; conll:LEMMA "wave"; conll:UPOS "NOUN"; conll:POS "NN"; conll:FEAT "Number=Sing"; conll:HEAD :s9_11; conll:EDGE "nsubj"; nif:nextWord :s9_14 .
+:s9_14 a nif:Word, <http://purl.org/olia/olia.owl#Adposition>; conll:WORD "of"; conll:ID "14"; conll:LEMMA "of"; conll:UPOS "ADP"; conll:POS "IN"; conll:HEAD :s9_17; conll:EDGE "case"; nif:nextWord :s9_15 .
+:s9_15 a nif:Word, <http://purl.org/olia/olia.owl#Adjective>; conll:WORD "succesfull"; conll:ID "15"; conll:LEMMA "succesfull"; conll:UPOS "ADJ"; conll:POS "JJ"; conll:FEAT "Degree=Pos"; conll:HEAD :s9_17; conll:EDGE "amod"; nif:nextWord :s9_16 .
+:s9_16 a nif:Word, <http://purl.org/olia/olia.owl#Adjective>; conll:WORD "arab"; conll:ID "16"; conll:LEMMA "arab"; conll:UPOS "ADJ"; conll:POS "JJ"; conll:FEAT "Degree=Pos"; conll:HEAD :s9_17; conll:EDGE "amod"; nif:nextWord :s9_17 .
+:s9_17 a nif:Word, <http://purl.org/olia/olia.owl#CommonNoun>; conll:WORD "attacks"; conll:ID "17"; conll:LEMMA "attack"; conll:UPOS "NOUN"; conll:POS "NNS"; conll:FEAT "Number=Plur"; conll:HEAD :s9_13; conll:EDGE "nmod"; conll:MISC "SpaceAfter=No"; nif:nextWord :s9_18 .
+:s9_18 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "."; conll:ID "18"; conll:LEMMA "."; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s9_3; conll:EDGE "punct" .
+
+@prefix : <https://github.com/UniversalDependencies/UD_English#> .
+@prefix powla: <http://purl.org/powla/powla.owl#> .
+@prefix conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix terms: <http://purl.org/acoli/open-ie/> .
+@prefix x: <http://purl.org/acoli/conll-rdf/xml#> .
+@prefix nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+:s9_0 nif:nextSentence :s10_0 .
+:s10_0 a nif:Sentence .
+:s10_1 a nif:Word; conll:WORD "A"; conll:ID "1"; conll:LEMMA "a"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_8; conll:EDGE "foreign"; nif:nextWord :s10_2 .
+:s10_2 a nif:Word; conll:WORD "la"; conll:ID "2"; conll:LEMMA "la"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_8; conll:EDGE "foreign"; nif:nextWord :s10_3 .
+:s10_3 a nif:Word; conll:WORD "guerre"; conll:ID "3"; conll:LEMMA "guerre"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_8; conll:EDGE "foreign"; nif:nextWord :s10_4 .
+:s10_4 a nif:Word; conll:WORD "c'est"; conll:ID "4"; conll:LEMMA "c'est"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_8; conll:EDGE "foreign"; nif:nextWord :s10_5 .
+:s10_5 a nif:Word; conll:WORD "comme"; conll:ID "5"; conll:LEMMA "comme"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_8; conll:EDGE "foreign"; nif:nextWord :s10_6 .
+:s10_6 a nif:Word; conll:WORD "a"; conll:ID "6"; conll:LEMMA "a"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_8; conll:EDGE "foreign"; nif:nextWord :s10_7 .
+:s10_7 a nif:Word; conll:WORD "la"; conll:ID "7"; conll:LEMMA "la"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_8; conll:EDGE "foreign"; nif:nextWord :s10_8 .
+:s10_8 a nif:Word; conll:WORD "guerre"; conll:ID "8"; conll:LEMMA "guerre"; conll:UPOS "X"; conll:POS "FW"; conll:HEAD :s10_0; conll:EDGE "root"; conll:MISC "SpaceAfter=No"; nif:nextWord :s10_9 .
+:s10_9 a nif:Word, <http://purl.org/olia/olia.owl#Punctuation>; conll:WORD "!"; conll:ID "9"; conll:LEMMA "!"; conll:UPOS "PUNCT"; conll:POS "."; conll:HEAD :s10_8; conll:EDGE "punct" .

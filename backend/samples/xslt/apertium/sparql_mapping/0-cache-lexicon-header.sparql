@@ -1,0 +1,18 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX conll: <https://github.com/acoli-repo/conll-rdf/blob/master/owl/conll.ttl#>
+
+# Extract Lexicon header from src and tgt, if needed.
+# currently unused.
+INSERT {
+	GRAPH <http://lexiconTMP> {
+		?lexicon lime:entry ?old_entry ;
+           lime:language ?lang .
+	}
+}
+WHERE {
+	?lexicon lime:entry ?old_entry ;
+           lime:language ?lang .
+}

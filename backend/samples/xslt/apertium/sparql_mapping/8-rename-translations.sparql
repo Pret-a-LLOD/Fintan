@@ -1,0 +1,32 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX conll: <https://github.com/acoli-repo/conll-rdf/blob/master/owl/conll.ttl#>
+PREFIX vartrans: <http://www.w3.org/ns/lemon/vartrans#>
+
+DELETE {
+	?old_translation 	a vartrans:Translation ;
+						vartrans:source ?source_sense ;
+						vartrans:target ?target_sense .
+	?lexicon			vartrans:trans ?old_translation .
+}
+INSERT {
+	?new_translation 	a vartrans:Translation ;
+						vartrans:source ?source_sense ;
+						vartrans:target ?target_sense .
+	?lexicon			vartrans:trans ?new_translation .
+}
+WHERE {
+	?old_translation vartrans:source ?source_sense .
+	?old_translation vartrans:target ?target_sense .
+	?lexicon vartrans:trans ?old_translation .
+
+	BIND(REPLACE(STR(?target_sense), "http://linguistic.linkeddata.es/id/apertium/tranSet[A-Z-]+/", "") as ?target_sense_name)
+	BIND(URI(
+			CONCAT(
+				CONCAT(
+					CONCAT(STR(?source_sense), '-'),
+				STR(?target_sense_name)),
+			'-trans')) as ?new_translation)
+}

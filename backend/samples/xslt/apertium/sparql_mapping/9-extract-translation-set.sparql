@@ -1,0 +1,21 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX lime: <http://www.w3.org/ns/lemon/lime#>
+PREFIX conll: <https://github.com/acoli-repo/conll-rdf/blob/master/owl/conll.ttl#>
+PREFIX vartrans: <http://www.w3.org/ns/lemon/vartrans#>
+
+# Creating a SELECT that will get only the things we need for the TranslationSet
+# unnecessary in Fintan, since all datasets remain properly separated during runtime
+SELECT ?subj ?prop ?obj
+WHERE
+{
+	?subj a ?clsName .
+	?subj ?prop ?obj .
+
+	VALUES( ?clsName ) {
+		( vartrans:TranslationSet )
+		( vartrans:Translation )
+		( ontolex:LexicalSense )
+	}
+}

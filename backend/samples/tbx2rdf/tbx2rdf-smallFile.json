@@ -1,0 +1,21 @@
+{
+"input" : "tbx2rdf/samples/test1.tbx"
+, "output" : "System.out"
+, "pipeline" : [
+	{
+	  "componentInstance" : "tbx2rdf",
+	  "class" : "TBX2RDFStreamLoader",
+	  "namespace" : "http://tbx2rdf.lider-project.eu/data/iate/testlocalnamespace/",
+	  "mappings" : "tbx2rdf/mappings.default",
+	  "lenient" : "false",
+	  "bigFile" : "false",
+	  "cachePath" : null
+	},
+	{ 
+      "componentInstance" : "ttlWriter",
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
+	}
+  ]
+}

@@ -1,0 +1,52 @@
+{
+"components" : [ 
+
+	{ 
+	  "componentInstance" : "tarql",
+	  "class" : "TarqlStreamTransformer",
+	  "delimiterIn" : "",
+	  "delimiterOut" : "##TEST#MIDDLE##",
+	  
+	  "query" : "samples/tarql/test.tarql",
+	  "delimiterCSV" : null,
+	  "tabs" : true,
+	  "quoteChar" : null,
+	  "escapeChar" : null,
+	  "encoding" : "UTF-8",
+	  "headerRow" : true,
+	  "baseIRI" : null,
+	  "write-base" : false,
+	  "dedup" : null
+	},
+	{ 
+	  "componentInstance" : "loader",
+	  "class" : "RDFStreamLoader",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#MIDDLE##"
+	},
+	{ 
+	  "componentInstance" : "writer",
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "##TEST#OUTPUT##"
+	}
+]
+, "streams" : [
+    {
+    	"readsFromSource" : "samples/tarql/testinput.tsv",
+    	"writesToInstance" : "tarql"
+    },
+    {
+    	"readsFromInstance" : "tarql",
+    	"writesToInstance" : "loader"
+    },
+    {
+    	"readsFromInstance" : "loader",
+    	"writesToInstance" : "writer"
+    },
+    {
+    	"readsFromInstance" : "writer",
+    	"writesToDestination" : "System.out"
+    }
+]
+}

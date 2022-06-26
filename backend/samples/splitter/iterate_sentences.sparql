@@ -1,0 +1,25 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX conll: <http://ufal.mff.cuni.cz/conll2009-st/task-description.html#>
+PREFIX nif: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#>
+
+## simple, order by ID 
+SELECT ?s 
+WHERE {
+  ?s a nif:Sentence
+  BIND(xsd:integer(REPLACE(STR(?s),'[^0-9]','')) AS ?snr)
+} order by asc(?snr)
+
+
+## Order by property path. Possibly slow, Jena may run into stack overflow for large corpora.
+#SELECT ?s (count(?s1) as ?cnt)
+#WHERE {
+#  ?s1 a nif:Sentence .
+#  FILTER(NOT EXISTS{?s0 nif:nextSentence ?s1}) .
+#  ?s1 nif:nextSentence* ?s .
+#} 
+#group by ?s
+#order by asc(?cnt)
+

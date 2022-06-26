@@ -1,0 +1,17 @@
+[submodule "fintan-core"]
+	path = fintan-core
+	url = https://github.com/acoli-repo/fintan-core.git
+[submodule "conll-rdf"]
+	path = conll-rdf
+	url = https://github.com/acoli-repo/conll-rdf.git
+	branch = fintan-support
+[submodule "tarql"]
+	path = tarql
+	url = https://github.com/tarql/tarql.git
+[submodule "tbx2rdf"]
+	path = tbx2rdf
+	url = https://github.com/cfaeth/tbx2rdf.git
+	branch = integrationTest
+[submodule "fintan-swagger-client"]
+	path = fintan-swagger-client
+	url = https://github.com/acoli-repo/fintan-swagger-client

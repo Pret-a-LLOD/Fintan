@@ -1,0 +1,22 @@
+{
+"input" : "samples/unimorph/data/sqi-presplit.gz"
+, "output" : "samples/unimorph/data/sqi-presplit-1-thread.ttl"
+, "pipeline" : [ 
+
+	{ "class" : "CoNLLStreamExtractor",
+		"baseURI" : "https://github.com/unimorph/sqi#",
+		"columns" : ["WORD", "LEMMA", "FEATS"]
+	},
+	
+	{ "class" : "CoNLLRDFUpdater"
+		, "models" : [
+			{"source":"samples/unimorph/data/unimorph.owl", "graph":"http://purl.org/olia/unimorph.owl"}
+	    ]
+		, "updates" : [
+			{"path":"samples/unimorph/sparql/unimorph2lemon.sparql", "iter":"1"},
+			{"path":"samples/unimorph/sparql/linkFEATS.sparql", "iter":"1"}
+		]
+		, "threads" : "1"
+	} 
+]
+}

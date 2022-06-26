@@ -1,0 +1,40 @@
+{
+"input" : "samples/unimorph/data/sqi-presplit.gz"
+, "output" : "samples/unimorph/data/sqi-splitter-4-thread.ttl"
+, "pipeline" : [ 
+
+	{ "class" : "CoNLLStreamExtractor",
+		"baseURI" : "https://github.com/unimorph/sqi#",
+		"columns" : ["WORD", "LEMMA", "FEATS"]
+	},
+	
+	{ 
+	  "class" : "RDFStreamSplitterTDB",
+	  "lang" : "ttl",
+	  "initUpdate" : null,
+	  "iteratorQuery" : "samples/unimorph/sparql/iterate_tokens.sparql",
+	  "constructQuery" : "samples/unimorph/sparql/construct_sentences.sparql",
+	  "recursiveUpdate" : null,
+	  "segmentStreams" : null,
+	  "deltaStreams" : null,
+	  "tdbPath" : null
+	},
+	
+	{ "class" : "RDFUpdater"
+		, "models" : [
+			{"source":"samples/unimorph/data/unimorph.owl", "graph":"http://purl.org/olia/unimorph.owl"}
+	    ]
+		, "updates" : [
+			{"path":"samples/unimorph/sparql/unimorph2lemon.sparql", "iter":"1"},
+			{"path":"samples/unimorph/sparql/linkFEATS.sparql", "iter":"1"}
+		]
+		, "threads" : "4"
+	},
+	{ 
+	  "class" : "RDFStreamWriter",
+	  "lang" : "ttl",
+	  "delimiter" : "",
+	  "prefixDeduplication" : false
+	}
+]
+}
