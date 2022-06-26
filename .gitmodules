@@ -7,3 +7,9 @@
 [submodule "loaders/xml2conll"]
 	path = loaders/xml2conll
 	url = https://github.com/acoli-repo/xml2conll
+[submodule "aux/tarql"]
+	path = aux/tarql
+	url = https://github.com/tarql/tarql
+[submodule "aux/tbx2rdf"]
+	path = aux/tbx2rdf
+	url = https://github.com/cfaeth/tbx2rdf
